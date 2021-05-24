@@ -66,7 +66,7 @@
                 (company-complete-common . evil-mc-execute-default-complete)
                 (doom/backward-to-bol-or-indent . evil-mc-execute-default-call)
                 (doom/forward-to-last-non-comment-or-eol . evil-mc-execute-default-call)
-                ;; :emacs undo
+                ;; :editor undo
                 (undo-fu-only-undo . evil-mc-execute-default-undo)
                 (undo-fu-only-redo . evil-mc-execute-default-redo)
                 ;; :editor evil

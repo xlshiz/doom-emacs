@@ -35,7 +35,7 @@
     :group 'twittering-mode)
 
   (add-hook 'doom-real-buffer-functions #'+twitter-buffer-p)
-  (when (featurep! :ui popup)
+  (when (featurep! :editor popup)
     (setq twittering-pop-to-buffer-function #'+twitter-display-buffer-fn))
 
   ;; Custom header-line for twitter buffers

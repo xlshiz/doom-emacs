@@ -48,7 +48,7 @@
 
 
 (use-package! flycheck-credo
-  :when (featurep! :checkers syntax)
+  :when (featurep! :tools checker)
   :after elixir-mode
   :config (flycheck-credo-setup))
 

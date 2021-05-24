@@ -14,7 +14,7 @@
     (add-to-list 'auto-mode-alist '("\\.jl\\'" . ess-julia-mode)))
   :config
   (setq ess-offset-continued 'straight
-        ess-use-flymake (not (featurep! :checkers syntax))
+        ess-use-flymake (not (featurep! :tools checker))
         ess-nuke-trailing-whitespace-p t
         ess-style 'DEFAULT
         ess-history-directory (expand-file-name "ess-history/" doom-cache-dir))

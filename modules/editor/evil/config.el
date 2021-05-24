@@ -38,8 +38,7 @@ directives. By default, this only recognizes C directives.")
         evil-mode-line-format 'nil
         ;; more vim-like behavior
         evil-symbol-word-search t
-        ;; if the current state is obvious from the cursor's color/shape, then
-        ;; we won't need superfluous indicators to do it instead.
+        ;; cursor appearance
         evil-default-cursor '+evil-default-cursor-fn
         evil-normal-state-cursor 'box
         evil-emacs-state-cursor  '(box +evil-emacs-cursor-fn)
@@ -52,8 +51,8 @@ directives. By default, this only recognizes C directives.")
         ;; errors will abort macros, so suppress them:
         evil-kbd-macro-suppress-motion-error t
         evil-undo-system
-        (cond ((featurep! :emacs undo +tree) 'undo-tree)
-              ((featurep! :emacs undo) 'undo-fu)
+        (cond ((featurep! :editor undo +tree) 'undo-tree)
+              ((featurep! :editor undo) 'undo-fu)
               (EMACS28+ 'undo-redo)))
 
   ;; Slow this down from 0.02 to prevent blocking in large or folded buffers
@@ -439,18 +438,18 @@ directives. By default, this only recognizes C directives.")
       (:when (featurep! :lang web)
        :m "]x"   #'+web:encode-html-entities
        :m "[x"   #'+web:decode-html-entities)
-      (:when (featurep! :ui vc-gutter)
+      (:when (featurep! :editor vc-gutter)
        :m "]d"   #'git-gutter:next-hunk
        :m "[d"   #'git-gutter:previous-hunk)
-      (:when (featurep! :ui hl-todo)
+      (:when (featurep! :editor hl-todo)
        :m "]t"   #'hl-todo-next
        :m "[t"   #'hl-todo-previous)
-      (:when (featurep! :ui workspaces)
+      (:when (featurep! :editor workspaces)
        :n "gt"   #'+workspace:switch-next
        :n "gT"   #'+workspace:switch-previous
        :n "]w"   #'+workspace/switch-right
        :n "[w"   #'+workspace/switch-left)
-      (:when (featurep! :ui tabs)
+      (:when (featurep! :editor tabs)
        :n "gt"   #'centaur-tabs-forward
        :n "gT"   #'centaur-tabs-backward)
 

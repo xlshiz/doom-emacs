@@ -63,7 +63,7 @@
         "t" #'merlin-type-enclosing)
 
   (use-package! flycheck-ocaml
-    :when (featurep! :checkers syntax)
+    :when (featurep! :tools checker)
     :hook (merlin-mode . +ocaml-init-flycheck-h)
     :config
     (defun +ocaml-init-flycheck-h ()
@@ -84,7 +84,7 @@
           :v "R" #'merlin-iedit-occurrences))
 
   (use-package! merlin-imenu
-    :when (featurep! :emacs imenu)
+    :when (featurep! :editor imenu)
     :hook (merlin-mode . merlin-use-merlin-imenu)))
 
 

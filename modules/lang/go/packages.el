@@ -11,5 +11,5 @@
 (when (featurep! :completion company)
   (package! company-go :pin "4acdcbdea79de6b3dee1c637eca5cbea0fdbe37c"))
 
-(when (featurep! :checkers syntax)
+(when (featurep! :tools checker)
   (package! flycheck-golangci-lint :pin "8e446c68311048f0b87febf8ef0379e29d358851"))

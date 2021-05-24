@@ -14,7 +14,7 @@
                            "-fdefer-typed-holes"
                            "-fdefer-type-errors"))
   :config
-  (when (featurep! :checkers syntax)
+  (when (featurep! :tools checker)
     (flycheck-add-next-checker 'haskell-dante '(warning . haskell-hlint)))
 
   (set-company-backend! 'dante-mode #'dante-company)

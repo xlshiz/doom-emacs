@@ -8,7 +8,7 @@
 
 
 (use-package! solidity-flycheck  ; included with solidity-mode
-  :when (featurep! :checkers syntax)
+  :when (featurep! :tools checker)
   :after solidity-mode
   :config
   (set-docsets! 'solidity-mode "Solidity")

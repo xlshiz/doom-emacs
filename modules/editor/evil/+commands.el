@@ -101,5 +101,5 @@
 (evil-ex-define-cmd "cap[ture]"   #'org-capture)
 
 ;;; ibuffer
-(when (featurep! :emacs ibuffer)
+(when (featurep! :editor ibuffer)
   (evil-ex-define-cmd "buffers" #'ibuffer))

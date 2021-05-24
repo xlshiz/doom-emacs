@@ -1,5 +1,5 @@
 ;;; completion/ivy/autoload/hydras.el -*- lexical-binding: t; -*-
-;;;###if (featurep! :ui hydra)
+;;;###if (featurep! :editor hydra)
 
 ;;;###autoload
 (after! ivy-hydra

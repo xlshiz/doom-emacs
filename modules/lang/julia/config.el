@@ -48,7 +48,7 @@
   :config
   (set-popup-rule! "^\\*julia.*\\*$" :ttl nil)
 
-  (when (featurep! :ui workspaces)
+  (when (featurep! :editor workspaces)
     (defadvice! +julia--namespace-repl-buffer-to-workspace-a (&optional executable-key suffix)
       "Name for a Julia REPL inferior buffer. Uses workspace name for doom emacs"
       :override #'julia-repl--inferior-buffer-name

@@ -133,7 +133,7 @@ server getting expensively restarted when reverting buffers."
           (doom-shut-up-a #'lsp--info "No language server available for %S"
                           major-mode)))))
 
-  (when (featurep! :ui modeline +light)
+  (when (featurep! :editor modeline +light)
     (defvar-local lsp-modeline-icon nil)
 
     (add-hook! '(lsp-before-initialize-hook
@@ -186,9 +186,7 @@ instead is more sensible."
         ;; Some icons don't scale correctly on Emacs 26, so disable them there.
         lsp-ui-sideline-actions-icon  ; DEPRECATED Remove later
         (if EMACS27+ lsp-ui-sideline-actions-icon-default)
-        ;; REVIEW Temporarily disabled, due to immense slowness on every
-        ;;        keypress. See emacs-lsp/lsp-ui#613
-        lsp-ui-doc-enable nil)
+	lsp-ui-doc-enable nil)
 
   (map! :map lsp-ui-peek-mode-map
         "j"   #'lsp-ui-peek--select-next

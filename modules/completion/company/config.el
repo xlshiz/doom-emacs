@@ -2,9 +2,9 @@
 
 (use-package! company
   :commands (company-complete-common
-             company-complete-common-or-cycle
-             company-manual-begin
-             company-grab-line)
+	     company-complete-common-or-cycle
+	     company-manual-begin
+	     company-grab-line)
   :hook (doom-first-input . global-company-mode)
   :init
   (setq company-minimum-prefix-length 2
@@ -39,7 +39,6 @@
         ;; domain-specific words with particular casing.
         company-dabbrev-ignore-case nil
         company-dabbrev-downcase nil)
-
   (when (featurep! +tng)
     (add-hook 'global-company-mode-hook #'company-tng-mode))
 
@@ -65,7 +64,6 @@
       (company-abort)))
 
   (add-hook 'after-change-major-mode-hook #'+company-init-backends-h 'append)
-
 
   ;; NOTE Fix #1335: ensure `company-emulation-alist' is the first item of
   ;;      `emulation-mode-map-alists', thus higher priority than keymaps of

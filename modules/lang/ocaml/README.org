@@ -55,7 +55,7 @@ opam install merlin utop ocp-indent dune ocamlformat
 
 * Configuration
 + If =:completion company= is enabled then autocomplete is provided by =merlin=
-+ When =:checkers syntax= is enabled then =flycheck-ocaml= is activated to do
++ When =:tools checker= is enabled then =flycheck-ocaml= is activated to do
   on-the-fly syntax/type checking via =merlin=, otherwise this is only done when
   the file is saved.
 + Spell checking is activated in comments if =:checkers spell= is active
@@ -66,7 +66,7 @@ opam install merlin utop ocp-indent dune ocamlformat
 + If =:editor multiple-cursors= is enabled then identifiers can be refactored
   with =v R= and multiple cursors (this correctly matches identifier occurrences
   according to scope, it is not purely a textual match)
-+ If =:emacs imenu= is enabled then top level symbols (modules, type, functions,
++ If =:editor imenu= is enabled then top level symbols (modules, type, functions,
   etc.) can be looked up using =SPC / i=
 
 Run =doom sync= to install all packages and =doom doctor= to diagnose missing

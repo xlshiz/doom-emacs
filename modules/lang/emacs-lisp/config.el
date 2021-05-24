@@ -186,7 +186,7 @@ employed so that flycheck still does *some* helpful linting.")
 
 
 (use-package! flycheck-cask
-  :when (featurep! :checkers syntax)
+  :when (featurep! :tools checker)
   :defer t
   :init
   (add-hook! 'emacs-lisp-mode-hook

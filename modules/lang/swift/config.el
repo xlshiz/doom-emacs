@@ -5,7 +5,7 @@
 
 
 (use-package! flycheck-swift
-  :when (featurep! :checkers syntax)
+  :when (featurep! :tools checker)
   :unless (featurep! +lsp)
   :after swift-mode
   :config (flycheck-swift-setup))

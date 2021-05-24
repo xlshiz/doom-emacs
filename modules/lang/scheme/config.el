@@ -70,5 +70,5 @@
 
 (use-package! flycheck-guile
   :when (featurep! +guile)
-  :when (featurep! :checkers syntax)
+  :when (featurep! :tools checker)
   :after geiser)

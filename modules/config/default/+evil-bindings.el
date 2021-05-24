@@ -87,11 +87,6 @@
       (:after geiser-doc :map geiser-doc-mode-map
        :n "o"    #'link-hint-open-link)
 
-      (:unless (featurep! :input layout +bepo)
-        (:after (evil-org evil-easymotion)
-         :map evil-org-mode-map
-         :m "gsh" #'+org/goto-visible))
-
       (:when (featurep! :editor multiple-cursors)
        :prefix "gz"
        :nv "d" #'evil-mc-make-and-goto-next-match
@@ -139,8 +134,7 @@
          "C-u"     #'company-previous-page
          "C-d"     #'company-next-page
          "C-s"     #'company-filter-candidates
-         "C-S-s"   (cond ((featurep! :completion helm) #'helm-company)
-                         ((featurep! :completion ivy)  #'counsel-company))
+         "C-S-s"   #'counsel-company
          "C-SPC"   #'company-complete-common
          "TAB"     #'company-complete-common-or-cycle
          [tab]     #'company-complete-common-or-cycle
@@ -164,52 +158,15 @@
         :map counsel-ag-map
         "C-SPC"    #'ivy-call-and-recenter ; preview
         "C-l"      #'ivy-done
-        [C-return] #'+ivy/git-grep-other-window-action))
+        [C-return] #'+ivy/git-grep-other-window-action)))
 
-      (:when (featurep! :completion helm)
-       (:after helm :map helm-map
-        [remap next-line]     #'helm-next-line
-        [remap previous-line] #'helm-previous-line
-        [left]     #'left-char
-        [right]    #'right-char
-        "C-S-f"    #'helm-previous-page
-        "C-S-n"    #'helm-next-source
-        "C-S-p"    #'helm-previous-source
-        (:when (featurep! :editor evil +everywhere)
-         "C-j"    #'helm-next-line
-         "C-k"    #'helm-previous-line
-         "C-S-j"  #'helm-next-source
-         "C-S-k"  #'helm-previous-source)
-        "C-u"      #'helm-delete-minibuffer-contents
-        "C-s"      #'helm-minibuffer-history
-        ;; Swap TAB and C-z
-        "TAB"      #'helm-execute-persistent-action
-        [tab]      #'helm-execute-persistent-action
-        "C-z"      #'helm-select-action)
-       (:after helm-ag :map helm-ag-map
-        "C--"      #'+helm-do-ag-decrease-context
-        "C-="      #'+helm-do-ag-increase-context
-        [left]     nil
-        [right]    nil)
-       (:after helm-files :map (helm-find-files-map helm-read-file-map)
-        [C-return] #'helm-ff-run-switch-other-window
-        "C-w"      #'helm-find-files-up-one-level)
-       (:after helm-locate :map helm-generic-files-map
-        [C-return] #'helm-ff-run-switch-other-window)
-       (:after helm-buffers :map helm-buffer-map
-        [C-return] #'helm-buffer-switch-other-window)
-       (:after helm-occur :map helm-occur-map
-        [C-return] #'helm-occur-run-goto-line-ow)
-       (:after helm-grep :map helm-grep-map
-        [C-return] #'helm-grep-run-other-window-action)))
-
-;;; :ui
-(map! (:when (featurep! :ui popup)
+;;; :editor
+(map! (:when (featurep! :editor popup)
        "C-`"   #'+popup/toggle
        "C-~"   #'+popup/raise
        "C-x p" #'+popup/other)
 
-      (:when (featurep! :ui workspaces)
+      (:when (featurep! :editor workspaces)
        :n "C-t"   #'+workspace/new
        :n "C-S-t" #'+workspace/display
        :g "M-1"   #'+workspace/switch-to-0
@@ -282,17 +239,15 @@
       :desc "window"                "w"    evil-window-map
       :desc "help"                  "h"    help-map
 
-      (:when (featurep! :ui popup)
+      (:when (featurep! :editor popup)
        :desc "Toggle last popup"     "~"    #'+popup/toggle)
       :desc "Find file"             "."    #'find-file
       :desc "Switch buffer"         ","    #'switch-to-buffer
-      (:when (featurep! :ui workspaces)
+      (:when (featurep! :editor workspaces)
        :desc "Switch workspace buffer" "," #'persp-switch-to-buffer
        :desc "Switch buffer"           "<" #'switch-to-buffer)
       :desc "Switch to last buffer" "`"    #'evil-switch-to-windows-last-buffer
-      :desc "Resume last search"    "'"
-      (cond ((featurep! :completion ivy)   #'ivy-resume)
-            ((featurep! :completion helm)  #'helm-resume))
+      :desc "Resume last search"    "'"    #'ivy-resume
 
       :desc "Search for symbol in project" "*" #'+default/search-project-for-symbol-at-point
       :desc "Search project"               "/" #'+default/search-project
@@ -301,7 +256,7 @@
       :desc "Jump to bookmark"      "RET"  #'bookmark-jump
 
       ;;; <leader> TAB --- workspace
-      (:when (featurep! :ui workspaces)
+      (:when (featurep! :editor workspaces)
        (:prefix-map ("TAB" . "workspace")
         :desc "Display tab bar"           "TAB" #'+workspace/display
         :desc "Switch workspace"          "."   #'+workspace/switch-to
@@ -331,10 +286,10 @@
        :desc "Toggle narrowing"            "-"   #'doom/toggle-narrow-buffer
        :desc "Previous buffer"             "["   #'previous-buffer
        :desc "Next buffer"                 "]"   #'next-buffer
-       (:when (featurep! :ui workspaces)
+       (:when (featurep! :editor workspaces)
         :desc "Switch workspace buffer" "b" #'persp-switch-to-buffer
         :desc "Switch buffer"           "B" #'switch-to-buffer)
-       (:unless (featurep! :ui workspaces)
+       (:unless (featurep! :editor workspaces)
         :desc "Switch buffer"           "b" #'switch-to-buffer)
        :desc "Clone buffer"                "c"   #'clone-indirect-buffer
        :desc "Clone buffer other window"   "C"   #'clone-indirect-buffer-other-window
@@ -366,10 +321,7 @@
         (:when (featurep! :completion ivy)
          :desc "Jump to symbol in current workspace" "j"   #'lsp-ivy-workspace-symbol
          :desc "Jump to symbol in any workspace"     "J"   #'lsp-ivy-global-workspace-symbol)
-        (:when (featurep! :completion helm)
-         :desc "Jump to symbol in current workspace" "j"   #'helm-lsp-workspace-symbol
-         :desc "Jump to symbol in any workspace"     "J"   #'helm-lsp-global-workspace-symbol)
-        (:when (featurep! :ui treemacs +lsp)
+        (:when (featurep! :editor treemacs +lsp)
          :desc "Errors list"                         "X"   #'lsp-treemacs-errors-list
          :desc "Incoming call hierarchy"             "y"   #'lsp-treemacs-call-hierarchy
          :desc "Outgoing call hierarchy"             "Y"   (cmd!! #'lsp-treemacs-call-hierarchy t)
@@ -395,7 +347,7 @@
        :desc "Delete trailing whitespace"            "w"   #'delete-trailing-whitespace
        :desc "Delete trailing newlines"              "W"   #'doom/delete-trailing-newlines
        :desc "List errors"                           "x"   #'flymake-show-diagnostics-buffer
-       (:when (featurep! :checkers syntax)
+       (:when (featurep! :tools checker)
         :desc "List errors"                         "x"   #'flycheck-list-errors))
 
       ;;; <leader> f --- file
@@ -425,11 +377,7 @@
        :desc "Revert file"                 "R"   #'vc-revert
        :desc "Copy link to remote"         "y"   #'+vc/browse-at-remote-kill
        :desc "Copy link to homepage"       "Y"   #'+vc/browse-at-remote-kill-homepage
-       (:when (featurep! :ui hydra)
-        :desc "SMerge"                    "m"   #'+vc/smerge-hydra/body)
-       (:when (featurep! :ui vc-gutter)
-        (:when (featurep! :ui hydra)
-         :desc "VCGutter"                "."   #'+vc/gutter-hydra/body)
+       (:when (featurep! :editor vc-gutter)
         :desc "Revert hunk"               "r"   #'git-gutter:revert-hunk
         :desc "Git stage hunk"            "s"   #'git-gutter:stage-hunk
         :desc "Git time machine"          "t"   #'git-timemachine-toggle
@@ -465,8 +413,6 @@
          :desc "Browse issues"             "I"   #'forge-browse-issues
          :desc "Browse pull requests"      "P"   #'forge-browse-pullreqs)
         (:prefix ("l" . "list")
-         (:when (featurep! :tools gist)
-          :desc "List gists"              "g"   #'+gist:list)
          :desc "List repositories"         "r"   #'magit-list-repositories
          :desc "List submodules"           "s"   #'magit-list-submodules
          :desc "List issues"               "i"   #'forge-list-issues
@@ -496,10 +442,6 @@
       (:prefix-map ("n" . "notes")
        :desc "Search notes for symbol"      "*" #'+default/search-notes-for-symbol-at-point
        :desc "Org agenda"                   "a" #'org-agenda
-       (:when (featurep! :tools biblio)
-        :desc "Bibliographic entries"        "b"
-        (cond ((featurep! :completion ivy)   #'ivy-bibtex)
-              ((featurep! :completion helm)  #'helm-bibtex)))
 
        :desc "Toggle last org-clock"        "c" #'+org/toggle-last-clock
        :desc "Cancel current org-clock"     "C" #'org-clock-cancel
@@ -557,40 +499,18 @@
        :desc "REPL"               "r"  #'+eval/open-repl-other-window
        :desc "REPL (same window)" "R"  #'+eval/open-repl-same-window
        :desc "Dired"              "-"  #'dired-jump
-       (:when (featurep! :ui neotree)
+       (:when (featurep! :editor neotree)
         :desc "Project sidebar"              "p" #'+neotree/open
         :desc "Find file in project sidebar" "P" #'+neotree/find-this-file)
-       (:when (featurep! :ui treemacs)
+       (:when (featurep! :editor treemacs)
         :desc "Project sidebar" "p" #'+treemacs/toggle
         :desc "Find file in project sidebar" "P" #'treemacs-find-file)
-       (:when (featurep! :term shell)
-        :desc "Toggle shell popup"    "t" #'+shell/toggle
-        :desc "Open shell here"       "T" #'+shell/here)
-       (:when (featurep! :term term)
-        :desc "Toggle terminal popup" "t" #'+term/toggle
-        :desc "Open terminal here"    "T" #'+term/here)
        (:when (featurep! :term vterm)
         :desc "Toggle vterm popup"    "t" #'+vterm/toggle
         :desc "Open vterm here"       "T" #'+vterm/here)
        (:when (featurep! :term eshell)
         :desc "Toggle eshell popup"   "e" #'+eshell/toggle
-        :desc "Open eshell here"      "E" #'+eshell/here)
-       (:when (featurep! :os macos)
-        :desc "Reveal in Finder"           "o" #'+macos/reveal-in-finder
-        :desc "Reveal project in Finder"   "O" #'+macos/reveal-project-in-finder
-        :desc "Send to Transmit"           "u" #'+macos/send-to-transmit
-        :desc "Send project to Transmit"   "U" #'+macos/send-project-to-transmit
-        :desc "Send to Launchbar"          "l" #'+macos/send-to-launchbar
-        :desc "Send project to Launchbar"  "L" #'+macos/send-project-to-launchbar
-        :desc "Open in iTerm"              "i" #'+macos/open-in-iterm)
-       (:when (featurep! :tools docker)
-        :desc "Docker" "D" #'docker)
-       (:when (featurep! :email mu4e)
-        :desc "mu4e" "m" #'=mu4e)
-       (:when (featurep! :email notmuch)
-        :desc "notmuch" "m" #'=notmuch)
-       (:when (featurep! :email wanderlust)
-        :desc "wanderlust" "m" #'=wanderlust))
+        :desc "Open eshell here"      "E" #'+eshell/here))
 
       ;;; <leader> p --- project
       (:prefix-map ("p" . "project")
@@ -619,8 +539,7 @@
        :desc "Pop up scratch buffer"        "x" #'doom/open-project-scratch-buffer
        :desc "Switch to scratch buffer"     "X" #'doom/switch-to-project-scratch-buffer
        (:when (and (featurep! :tools taskrunner)
-                   (or (featurep! :completion ivy)
-                       (featurep! :completion helm)))
+                   (featurep! :completion ivy))
         :desc "List project tasks"          "z" #'+taskrunner/project-tasks))
 
       ;;; <leader> q --- quit/session
@@ -637,24 +556,6 @@
        :desc "Restore session from file"    "L" #'doom/load-session
        :desc "Restart & restore Emacs"      "r" #'doom/restart-and-restore
        :desc "Restart Emacs"                "R" #'doom/restart)
-
-      ;;; <leader> r --- remote
-      (:when (featurep! :tools upload)
-       (:prefix-map ("r" . "remote")
-        :desc "Browse remote"              "b" #'ssh-deploy-browse-remote-base-handler
-        :desc "Browse relative"            "B" #'ssh-deploy-browse-remote-handler
-        :desc "Download remote"            "d" #'ssh-deploy-download-handler
-        :desc "Delete local & remote"      "D" #'ssh-deploy-delete-handler
-        :desc "Eshell base terminal"       "e" #'ssh-deploy-remote-terminal-eshell-base-handler
-        :desc "Eshell relative terminal"   "E" #'ssh-deploy-remote-terminal-eshell-handler
-        :desc "Move/rename local & remote" "m" #'ssh-deploy-rename-handler
-        :desc "Open this file on remote"   "o" #'ssh-deploy-open-remote-file-handler
-        :desc "Run deploy script"          "s" #'ssh-deploy-run-deploy-script-handler
-        :desc "Upload local"               "u" #'ssh-deploy-upload-handler
-        :desc "Upload local (force)"       "U" #'ssh-deploy-upload-handler-forced
-        :desc "Diff local & remote"        "x" #'ssh-deploy-diff-handler
-        :desc "Browse remote files"        "." #'ssh-deploy-browse-remote-handler
-        :desc "Detect remote changes"      ">" #'ssh-deploy-remote-changes-handler))
 
       ;;; <leader> s --- search
       (:prefix-map ("s" . "search")
@@ -683,34 +584,25 @@
       ;;; <leader> t --- toggle
       (:prefix-map ("t" . "toggle")
        :desc "Big mode"                     "b" #'doom-big-font-mode
-       (:when (featurep! :ui fill-column)
+       (:when (featurep! :editor fill-column)
         :desc "Fill Column Indicator"       "c" #'+fill-column/toggle)
        :desc "Flymake"                      "f" #'flymake-mode
-       (:when (featurep! :checkers syntax)
+       (:when (featurep! :tools checker)
         :desc "Flycheck"                   "f" #'flycheck-mode)
        :desc "Frame fullscreen"             "F" #'toggle-frame-fullscreen
        :desc "Evil goggles"                 "g" #'evil-goggles-mode
-       (:when (featurep! :ui indent-guides)
+       (:when (featurep! :editor indent-guides)
         :desc "Indent guides"              "i" #'highlight-indent-guides-mode)
        :desc "Indent style"                 "I" #'doom/toggle-indent-style
        :desc "Line numbers"                 "l" #'doom/toggle-line-numbers
-       (:when (featurep! :ui minimap)
-        :desc "Minimap"                      "m" #'minimap-mode)
        (:when (featurep! :lang org +present)
         :desc "org-tree-slide mode"        "p" #'org-tree-slide-mode)
        :desc "Read-only mode"               "r" #'read-only-mode
-       (:when (and (featurep! :checkers spell) (not (featurep! :checkers spell +flyspell)))
-        :desc "Spell checker"              "s" #'spell-fu-mode)
-       (:when (featurep! :checkers spell +flyspell)
-        :desc "Spell checker"              "s" #'flyspell-mode)
        (:when (featurep! :lang org +pomodoro)
         :desc "Pomodoro timer"             "t" #'org-pomodoro)
        :desc "Soft line wrapping"           "w" #'visual-line-mode
        (:when (featurep! :editor word-wrap)
-        :desc "Soft line wrapping"         "w" #'+word-wrap-mode)
-       (:when (featurep! :ui zen)
-        :desc "Zen mode"                   "z" #'+zen/toggle
-        :desc "Zen mode (fullscreen)"      "Z" #'+zen/toggle-fullscreen)))
+        :desc "Soft line wrapping"         "w" #'+word-wrap-mode)))
 
 (after! which-key
   (let ((prefix-re (regexp-opt (list doom-leader-key doom-leader-alt-key))))

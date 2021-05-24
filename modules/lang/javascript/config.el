@@ -76,7 +76,7 @@
   (add-to-list 'magic-mode-alist '(+javascript-jsx-file-p . rjsx-mode))
   :config
   (set-electric! 'rjsx-mode :chars '(?\} ?\) ?. ?>))
-  (when (featurep! :checkers syntax)
+  (when (featurep! :tools checker)
     (add-hook! 'rjsx-mode-hook
       ;; jshint doesn't know how to deal with jsx
       (push 'javascript-jshint flycheck-disabled-checkers)))

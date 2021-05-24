@@ -82,7 +82,7 @@
                            sp-point-before-same-p))
 
   ;; Affects pyenv and conda
-  (when (featurep! :ui modeline)
+  (when (featurep! :editor modeline)
     (advice-add #'pythonic-activate :after-while #'+modeline-update-env-in-all-windows-h)
     (advice-add #'pythonic-deactivate :after #'+modeline-clear-env-in-all-windows-h))
 
@@ -228,7 +228,7 @@
 (use-package! pyvenv
   :after python
   :init
-  (when (featurep! :ui modeline)
+  (when (featurep! :editor modeline)
     (add-hook 'pyvenv-post-activate-hooks #'+modeline-update-env-in-all-windows-h)
     (add-hook 'pyvenv-pre-deactivate-hooks #'+modeline-clear-env-in-all-windows-h))
   :config
@@ -307,7 +307,7 @@
 
 (use-package! flycheck-cython
   :when (featurep! +cython)
-  :when (featurep! :checkers syntax)
+  :when (featurep! :tools checker)
   :after cython-mode)
 
 

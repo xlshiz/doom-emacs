@@ -1,7 +1,13 @@
 ;; -*- no-byte-compile: t; -*-
 ;;; input/chinese/packages.el
 
-(package! pyim :pin "f48c3edee78ba5f020bcb42830db99a14761f176")
-(package! fcitx :pin "12dc2638ddd15c8f6cfaecb20e1f428ab2bb5624")
-(package! ace-pinyin :pin "8b2e9335b02486730ea4ceee790130cc5328f9ea")
-(package! pangu-spacing :pin "f92898949ba3bf991fd229416f3bbb54e9c6c223")
+(package! pinyinlib.el :recipe (:host github :repo "xlshiz/pinyinlib.el"))
+(package! ace-pinyin :recipe (:host github :repo "xlshiz/ace-pinyin"))
+(package! evil-pinyin :recipe (:host github :repo "laishulu/evil-pinyin"))
+(package! pyim :pin "1344bc16f2b5ff38655b94f5678c7e5f0cd09de0")
+(when (featurep! +rime)
+  (package! liberime :pin "8d4d1d4f2924dc560bce1d79680df36dcc086d49" :recipe (:host github :repo "merrickluo/liberime" :files ("CMakeLists.txt" "Makefile" "src" "liberime*.el" "liberime.el"))))
+(package! pangu-spacing)
+(package! company-english-helper :recipe (:host github :repo "manateelazycat/company-english-helper"))
+(package! insert-translated-name :recipe (:host github :repo "manateelazycat/insert-translated-name"))
+(package! sis :recipe (:host github :repo "laishulu/emacs-smart-input-source"))

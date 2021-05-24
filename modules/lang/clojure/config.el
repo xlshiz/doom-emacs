@@ -94,7 +94,7 @@
         (evil-make-overriding-map cider--debug-mode-map 'normal)
         (evil-normalize-keymaps))))
 
-  (when (featurep! :ui modeline +light)
+  (when (featurep! :editor modeline +light)
     (defvar-local cider-modeline-icon nil)
 
     (add-hook! '(cider-connected-hook
@@ -229,5 +229,5 @@ This is needed because we have ripped out the code that would normally set it
 
 
 (use-package! flycheck-clj-kondo
-  :when (featurep! :checkers syntax)
+  :when (featurep! :tools checker)
   :after flycheck)

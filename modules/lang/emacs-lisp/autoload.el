@@ -191,7 +191,7 @@ https://emacs.stackexchange.com/questions/10230/how-to-indent-keywords-aligned"
          (load-path (append (list (doom-path "test")
                                   default-directory)
                             load-path))
-         (buttercup-suites nil))
+	 (buttercup-suites nil))
     (buttercup-run-discover)))
 
 ;;;###autoload

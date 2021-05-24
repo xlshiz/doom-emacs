@@ -41,7 +41,7 @@
        :desc "Delete trailing whitespace"            "w"   #'delete-trailing-whitespace
        :desc "Delete trailing newlines"              "W"   #'doom/delete-trailing-newlines
        :desc "List errors"                           "x"   #'flymake-show-diagnostics-buffer
-       (:when (featurep! :checkers syntax)
+       (:when (featurep! :tools checker)
         :desc "List errors"                         "x"   #'flycheck-list-errors)
        (:when (and (featurep! :tools lsp) (not (featurep! :tools lsp +eglot)))
         :desc "LSP Code actions"                      "a"   #'lsp-execute-code-action
@@ -51,10 +51,7 @@
         (:when (featurep! :completion ivy)
          :desc "Jump to symbol in current workspace" "j"   #'lsp-ivy-workspace-symbol
          :desc "Jump to symbol in any workspace"     "J"   #'lsp-ivy-global-workspace-symbol)
-        (:when (featurep! :completion helm)
-         :desc "Jump to symbol in current workspace" "j"   #'helm-lsp-workspace-symbol
-         :desc "Jump to symbol in any workspace"     "J"   #'helm-lsp-global-workspace-symbol)
-        (:when (featurep! :ui treemacs +lsp)
+        (:when (featurep! :editor treemacs +lsp)
          :desc "Errors list"                         "X"   #'lsp-treemacs-errors-list
          :desc "Incoming call hierarchy"             "y"   #'lsp-treemacs-call-hierarchy
          :desc "Outgoing call hierarchy"             "Y"   (cmd!! #'lsp-treemacs-call-hierarchy t)
@@ -89,24 +86,6 @@
        :desc "Yank file path from project" "Y"   #'+default/yank-buffer-path-relative-to-project
        :desc "Open scratch buffer"         "x"   #'doom/open-scratch-buffer
        :desc "Switch to scratch buffer"    "X"   #'doom/switch-to-scratch-buffer)
-
-      ;;; <leader> r --- remote
-      (:when (featurep! :tools upload)
-       (:prefix-map ("r" . "remote")
-        :desc "Browse remote"              "b" #'ssh-deploy-browse-remote-base-handler
-        :desc "Browse relative"            "B" #'ssh-deploy-browse-remote-handler
-        :desc "Download remote"            "d" #'ssh-deploy-download-handler
-        :desc "Delete local & remote"      "D" #'ssh-deploy-delete-handler
-        :desc "Eshell base terminal"       "e" #'ssh-deploy-remote-terminal-eshell-base-handler
-        :desc "Eshell relative terminal"   "E" #'ssh-deploy-remote-terminal-eshell-handler
-        :desc "Move/rename local & remote" "m" #'ssh-deploy-rename-handler
-        :desc "Open this file on remote"   "o" #'ssh-deploy-open-remote-file-handler
-        :desc "Run deploy script"          "s" #'ssh-deploy-run-deploy-script-handler
-        :desc "Upload local"               "u" #'ssh-deploy-upload-handler
-        :desc "Upload local (force)"       "U" #'ssh-deploy-upload-handler-forced
-        :desc "Diff local & remote"        "x" #'ssh-deploy-diff-handler
-        :desc "Browse remote files"        "." #'ssh-deploy-browse-remote-handler
-        :desc "Detect remote changes"      ">" #'ssh-deploy-remote-changes-handler))
 
       ;;; <leader> s --- search
       (:prefix-map ("s" . "search")
@@ -144,10 +123,6 @@
       (:prefix-map ("n" . "notes")
        :desc "Search notes for symbol"        "." #'+default/search-notes-for-symbol-at-point
        :desc "Org agenda"                     "a" #'org-agenda
-       (:when (featurep! :tools biblio)
-        :desc "Bibliographic entries"        "b"
-        (cond ((featurep! :completion ivy)   #'ivy-bibtex)
-              ((featurep! :completion helm)  #'helm-bibtex)))
 
        :desc "Toggle last org-clock"          "c" #'+org/toggle-last-clock
        :desc "Cancel current org-clock"       "C" #'org-clock-cancel
@@ -199,41 +174,18 @@
        :desc "REPL"               "r"  #'+eval/open-repl-other-window
        :desc "REPL (same window)" "R"  #'+eval/open-repl-same-window
        :desc "Dired"              "-"  #'dired-jump
-       (:when (featurep! :ui neotree)
+       (:when (featurep! :editor neotree)
         :desc "Project sidebar"               "p" #'+neotree/open
         :desc "Find file in project sidebar"  "P" #'+neotree/find-this-file)
-       (:when (featurep! :ui treemacs)
+       (:when (featurep! :editor treemacs)
         :desc "Project sidebar"               "p" #'+treemacs/toggle
         :desc "Find file in project rsidebar" "P" #'treemacs-find-file)
-       (:when (featurep! :term shell)
-        :desc "Toggle shell popup"            "t" #'+shell/toggle
-        :desc "Open shell here"               "T" #'+shell/here)
-       (:when (featurep! :term term)
-        :desc "Toggle terminal popup"         "t" #'+term/toggle
-        :desc "Open terminal here"            "T" #'+term/here)
        (:when (featurep! :term vterm)
         :desc "Toggle vterm popup"            "t" #'+vterm/toggle
         :desc "Open vterm here"               "T" #'+vterm/here)
        (:when (featurep! :term eshell)
         :desc "Toggle eshell popup"           "e" #'+eshell/toggle
-        :desc "Open eshell here"              "E" #'+eshell/here)
-       (:when (featurep! :os macos)
-        :desc "Reveal in Finder"           "o" #'+macos/reveal-in-finder
-        :desc "Reveal project in Finder"   "O" #'+macos/reveal-project-in-finder
-        :desc "Send to Transmit"           "u" #'+macos/send-to-transmit
-        :desc "Send project to Transmit"   "U" #'+macos/send-project-to-transmit
-        :desc "Send to Launchbar"          "l" #'+macos/send-to-launchbar
-        :desc "Send project to Launchbar"  "L" #'+macos/send-project-to-launchbar
-        :desc "Open in iTerm"              "i" #'+macos/open-in-iterm)
-       (:when (featurep! :tools docker)
-        :desc "Docker" "D" #'docker)
-       (:when (featurep! :email mu4e)
-        :desc "mu4e" "m" #'=mu4e)
-       (:when (featurep! :email notmuch)
-        :desc "notmuch" "m" #'=notmuch)
-       (:when (featurep! :email wanderlust)
-        :desc "wanderlust" "m" #'=wanderlust))
-
+        :desc "Open eshell here"              "E" #'+eshell/here))
 
       ;;; <leader> p --- project
       (:prefix ("p" . "project")
@@ -244,8 +196,7 @@
        :desc "Open project scratch buffer" "x" #'doom/open-project-scratch-buffer
        :desc "Switch to project scratch buffer" "X" #'doom/switch-to-project-scratch-buffer
        (:when (and (featurep! :tools taskrunner)
-                   (or (featurep! :completion ivy)
-                       (featurep! :completion helm)))
+                   (featurep! :completion ivy))
         :desc "List project tasks"         "z" #'+taskrunner/project-tasks)
        ;; later expanded by projectile
        (:prefix ("4" . "in other window"))
@@ -278,38 +229,29 @@
       ;;; <leader> t --- toggle
       (:prefix-map ("t" . "toggle")
        :desc "Big mode"                     "b" #'doom-big-font-mode
-       (:when (featurep! :ui fill-column)
+       (:when (featurep! :editor fill-column)
         :desc "Fill Column Indicator"       "c" #'+fill-column/toggle)
        :desc "Flymake"                      "f" #'flymake-mode
        :desc "Frame fullscreen"             "F" #'toggle-frame-fullscreen
        :desc "Indent style"                 "I" #'doom/toggle-indent-style
        :desc "Line numbers"                 "l" #'doom/toggle-line-numbers
        :desc "Word-wrap mode"               "w" #'+word-wrap-mode
-       (:when (featurep! :checkers syntax)
+       (:when (featurep! :tools checker)
         :desc "Flycheck"                   "f" #'flycheck-mode)
-       (:when (featurep! :ui indent-guides)
+       (:when (featurep! :editor indent-guides)
         :desc "Indent guides"              "i" #'highlight-indent-guides-mode)
-       (:when (featurep! :ui minimap)
-        :desc "Minimap mode"               "m" #'minimap-mode)
        (:when (featurep! :lang org +present)
         :desc "org-tree-slide mode"        "p" #'org-tree-slide-mode)
        :desc "Read-only mode"               "r" #'read-only-mode
-       (:when (and (featurep! :checkers spell) (not (featurep! :checkers spell +flyspell)))
-        :desc "Spell checker"              "s" #'spell-fu-mode)
-       (:when (featurep! :checkers spell +flyspell)
-        :desc "Spell checker"              "s" #'flyspell-mode)
        (:when (featurep! :lang org +pomodoro)
-        :desc "Pomodoro timer"             "t" #'org-pomodoro)
-       (:when (featurep! :ui zen)
-        :desc "Zen mode"                   "z" #'+zen/toggle
-        :desc "Zen mode (fullscreen)"      "Z" #'+zen/toggle-fullscreen))
+        :desc "Pomodoro timer"             "t" #'org-pomodoro))
 
       ;;; <leader> v --- versioning
       (:prefix-map ("v" . "versioning")
        :desc "Git revert file"             "R"   #'vc-revert
        :desc "Kill link to remote"         "y"   #'+vc/browse-at-remote-kill
        :desc "Kill link to homepage"       "Y"   #'+vc/browse-at-remote-kill-homepage
-       (:when (featurep! :ui vc-gutter)
+       (:when (featurep! :editor vc-gutter)
         :desc "Git revert hunk"            "r"   #'git-gutter:revert-hunk
         :desc "Git stage hunk"             "s"   #'git-gutter:stage-hunk
         :desc "Git time machine"           "t"   #'git-timemachine-toggle
@@ -344,8 +286,6 @@
          :desc "Browse issues"             "I"   #'forge-browse-issues
          :desc "Browse pull requests"      "P"   #'forge-browse-pullreqs)
         (:prefix ("l" . "list")
-         (:when (featurep! :tools gist)
-          :desc "List gists"               "g"   #'gist-list)
          :desc "List repositories"         "r"   #'magit-list-repositories
          :desc "List submodules"           "s"   #'magit-list-submodules
          :desc "List issues"               "i"   #'forge-list-issues
@@ -361,7 +301,7 @@
 
       ;;; <leader> w --- workspaces/windows
       (:prefix-map ("w" . "workspaces/windows")
-       (:when (featurep! :ui workspaces)
+       (:when (featurep! :editor workspaces)
         :desc "Display workspaces"           "d" #'+workspace/display
         :desc "Rename workspace"             "r" #'+workspace/rename
         :desc "Create workspace"             "c" #'+workspace/new
@@ -405,23 +345,6 @@
         :desc "Add cursor w/mouse" "<mouse-1>" #'mc/add-cursor-on-click))
 
       ;; APPs
-      ;;; <leader> M --- mu4e
-      (:when (featurep! :email mu4e)
-       (:prefix-map ("M" . "mu4e")
-        :desc "Open email app" "M" #'=mu4e
-        :desc "Compose email"  "c" #'+mu4e/compose))
-
-      ;;; <leader> I --- IRC
-      (:when (featurep! :app irc)
-       (:prefix-map ("I" . "irc")
-        :desc "Open irc app"       "I" #'=irc
-        :desc "Next unread buffer" "a" #'tracking-next-buffer
-        :desc "Quit irc"           "q" #'+irc/quit
-        :desc "Reconnect all"      "r" #'circe-reconnect-all
-        :desc "Send message"       "s" #'+irc/send-message
-        (:when (featurep! :completion ivy)
-         :desc "Jump to channel"  "j" #'+irc/ivy-jump-to-channel)))
-
       ;;; <leader> T --- twitter
       (:when (featurep! :app twitter)
        (:prefix-map ("T" . "twitter")
@@ -445,18 +368,11 @@
       (:when (featurep! :completion ivy)
         "C-S-s"        #'swiper
         "C-S-r"        #'ivy-resume)
-      (:when (featurep! :completion helm)
-        "C-S-s"        #'swiper-helm
-        "C-S-r"        #'helm-resume)
-
-      ;;; objed
-      (:when (featurep! :editor objed +manual)
-        "M-SPC"     #'objed-activate)
 
       ;;; buffer management
       "C-x b"       #'switch-to-buffer
       "C-x 4 b"     #'switch-to-buffer-other-window
-      (:when (featurep! :ui workspaces)
+      (:when (featurep! :editor workspaces)
         "C-x b"       #'persp-switch-to-buffer
         "C-x B"       #'switch-to-buffer
         "C-x 4 B"     #'switch-to-buffer-other-window
@@ -534,7 +450,7 @@
         "C-M-y"   #'counsel-yank-pop)
 
       ;;; neotree
-      (:when (featurep! :ui neotree)
+      (:when (featurep! :editor neotree)
         "<f9>"    #'+neotree/open
         "<C-f9>"  #'+neotree/find-this-file
         (:after neotree
@@ -557,7 +473,7 @@
           "P"     #'neotree-select-previous-sibling-node))
 
       ;;; popups
-      (:when (featurep! :ui popup)
+      (:when (featurep! :editor popup)
         "C-x p"   #'+popup/other
         "C-`"     #'+popup/toggle
         "C-~"     #'+popup/raise)
@@ -574,7 +490,7 @@
         "C-M-t"     #'sp-transpose-sexp)
 
       ;;; treemacs
-      (:when (featurep! :ui treemacs)
+      (:when (featurep! :editor treemacs)
         "<f9>"   #'+treemacs/toggle
         "<C-f9>" #'treemacs-find-file))
 

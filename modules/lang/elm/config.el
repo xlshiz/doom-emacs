@@ -18,6 +18,6 @@
 
 
 (use-package! flycheck-elm
-  :when (featurep! :checkers syntax)
+  :when (featurep! :tools checker)
   :after elm-mode
   :config (add-to-list 'flycheck-checkers 'elm))

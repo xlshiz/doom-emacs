@@ -36,4 +36,4 @@ If you want LSP support, install [[https://github.com/erlang/sourcer][sourcer]].
 
 * Features
 - Code completion (~+lsp~, ~:completion company~, and ~:completion ivy~)
-- Syntax checking (~:checkers syntax~)
+- Syntax checking (~:tools checker~)

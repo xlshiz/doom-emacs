@@ -53,7 +53,7 @@ lua-language-server.")
   (add-hook! 'moonscript-mode-hook
              #'+lua-moonscript-fix-single-quotes-h
              #'+lua-moonscript-fontify-interpolation-h)
-  (when (featurep! :checkers syntax)
+  (when (featurep! :tools checker)
     (require 'flycheck-moonscript nil t)))
 
 

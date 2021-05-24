@@ -15,7 +15,7 @@
 
 
 (use-package! flycheck-plantuml
-  :when (featurep! :checkers syntax)
+  :when (featurep! :tools checker)
   :after plantuml-mode
   :config (flycheck-plantuml-setup))
 

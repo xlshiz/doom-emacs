@@ -15,7 +15,7 @@
     (package! geiser-gauche :pin "66e51430bded0f0e2037f474818a7bbaafb2906c"))
   (when (featurep! +guile)
     (package! geiser-guile :pin "8dda28f4f1758221f84f5cb5dc5b5ca5fd56caa9")
-    (when (featurep! :checkers syntax)
+    (when (featurep! :tools checker)
       (package! flycheck-guile
         :recipe (:host github :repo "flatwhatson/flycheck-guile")
         :pin "e46d6e5453dd7471309fae6549445c48e6d8f340")))

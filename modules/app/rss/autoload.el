@@ -6,7 +6,7 @@
 (defun =rss ()
   "Activate (or switch to) `elfeed' in its workspace."
   (interactive)
-  (if (featurep! :ui workspaces)
+  (if (featurep! :editor workspaces)
       (progn
         (+workspace-switch "rss" t)
         (doom/switch-to-scratch-buffer)
@@ -91,7 +91,7 @@
         (remove-hook 'kill-buffer-hook #'+rss-cleanup-h :local)
         (kill-buffer b)))
     (mapc #'kill-buffer show-buffers))
-  (if (featurep! :ui workspaces)
+  (if (featurep! :editor workspaces)
       (+workspace/delete "rss")
     (when (window-configuration-p +rss--wconf)
       (set-window-configuration +rss--wconf))

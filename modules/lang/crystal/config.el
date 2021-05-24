@@ -7,12 +7,12 @@
 
 
 (use-package! flycheck-crystal
-  :when (featurep! :checkers syntax)
+  :when (featurep! :tools checker)
   :after crystal-mode)
 
 
 (use-package! flycheck-ameba
-  :when (featurep! :checkers syntax)
+  :when (featurep! :tools checker)
   :after crystal-mode
   :config (flycheck-ameba-setup))
 

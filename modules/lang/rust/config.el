@@ -24,7 +24,7 @@
         rustic-format-trigger nil)
 
   ;; HACK `rustic-flycheck' adds all these hooks in disruptive places. Instead,
-  ;;      leave it to our :checkers syntax module to do all the set up properly.
+  ;;      leave it to our :tools checker module to do all the set up properly.
   (remove-hook 'rustic-mode-hook #'flycheck-mode)
   (remove-hook 'rustic-mode-hook #'flymake-mode-off)
   (unless (featurep! +lsp)

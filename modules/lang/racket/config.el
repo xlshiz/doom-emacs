@@ -30,7 +30,7 @@
     (add-hook 'racket-mode-local-vars-hook #'racket-xp-mode)
     ;; Both flycheck and racket-xp produce error popups, but racket-xp's are
     ;; higher quality so disable flycheck's:
-    (when (featurep! :checkers syntax)
+    (when (featurep! :tools checker)
       (add-hook! 'racket-xp-mode-hook
         (defun +racket-disable-flycheck-h ()
           (cl-pushnew 'racket flycheck-disabled-checkers)))))
