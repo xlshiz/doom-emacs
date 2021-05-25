@@ -49,7 +49,7 @@
     ("C" color-rg-customized-search)
     ("i" color-rg-switch-to-edit-mode)
     ("q" nil "quit"))
-  (after! evil
+  (after! evil-collection
     (evil-collection-color-rg-setup)))
 
 (use-package! snails
