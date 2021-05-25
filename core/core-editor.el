@@ -179,7 +179,7 @@ or file path may exist now."
 ;; more consistent default than 8-space tabs. It can be changed on a per-mode
 ;; basis anyway (and is, where tabs are the canonical style, like go-mode).
 (setq-default indent-tabs-mode nil
-              tab-width 8)
+              tab-width 4)
 
 ;; Only indent the line when at BOL or in a line's indentation. Anywhere else,
 ;; insert literal indentation.
@@ -305,11 +305,11 @@ or file path may exist now."
   ;; Resolve symlinks, strip out the /sudo:X@ prefix in local tramp paths, and
   ;; abbreviate $HOME -> ~ in filepaths (more portable, more readable, & saves
   ;; space)
-  (add-to-list 'recentf-filename-handlers 'doom--recentf-file-truename-fn)
+  (add-to-list 'recentf-filename-handlers #'doom--recentf-file-truename-fn)
 
   ;; Text properties inflate the size of recentf's files, and there is
   ;; no purpose in persisting them (Must be first in the list!)
-  (add-to-list 'recentf-filename-handlers 'substring-no-properties)
+  (add-to-list 'recentf-filename-handlers #'substring-no-properties)
 
   (add-hook! '(doom-switch-window-hook write-file-functions)
     (defun doom--recentf-touch-buffer-h ()

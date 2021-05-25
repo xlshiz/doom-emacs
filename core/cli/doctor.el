@@ -48,26 +48,33 @@ in."
 
   ;; REVIEW Refactor me
   (print! (start "Checking your Emacs version..."))
-  (cond
-   (EMACS28+
-    (warn! (concat "Emacs %s detected. Doom support this version, but you are living on "
-                   "edge! Be prepared for breakages in future versions of Emacs.")
-           emacs-version))
-   ((= emacs-major-version 26)
-    (warn! (concat "Emacs %s detected. Doom is dropping Emacs 26.x support in June 2021. "
-                   "Consider upgrading to Emacs 27.1 (or better: 27.2) soon!")
-           emacs-version)))
+  (print-group!
+   (cond
+    (EMACS28+
+     (warn! "Emacs %s detected" emacs-version)
+     (explain! "Doom supports this version, but you are living on the edge! "
+               "Be prepared for breakages in future versions of Emacs."))
+    ((= emacs-major-version 26)
+     (warn! "Emacs %s detected" emacs-version)
+     (explain! "Doom is dropping Emacs 26.x support in June 2021. Consider "
+               "upgrading to Emacs 27.1 (or better: 27.2) soon!"
+               emacs-version))))
 
   (print! (start "Checking for Doom's prerequisites..."))
   (print-group!
    (if (not (executable-find "git"))
        (error! "Couldn't find git on your machine! Doom's package manager won't work.")
-     (let ((version (cadr (split-string
-                           (cdr (doom-call-process "git" "version"))
-                           " version "))))
-       (when (version< version "2.28")
-         (error! "Git %s detected! Doom requires git 2.28 or newer!"
-                 version))))
+     (save-match-data
+       (let* ((version
+               (cdr (doom-call-process "git" "version")))
+              (version
+               (and (string-match "\\_<[0-9]+\\.[0-9]+\\(\\.[0-9]+\\)\\_>" version)
+                    (match-string 0 version))))
+         (if version
+             (when (version< version "2.28")
+               (error! "Git %s detected! Doom requires git 2.28 or newer!"
+                       version))
+           (warn! "Cannot determine Git version. Doom requires git 2.28 or newer!")))))
 
    (unless (executable-find "rg")
      (error! "Couldn't find the `rg' binary; this a hard dependecy for Doom, file searches may not work at all")))
