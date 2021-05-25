@@ -16,19 +16,10 @@
       :recipe (:host github :repo "Kaali/company-glsl")
       :pin "404cd0694ab34971f9c01eb22126cd2e7d3f9dc4")))
 
+(package! ggtags)
+(package! counsel-gtags)
+
 (if (featurep! +lsp)
     (unless (featurep! :tools lsp +eglot)
       ;; ccls package is necessary only for lsp-mode.
-      (package! ccls :pin "675a5704c14a27931e835a431beea3631d92e8e6"))
-  (when (package! irony :pin "ec6dce7ee16ffaa9a735204534aa4aa074d14487")
-    (package! irony-eldoc :pin "73e79a89fad982a2ba072f2fcc1b4e41f0aa2978")
-    (when (featurep! :tools checker)
-      (package! flycheck-irony :pin "42dbecd4a865cabeb301193bb4d660e26ae3befe"))
-    (when (featurep! :completion company)
-      (package! company-irony :pin "b44711dfce445610c1ffaec4951c6ff3882b216a")
-      (package! company-irony-c-headers :pin "72c386aeb079fb261d9ec02e39211272f76bbd97")))
-  (when (package! rtags :pin "63f18acb21e664fd92fbc19465f0b5df085b5e93")
-    (when (featurep! :completion ivy)
-      (package! ivy-rtags))
-    (when (featurep! :completion helm)
-      (package! helm-rtags))))
+      (package! ccls :pin "675a5704c14a27931e835a431beea3631d92e8e6")))

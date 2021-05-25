@@ -1,4 +1,4 @@
 ;; -*- no-byte-compile: t; -*-
-;;; ui/tabs/packages.el
+;;; editor/tabs/packages.el
 
-(package! centaur-tabs :pin "9c7c936e4e1de6f4f4095d70e43c9ae738d05086")
+(package! awesome-tab :recipe (:host github :repo "manateelazycat/awesome-tab" :files ("*.el") :build (autoloads)) :pin "5dec2931f1ef6b6b40fe8004b3434e36edc10628")

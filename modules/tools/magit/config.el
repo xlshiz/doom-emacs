@@ -1,4 +1,4 @@
-;;; tools/magit/config.el -*- lexical-binding: t; -*-
+;;; tools/magit/config.el -*- lexical-binding: t; no-byte-compile: t -*-
 
 (defvar +magit-open-windows-in-direction 'right
   "What direction to open new windows from the status buffer.

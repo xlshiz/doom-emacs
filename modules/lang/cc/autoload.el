@@ -99,33 +99,11 @@ simpler."
   (interactive)
   (unless (memq major-mode '(c-mode c++-mode objc-mode))
     (user-error "Not a C/C++/ObjC buffer"))
-  ;; first rtag
-  (when (and (featurep 'rtags)
-             rtags-enabled
-             (executable-find rtags-rc-binary-name))
-    (with-temp-buffer
-      (message "Reloaded compile commands for rtags daemon")
-      (rtags-call-rc :silent t "-J" (or (doom-project-root) default-directory))))
-  ;; then irony
-  (when (and (featurep 'irony) irony-mode)
-    (+cc-init-irony-compile-options-h))
-  ;; Otherwise, LSP
+  ;; LSP
   (when (bound-and-true-p lsp-mode)
     (lsp-workspace-restart))
   (when (bound-and-true-p eglot-managed-mode)
     (eglot-reconnect)))
-
-;;;###autoload
-(defun +cc/imenu ()
-  "Invoke `rtags-imenu' if a running rdm process is available, otherwise invoke
-`imenu'."
-  (interactive)
-  (call-interactively
-   (if (and (processp rtags-rdm-process)
-            (not (eq (process-status rtags-rdm-process) 'exit))
-            (not (eq (process-status rtags-rdm-process) 'signal)))
-       #'rtags-imenu
-     #'imenu)))
 
 ;; Eglot specific helper, courtesy of MaskRay
 ;;;###autoload
@@ -180,27 +158,12 @@ the children of class at point."
            ("\\<[A-Z]\\{3,\\}\\>"  . font-lock-constant-face))
      t)))
 
-(defvar +cc--project-includes-alist nil)
 ;;;###autoload
-(defun +cc-init-irony-compile-options-h ()
-  "Initialize compiler options for irony-mode. It searches for the nearest
-compilation database and initailizes it, otherwise falling back on
-`+cc-default-compiler-options' and `+cc-default-include-paths'.
+(defun +cc-disable-auto-complete ()
+  (require 'company)
+  (setq-local company-idle-delay nil))
 
-See https://github.com/Sarcasm/irony-mode#compilation-database for details on
-compilation dbs."
-  (when (memq major-mode '(c-mode c++-mode objc-mode))
-    (require 'irony-cdb)
-    (unless (irony-cdb-autosetup-compile-options)
-      (let ((project-root (doom-project-root))
-            (include-paths (+cc-resolve-include-paths)))
-        (setf (alist-get project-root +cc--project-includes-alist)
-              include-paths)
-        (irony-cdb--update-compile-options
-         (append (delq nil (cdr-safe (assq major-mode +cc-default-compiler-options)))
-                 (cl-loop for path in include-paths
-                          collect (format "-I%s" path)))
-         project-root)))))
+(defvar +cc--project-includes-alist nil)
 
 ;; ;;;###autoload
 ;; (defun +cc|init-ccls-compile-options ()
@@ -223,10 +186,9 @@ compilation dbs."
   "Takes the local project include paths and registers them with ffap.
 This way, `find-file-at-point' (and `+lookup/file') will know where to find most
 header files."
-  (when-let (project-root (or (bound-and-true-p irony--working-directory)
-                              (and (featurep 'lsp)
+  (when-let (project-root (and (featurep 'lsp)
                                    (or (lsp-workspace-root)
-                                       (doom-project-root)))))
+                                       (doom-project-root))))
     (require 'ffap)
     (make-local-variable 'ffap-c-path)
     (make-local-variable 'ffap-c++-path)

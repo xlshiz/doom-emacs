@@ -604,3 +604,5 @@ directives. By default, this only recognizes C directives.")
         :i "C-o"    #'company-capf
         :i "C-n"    #'+company/dabbrev
         :i "C-p"    #'+company/dabbrev-code-previous)))
+
+(load! "+ex.el")

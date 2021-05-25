@@ -44,6 +44,7 @@ This is ignored by ccls.")
   ;;; Improve fontification in C/C++ (also see `modern-cpp-font-lock')
   :hook (c-mode-common . rainbow-delimiters-mode)
   :hook ((c-mode c++-mode) . +cc-fontify-constants-h)
+  :hook ((c-mode c++-mode) . +cc-disable-auto-complete)
   :config
   (set-docsets! 'c-mode "C")
   (set-docsets! 'c++-mode "C++" "Boost")
@@ -51,21 +52,7 @@ This is ignored by ccls.")
   (set-rotate-patterns! 'c++-mode
     :symbols '(("public" "protected" "private")
                ("class" "struct")))
-  (set-ligatures! '(c-mode c++-mode)
-    ;; Functional
-    ;; :def "void "
-    ;; Types
-    :null "nullptr"
-    :true "true" :false "false"
-    :int "int" :float "float"
-    :str "std::string"
-    :bool "bool"
-    ;; Flow
-    :not "!"
-    :and "&&" :or "||"
-    :for "for"
-    :return "return"
-    :yield "#require")
+  (set-ligatures! '(c-mode c++-mode) nil)
 
   ;; HACK Suppress 'Args out of range' error in when multiple modifications are
   ;;      performed at once in a `c++-mode' buffer, e.g. with `iedit' or
@@ -77,6 +64,16 @@ This is ignored by ccls.")
   ;; Custom style, based off of linux
   (setq c-basic-offset tab-width
         c-backspace-function #'delete-backward-char)
+
+  (defface +font-lock-call-function-face
+    '((((background dark)) :foreground "#2188b6")
+      (((background light)) :foreground "#2188b6"))
+    "Call function face"
+    :group 'font-lock-faces)
+  (defvar +font-lock-call-function-face '+font-lock-call-function-face)
+  (font-lock-add-keywords 'c-mode
+                          '(("\\(\\w+\\)\\s-*\(" . +font-lock-call-function-face))
+                          t)
 
   (c-add-style
    "doom" '((c-comment-only-line-offset . 0)
@@ -114,40 +111,13 @@ This is ignored by ccls.")
   (after! ffap
     (add-to-list 'ffap-alist '(c-mode . ffap-c-mode))))
 
+(use-package! ggtags
+  :commands (ggtags-mode ggtags-find-tag-dwim))
+(use-package! counsel-gtags
+  :commands (counsel-gtags-dwim))
 
 (use-package! modern-cpp-font-lock
   :hook (c++-mode . modern-c++-font-lock-mode))
-
-
-(use-package! irony
-  :unless (featurep! +lsp)
-  :commands irony-install-server
-  ;; Initialize compilation database, if present. Otherwise, fall back on
-  ;; `+cc-default-compiler-options'.
-  :hook (irony-mode . +cc-init-irony-compile-options-h)
-  ;; Only initialize `irony-mode' if the server is available. Otherwise fail
-  ;; quietly and gracefully.
-  :hook ((c-mode-local-vars c++-mode-local-vars objc-mode-local-vars) . +cc-init-irony-mode-maybe-h)
-  :preface (setq irony-server-install-prefix (concat doom-etc-dir "irony-server/"))
-  :config
-  (defun +cc-init-irony-mode-maybe-h ()
-    (if (file-directory-p irony-server-install-prefix)
-        (irony-mode +1)
-      (message "Irony server isn't installed")))
-
-  (setq irony-cdb-search-directory-list '("." "build" "build-conda"))
-
-  (use-package! irony-eldoc
-    :hook (irony-mode . irony-eldoc))
-
-  (use-package! flycheck-irony
-    :when (featurep! :tools checker)
-    :config (flycheck-irony-setup))
-
-  (use-package! company-irony
-    :when (featurep! :completion company)
-    :init (set-company-backend! 'irony-mode '(:separate company-irony-c-headers company-irony))
-    :config (require 'company-irony-c-headers)))
 
 
 ;;
@@ -174,57 +144,6 @@ This is ignored by ccls.")
   :when (featurep! :completion company)
   :after glsl-mode
   :config (set-company-backend! 'glsl-mode 'company-glsl))
-
-
-;;
-;; Rtags Support
-
-(use-package! rtags
-  :unless (featurep! +lsp)
-  ;; Only initialize rtags-mode if rtags and rdm are available.
-  :hook ((c-mode-local-vars c++-mode-local-vars objc-mode-local-vars) . +cc-init-rtags-maybe-h)
-  :preface (setq rtags-install-path (concat doom-etc-dir "rtags/"))
-  :config
-  (defun +cc-init-rtags-maybe-h ()
-    "Start an rtags server in c-mode and c++-mode buffers.
-If rtags or rdm aren't available, fail silently instead of throwing a breaking error."
-    (and (require 'rtags nil t)
-         (rtags-executable-find rtags-rdm-binary-name)
-         (rtags-start-process-unless-running)))
-
-  (setq rtags-autostart-diagnostics t
-        rtags-use-bookmarks nil
-        rtags-completions-enabled nil
-        rtags-display-result-backend
-        (cond ((featurep! :completion ivy)  'ivy)
-              ((featurep! :completion helm) 'helm)
-              ('default))
-        ;; These executables are named rtags-* on debian
-        rtags-rc-binary-name
-        (or (cl-find-if #'executable-find (list rtags-rc-binary-name "rtags-rc"))
-            rtags-rc-binary-name)
-        rtags-rdm-binary-name
-        (or (cl-find-if #'executable-find (list rtags-rdm-binary-name "rtags-rdm"))
-            rtags-rdm-binary-name)
-        ;; If not using ivy or helm to view results, use a pop-up window rather
-        ;; than displaying it in the current window...
-        rtags-results-buffer-other-window t
-        ;; ...and don't auto-jump to first match before making a selection.
-        rtags-jump-to-first-match nil)
-
-  (set-lookup-handlers! '(c-mode c++-mode)
-    :definition #'rtags-find-symbol-at-point
-    :references #'rtags-find-references-at-point)
-
-  ;; Use rtags-imenu instead of imenu/counsel-imenu
-  (define-key! (c-mode-map c++-mode-map) [remap imenu] #'+cc/imenu)
-
-  ;; Ensure rtags cleans up after itself properly when exiting Emacs, rather
-  ;; than display a jarring confirmation prompt for killing it.
-  (add-hook! 'kill-emacs-hook (ignore-errors (rtags-cancel-process)))
-
-  (add-hook 'rtags-jump-hook #'better-jumper-set-jump)
-  (add-hook 'rtags-after-find-file-hook #'recenter))
 
 
 ;;
@@ -297,6 +216,25 @@ If rtags or rdm aren't available, fail silently instead of throwing a breaking e
     (setq ccls-initialization-options
           `(:index (:trackDependency 1
                     :threads ,(max 1 (/ (doom-system-cpus) 2))))))
+
+  (when IS-LINUX
+    (setq ccls-initialization-options
+          (append ccls-initialization-options
+                  `(:clang
+                    (:excludeArgs
+                     ;; Linux's gcc options. See ccls/wiki
+                     ["-falign-jumps=1" "-falign-loops=1" "-fconserve-stack" "-fmerge-constants" "-fno-code-hoisting" "-fno-schedule-insns" "-fno-var-tracking-assignments" "-fsched-pressure"
+                      "-mhard-float" "-mindirect-branch-register" "-mindirect-branch=thunk-inline" "-mpreferred-stack-boundary=2" "-mpreferred-stack-boundary=3" "-mpreferred-stack-boundary=4" "-mrecord-mcount" "-mindirect-branch=thunk-extern" "-mno-fp-ret-in-387" "-mskip-rax-setup"
+                      "--param=allow-store-data-races=0" "-Wa arch/x86/kernel/macros.s" "-Wa -"]
+                     :extraArgs ["--gcc-toolchain=/usr"])
+                    :completion
+                    (:include
+                     (:blacklist
+                      ["^/usr/(local/)?include/c\\+\\+/[0-9\\.]+/(bits|tr1|tr2|profile|ext|debug)/"
+                       "^/usr/(local/)?include/c\\+\\+/v1/"
+                       ]))
+                    :index (:trackDependency 1)))))
+
   (when IS-MAC
     (setq ccls-initialization-options
           (append ccls-initialization-options

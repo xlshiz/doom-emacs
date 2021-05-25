@@ -46,7 +46,6 @@
 
   ;; default snippets library, if available
   (add-to-list 'load-path +snippets-dir)
-  (require 'doom-snippets nil t)
 
   ;; HACK In case `+snippets-dir' and `doom-snippets-dir' are the same, or
   ;;      duplicates exist in `yas-snippet-dirs'.
