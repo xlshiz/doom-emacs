@@ -165,7 +165,7 @@ directives. By default, this only recognizes C directives.")
       (abort-recursive-edit)))
 
   ;; Make J (evil-join) remove comment delimiters when joining lines.
-  (advice-add #'evil-join :around #'+evil-join-a)
+  ;; (advice-add #'evil-join :around #'+evil-join-a)
 
   ;; Prevent gw (`evil-fill') and gq (`evil-fill-and-move') from squeezing
   ;; spaces. It doesn't in vim, so it shouldn't in evil.
@@ -314,7 +314,7 @@ directives. By default, this only recognizes C directives.")
   :init
   (setq evil-escape-excluded-states '(normal visual multiedit emacs motion)
         evil-escape-excluded-major-modes '(neotree-mode treemacs-mode vterm-mode)
-        evil-escape-key-sequence "jk"
+        evil-escape-key-sequence ",."
         evil-escape-delay 0.15)
   (evil-define-key* '(insert replace visual operator) 'global "\C-g" #'evil-escape)
   :config
@@ -604,5 +604,3 @@ directives. By default, this only recognizes C directives.")
         :i "C-o"    #'company-capf
         :i "C-n"    #'+company/dabbrev
         :i "C-p"    #'+company/dabbrev-code-previous)))
-
-(load! "+ex.el")

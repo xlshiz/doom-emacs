@@ -711,6 +711,7 @@ between the two."
         ;; Org-aware C-a/C-e
         [remap doom/backward-to-bol-or-indent]          #'org-beginning-of-line
         [remap doom/forward-to-last-non-comment-or-eol] #'org-end-of-line
+        "C-j"        #'ace-window
 
         :localleader
         "#" #'org-update-statistics-cookies
@@ -735,7 +736,7 @@ between the two."
         "o" #'org-set-property
         "q" #'org-set-tags-command
         "t" #'org-todo
-        "T" #'org-todo-list
+        "T" #'org-show-todo-tree
         "x" #'org-toggle-checkbox
         (:prefix ("a" . "attachments")
          "a" #'org-attach
@@ -1019,7 +1020,7 @@ compelling reason, so..."
   (evil-org-set-key-theme)
   (add-hook! 'org-tab-first-hook :append
              ;; Only fold the current tree, rather than recursively
-             #'+org-cycle-only-current-subtree-h
+             ;; #'+org-cycle-only-current-subtree-h
              ;; Clear babel results if point is inside a src block
              #'+org-clear-babel-results-h)
   (let-alist evil-org-movement-bindings
@@ -1034,6 +1035,7 @@ compelling reason, so..."
       (map! :map evil-org-mode-map
             :ni [C-return]   #'+org/insert-item-below
             :ni [C-S-return] #'+org/insert-item-above
+            :ni "C-j"        #'ace-window
             ;; navigate table cells (from insert-mode)
             :i Cright (cmds! (org-at-table-p) #'org-table-next-field
                              #'org-end-of-line)
@@ -1075,6 +1077,8 @@ compelling reason, so..."
             :n "zr"  #'+org/show-next-fold-level
             :n "zR"  #'+org/open-all-folds
             :n "zi"  #'org-toggle-inline-images
+            :n "gj"  #'evil-next-visual-line
+            :n "gk"  #'evil-previous-visual-line
 
             :map org-read-date-minibuffer-local-map
             Cleft    (cmd! (org-eval-in-calendar '(calendar-backward-day 1)))

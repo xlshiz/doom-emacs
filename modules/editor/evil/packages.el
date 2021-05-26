@@ -36,8 +36,3 @@
     (autoload 'neotree-make-executor "neotree" nil nil 'macro))
 
   (package! evil-collection :pin "b6025cf9eaf7b4659db918548fd6d96ed17fddc6"))
-
-;;
-(package! thing-edit :recipe (:host github :repo "manateelazycat/thing-edit"))
-(package! avy-thing-edit :recipe (:host github :repo "xlshiz/avy-thing-edit"))
-(package! imenu-list)

@@ -16,6 +16,15 @@
 
   :config
   (set-popup-rule! "^\\*vterm" :size 0.25 :vslot -4 :select t :quit nil :ttl 0)
+  (set-popup-rule! "^\\*doom:vterm" :size 0.25 :vslot -4 :select t :quit nil :ttl 0)
+
+  ;; "C-j" to ace-window
+  (add-to-list 'vterm-keymap-exceptions "C-j")
+  (defadvice evil-collection-vterm-setup (after +evil-collection-vterm-setup-h activate)
+    (evil-collection-define-key 'insert 'vterm-mode-map
+      (kbd "C-j") 'ace-window)
+    (evil-collection-define-key 'normal 'vterm-mode-map
+      (kbd "C-j") 'ace-window))
 
   ;; Once vterm is dead, the vterm buffer is useless. Why keep it around? We can
   ;; spawn another if want one.

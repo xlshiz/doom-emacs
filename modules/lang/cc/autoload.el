@@ -160,8 +160,9 @@ the children of class at point."
 
 ;;;###autoload
 (defun +cc-disable-auto-complete ()
-  (require 'company)
-  (setq-local company-idle-delay nil))
+  (when (featurep! :completion company)
+    (require 'company)
+    (setq-local company-idle-delay nil)))
 
 (defvar +cc--project-includes-alist nil)
 

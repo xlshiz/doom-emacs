@@ -1,5 +1,5 @@
 ;; -*- no-byte-compile: t; -*-
-;;; checkers/syntax/packages.el
+;;; tools/checkers/packages.el
 
 (package! flycheck :pin "f8c679fff349850c80541a31de50009c3c15d4c9")
 (package! flycheck-popup-tip :pin "ef86aad907f27ca076859d8d9416f4f7727619c6")

@@ -186,7 +186,7 @@ instead is more sensible."
         ;; Some icons don't scale correctly on Emacs 26, so disable them there.
         lsp-ui-sideline-actions-icon  ; DEPRECATED Remove later
         (if EMACS27+ lsp-ui-sideline-actions-icon-default)
-	lsp-ui-doc-enable nil)
+        lsp-ui-doc-enable nil)
 
   (map! :map lsp-ui-peek-mode-map
         "j"   #'lsp-ui-peek--select-next

@@ -1,4 +1,4 @@
-;;; checkers/syntax/autoload.el -*- lexical-binding: t; -*-
+;;; tools/checkers/autoload.el -*- lexical-binding: t; -*-
 
 ;;;###autodef
 (defun set-next-checker! (mode checker next &optional append)

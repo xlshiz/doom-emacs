@@ -2,13 +2,14 @@
 
 (use-package! company
   :commands (company-complete-common
-	     company-complete-common-or-cycle
-	     company-manual-begin
-	     company-grab-line)
+             company-complete-common-or-cycle
+             company-manual-begin
+             company-grab-line)
   :hook (doom-first-input . global-company-mode)
   :init
   (setq company-minimum-prefix-length 2
         company-tooltip-limit 14
+        company-show-numbers t
         company-tooltip-align-annotations t
         company-require-match 'never
         company-global-modes
@@ -98,6 +99,7 @@
   (setq company-box-show-single-candidate t
         company-box-backends-colors nil
         company-box-max-candidates 50
+        ;; company-box-doc-enable nil
         company-box-icons-alist 'company-box-icons-all-the-icons
         company-box-icons-functions
         (cons #'+company-box-icons--elisp-fn

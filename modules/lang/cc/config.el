@@ -45,6 +45,10 @@ This is ignored by ccls.")
   :hook (c-mode-common . rainbow-delimiters-mode)
   :hook ((c-mode c++-mode) . +cc-fontify-constants-h)
   :hook ((c-mode c++-mode) . +cc-disable-auto-complete)
+  :hook ((c-mode c++-mode) . (lambda () (setq indent-tabs-mode t tab-width 8 c-basic-offset 8)))
+  :init
+  (add-to-list 'doom-detect-indentation-excluded-modes 'c-mode)
+  (add-to-list 'doom-detect-indentation-excluded-modes 'c++-mode)
   :config
   (set-docsets! 'c-mode "C")
   (set-docsets! 'c++-mode "C++" "Boost")
@@ -156,24 +160,14 @@ This is ignored by ccls.")
                cmake-mode-local-vars-hook)
              #'lsp!)
 
-  (map! :after ccls
-        :map (c-mode-map c++-mode-map)
-        :n "C-h" (cmd! (ccls-navigate "U"))
-        :n "C-j" (cmd! (ccls-navigate "R"))
-        :n "C-k" (cmd! (ccls-navigate "L"))
-        :n "C-l" (cmd! (ccls-navigate "D"))
-        (:localleader
-         :desc "Preprocess file"        "lp" #'ccls-preprocess-file
-         :desc "Reload cache & CCLS"    "lf" #'ccls-reload)
-        (:after lsp-ui-peek
-         (:localleader
-          :desc "Callers list"          "c" #'+cc/ccls-show-caller
-          :desc "Callees list"          "C" #'+cc/ccls-show-callee
-          :desc "References (address)"  "a" #'+cc/ccls-show-references-address
-          :desc "References (not call)" "f" #'+cc/ccls-show-references-not-call
-          :desc "References (Macro)"    "m" #'+cc/ccls-show-references-macro
-          :desc "References (Read)"     "r" #'+cc/ccls-show-references-read
-          :desc "References (Write)"    "w" #'+cc/ccls-show-references-write)))
+  (setq lsp-clients-clangd-args '("-j=3"
+                                  "--background-index"
+                                  "--clang-tidy"
+                                  "--completion-style=detailed"
+                                  "--header-insertion=never"
+                                  "--header-insertion-decorators=0"))
+  (unless (featurep! +ccls)
+    (after! lsp-clangd (set-lsp-priority! 'clangd 1)))
 
   (when (featurep! :tools lsp +eglot)
     ;; Map eglot specific helper
@@ -193,7 +187,7 @@ This is ignored by ccls.")
                                                   :resourceDir (cdr (doom-call-process "clang" "-print-resource-dir"))))))))))))
 
 (use-package! ccls
-  :when (featurep! +lsp)
+  :when (and (featurep! +lsp) (featurep! +ccls))
   :unless (featurep! :tools lsp +eglot)
   :hook (lsp-lens-mode . ccls-code-lens-mode)
   :init
@@ -241,4 +235,18 @@ This is ignored by ccls.")
                   `(:clang ,(list :extraArgs ["-isystem/Library/Developer/CommandLineTools/usr/include/c++/v1"
                                               "-isystem/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
                                               "-isystem/usr/local/include"]
-                                  :resourceDir (cdr (doom-call-process "clang" "-print-resource-dir"))))))))
+                                  :resourceDir (cdr (doom-call-process "clang" "-print-resource-dir")))))))
+
+  (map! :map (c-mode-map c++-mode-map)
+        (:localleader
+         :desc "Preprocess file"        "lp" #'ccls-preprocess-file
+         :desc "Reload cache & CCLS"    "lf" #'ccls-reload)
+        (:after lsp-ui-peek
+         (:localleader
+          :desc "Callers list"          "c" #'+cc/ccls-show-caller
+          :desc "Callees list"          "C" #'+cc/ccls-show-callee
+          :desc "References (address)"  "a" #'+cc/ccls-show-references-address
+          :desc "References (not call)" "f" #'+cc/ccls-show-references-not-call
+          :desc "References (Macro)"    "m" #'+cc/ccls-show-references-macro
+          :desc "References (Read)"     "r" #'+cc/ccls-show-references-read
+          :desc "References (Write)"    "w" #'+cc/ccls-show-references-write))))

@@ -115,6 +115,17 @@
       :n "M-C-="  #'doom/increase-font-size
       :n "M-C--"  #'doom/decrease-font-size)
 
+(map! :nmvo ","        nil
+      :g  "M-s"        #'save-buffer
+      :n  "ga"         #'ff-find-other-file
+      :n  "go"         (λ! (message "%S" (text-properties-at (point))))
+      :g  "C-j"        #'ace-window
+      :i  "C-f"        #'forward-char
+      :i  "C-b"        #'backward-char
+      :n  "C-t"        #'pop-tag-mark
+      ;; vterm
+      :ni  "M-n"       #'+vterm/toggle
+      :ni  [f5]        #'+vterm/toggle)
 
 ;;
 ;;; Module keybinds
@@ -123,6 +134,19 @@
 (map! (:when (featurep! :completion company)
        :i "C-@"    (cmds! (not (minibufferp)) #'company-complete-common)
        :i "C-SPC"  (cmds! (not (minibufferp)) #'company-complete-common)
+       :i [C-tab]  #'+company/complete
+       (:prefix "C-x"
+        :i "e"      #'company-english-helper-search
+        :i "C-l"    #'+company/whole-lines
+        :i "C-k"    #'+company/dict-or-keywords
+        :i "C-f"    #'company-files
+        :i "C-]"    #'company-etags
+        :i "s"      #'company-ispell
+        :i "t"      #'company-tabnine
+        :i "C-s"    #'company-yasnippet
+        :i "C-o"    #'company-capf
+        :i "C-n"    #'+company/dabbrev
+        :i "C-p"    #'+company/dabbrev-code-previous)
        (:after company
         (:map company-active-map
          "C-w"     nil  ; don't interfere with `evil-delete-backward-word'
@@ -136,8 +160,9 @@
          "C-s"     #'company-filter-candidates
          "C-S-s"   #'counsel-company
          "C-SPC"   #'company-complete-common
-         "TAB"     #'company-complete-common-or-cycle
-         [tab]     #'company-complete-common-or-cycle
+         "TAB"     #'+company/smarter-yas-expand-next-field-complete
+         [tab]     #'+company/smarter-yas-expand-next-field-complete
+         [C-return] #'+company/return-cancel-completion
          [backtab] #'company-select-previous
          [f1]      nil)
         (:map company-search-map  ; applies to `company-filter-map' too
@@ -191,7 +216,30 @@
         :n "s-7"   #'+workspace/switch-to-6
         :n "s-8"   #'+workspace/switch-to-7
         :n "s-9"   #'+workspace/switch-to-8
-        :n "s-0"   #'+workspace/switch-to-final)))
+        :n "s-0"   #'+workspace/switch-to-final))
+      (:when (featurep! :editor tabs)
+       (:after awesome-tab
+        :ni "M-j"       #'awesome-tab-ace-jump
+        :ni "M-h"       #'awesome-tab-backward
+        :ni "M-l"       #'awesome-tab-forward)
+       (:after org
+        :map org-mode-map
+        :ni "M-j"       #'awesome-tab-ace-jump
+        :ni "M-h"       #'awesome-tab-backward
+        :ni "M-l"       #'awesome-tab-forward)
+       (:after evil-org
+        :map evil-org-mode-map
+        :ni "M-j"       #'awesome-tab-ace-jump
+        :ni "M-h"       #'awesome-tab-backward
+        :ni "M-l"       #'awesome-tab-forward)
+       (:after evil-markdown
+        :map evil-markdown-mode-map
+        :ni "M-j"       #'awesome-tab-ace-jump
+        :ni "M-h"       #'awesome-tab-backward
+        :ni "M-l"       #'awesome-tab-forward)
+       (:after info
+        :map Info-mode-map
+        :ni "C-j"       #'ace-window)))
 
 ;;; :editor
 (map! (:when (featurep! :editor format)
@@ -225,6 +273,84 @@
 (when (featurep! :tools eval)
   (map! "M-r" #'+eval/buffer))
 
+;;; :avy-thins-edit
+(map! :nmvo ","         nil
+      (:prefix-map ("C-c y" . "avy-copy-and-yank")
+       :ni "w"      #'avy-thing-copy-and-yank-word
+       :ni "o"      #'avy-thing-copy-and-yank-symbol
+       :ni "x"      #'avy-thing-copy-and-yank-sexp
+       :ni "l"      #'avy-thing-copy-and-yank-line
+       :ni "b"      #'avy-thing-copy-and-yank-parentheses
+       :ni "("      #'avy-thing-copy-and-yank-parentheses
+       :ni "p"      #'avy-thing-copy-and-yank-paragraph
+       :ni "{"      #'avy-thing-copy-and-yank-paragraph
+       :ni "n"      #'avy-thing-copy-and-yank-number
+       :ni "f"      #'avy-thing-copy-and-yank-defun
+       :ni "e"      #'avy-thing-copy-and-yank-email
+       :ni "i"      #'avy-thing-copy-and-yank-filename
+       :ni "t"      #'avy-thing-copy-and-yank-list
+       :ni "u"      #'avy-thing-copy-and-yank-url)
+      (:prefix-map ("C-c j" . "avy-thing-edit")
+       (:prefix-map ("c" . "copy")
+        :ni "w"      #'avy-thing-copy-word
+        :ni "o"      #'avy-thing-copy-symbol
+        :ni "x"      #'avy-thing-copy-sexp
+        :ni "l"      #'avy-thing-copy-line
+        :ni "b"      #'avy-thing-copy-parentheses
+        :ni "("      #'avy-thing-copy-parentheses
+        :ni "p"      #'avy-thing-copy-paragraph
+        :ni "{"      #'avy-thing-copy-paragraph
+        :ni "n"      #'avy-thing-copy-number
+        :ni "f"      #'avy-thing-copy-defun
+        :ni "e"      #'avy-thing-copy-email
+        :ni "i"      #'avy-thing-copy-filename
+        :ni "t"      #'avy-thing-copy-list
+        :ni "u"      #'avy-thing-copy-url)
+       (:prefix-map ("y" . "copy and yank")
+        :ni "w"      #'avy-thing-copy-and-yank-word
+        :ni "o"      #'avy-thing-copy-and-yank-symbol
+        :ni "x"      #'avy-thing-copy-and-yank-sexp
+        :ni "l"      #'avy-thing-copy-and-yank-line
+        :ni "b"      #'avy-thing-copy-and-yank-parentheses
+        :ni "("      #'avy-thing-copy-and-yank-parentheses
+        :ni "p"      #'avy-thing-copy-and-yank-paragraph
+        :ni "{"      #'avy-thing-copy-and-yank-paragraph
+        :ni "n"      #'avy-thing-copy-and-yank-number
+        :ni "f"      #'avy-thing-copy-and-yank-defun
+        :ni "e"      #'avy-thing-copy-and-yank-email
+        :ni "i"      #'avy-thing-copy-and-yank-filename
+        :ni "t"      #'avy-thing-copy-and-yank-list
+        :ni "u"      #'avy-thing-copy-and-yank-url)
+       (:prefix-map ("x" . "cut")
+        :ni "w"      #'avy-thing-cut-word
+        :ni "o"      #'avy-thing-cut-symbol
+        :ni "x"      #'avy-thing-cut-sexp
+        :ni "l"      #'avy-thing-cut-line
+        :ni "b"      #'avy-thing-cut-parentheses
+        :ni "("      #'avy-thing-cut-parentheses
+        :ni "p"      #'avy-thing-cut-paragraph
+        :ni "{"      #'avy-thing-cut-paragraph
+        :ni "n"      #'avy-thing-cut-number
+        :ni "f"      #'avy-thing-cut-defun
+        :ni "e"      #'avy-thing-cut-email
+        :ni "i"      #'avy-thing-cut-filename
+        :ni "t"      #'avy-thing-cut-list
+        :ni "u"      #'avy-thing-cut-url)
+       (:prefix-map ("r" . "replace")
+        :ni "w"      #'avy-thing-replace-word
+        :ni "o"      #'avy-thing-replace-symbol
+        :ni "x"      #'avy-thing-replace-sexp
+        :ni "l"      #'avy-thing-replace-line
+        :ni "b"      #'avy-thing-replace-parentheses
+        :ni "("      #'avy-thing-replace-parentheses
+        :ni "p"      #'avy-thing-replace-paragraph
+        :ni "{"      #'avy-thing-replace-paragraph
+        :ni "n"      #'avy-thing-replace-number
+        :ni "f"      #'avy-thing-replace-defun
+        :ni "e"      #'avy-thing-replace-email
+        :ni "i"      #'avy-thing-replace-filename
+        :ni "t"      #'avy-thing-replace-list
+        :ni "u"      #'avy-thing-replace-url)))
 
 ;;
 ;;; <leader>
@@ -247,17 +373,21 @@
        :desc "Switch workspace buffer" "," #'persp-switch-to-buffer
        :desc "Switch buffer"           "<" #'switch-to-buffer)
       :desc "Switch to last buffer" "`"    #'evil-switch-to-windows-last-buffer
-      :desc "Resume last search"    "'"    #'ivy-resume
+      :desc "Run terminal"          "'"    #'vterm
 
       :desc "Search for symbol in project" "*" #'+default/search-project-for-symbol-at-point
       :desc "Search project"               "/" #'+default/search-project
 
-      :desc "Find file in project"  "SPC"  #'projectile-find-file
+      :desc "M-x"                   "SPC"  #'execute-extended-command
       :desc "Jump to bookmark"      "RET"  #'bookmark-jump
+      :desc "Alternate buffer"      "TAB"  #'+my/alternate-buffer-in-persp
+      :desc "Find everything"       "a"    #'snail
+      (:when (featurep! :config default +snails)
+       :desc "Find everything"      "a"    #'snails)
 
-      ;;; <leader> TAB --- workspace
+      ;;; <leader> S --- workspace
       (:when (featurep! :editor workspaces)
-       (:prefix-map ("TAB" . "workspace")
+       (:prefix-map ("S" . "workspace")
         :desc "Display tab bar"           "TAB" #'+workspace/display
         :desc "Switch workspace"          "."   #'+workspace/switch-to
         :desc "Switch to last workspace"  "`"   #'+workspace/other
@@ -283,14 +413,13 @@
 
       ;;; <leader> b --- buffer
       (:prefix-map ("b" . "buffer")
+       :desc "Alternate buffer"           "TAB"  #'+my/alternate-buffer-in-persp
        :desc "Toggle narrowing"            "-"   #'doom/toggle-narrow-buffer
        :desc "Previous buffer"             "["   #'previous-buffer
        :desc "Next buffer"                 "]"   #'next-buffer
+       :desc "Switch buffer"               "b"   #'switch-to-buffer
        (:when (featurep! :editor workspaces)
-        :desc "Switch workspace buffer" "b" #'persp-switch-to-buffer
-        :desc "Switch buffer"           "B" #'switch-to-buffer)
-       (:unless (featurep! :editor workspaces)
-        :desc "Switch buffer"           "b" #'switch-to-buffer)
+        :desc "Switch buffer"              "B"   #'switch-to-buffer)
        :desc "Clone buffer"                "c"   #'clone-indirect-buffer
        :desc "Clone buffer other window"   "C"   #'clone-indirect-buffer-other-window
        :desc "Kill buffer"                 "d"   #'kill-current-buffer
@@ -352,13 +481,14 @@
 
       ;;; <leader> f --- file
       (:prefix-map ("f" . "file")
+       :desc "Find file"                   "."   #'find-file
        :desc "Open project editorconfig"   "c"   #'editorconfig-find-current-editorconfig
        :desc "Copy this file"              "C"   #'doom/copy-this-file
        :desc "Find directory"              "d"   #'+default/dired
        :desc "Delete this file"            "D"   #'doom/delete-this-file
        :desc "Find file in emacs.d"        "e"   #'doom/find-file-in-emacsd
        :desc "Browse emacs.d"              "E"   #'doom/browse-in-emacsd
-       :desc "Find file"                   "f"   #'find-file
+       :desc "Recursive find file"         "f"   #'+default/find-file-under-here
        :desc "Find file from here"         "F"   #'+default/find-file-under-here
        :desc "Locate file"                 "l"   #'locate
        :desc "Find file in private config" "p"   #'doom/find-file-in-private-config
@@ -438,6 +568,20 @@
        :desc "Unicode"                       "u"   #'insert-char
        :desc "From clipboard"                "y"   #'+default/yank-pop)
 
+      ;;; <leader> j --- jump
+      (:prefix-map ("j" . "jump")
+       :desc "avy goto char timer"        "j"   #'evil-avy-goto-char-timer
+       :desc "avy goto 2 char"            "c"   #'evil-avy-goto-char-2
+       :desc "avy goto char"              "C"   #'evil-avy-goto-char
+       :desc "avy goto line"              "l"   #'evil-avy-goto-line
+       :desc "avy goto word"              "w"   #'evil-avy-goto-word-1
+       :desc "avy goto symbol"            "o"   #'evil-avy-goto-symbol-1)
+
+      ;;; <leader> m --- mark
+      (:prefix-map ("m" . "mark")
+       :desc "Mark symbol highlight"      "m"   #'symbol-overlay-put
+       :desc "Clear all highlight"        "c"   #'symbol-overlay-remove-all)
+
       ;;; <leader> n --- notes
       (:prefix-map ("n" . "notes")
        :desc "Search notes for symbol"      "*" #'+default/search-notes-for-symbol-at-point
@@ -486,6 +630,7 @@
 
       ;;; <leader> o --- open
       (:prefix-map ("o" . "open")
+       :desc "Imenu sidebar"    "i"  #'imenu-list-smart-toggle
        :desc "Org agenda"       "A"  #'org-agenda
        (:prefix ("a" . "org agenda")
         :desc "Agenda"         "a"  #'org-agenda
@@ -514,11 +659,13 @@
 
       ;;; <leader> p --- project
       (:prefix-map ("p" . "project")
+       :desc "Search project"               "n" #'+my/evil-search-to-project
+       :desc "Run shell in project"         "'" #'+vterm/here
        :desc "Browse project"               "." #'+default/browse-project
        :desc "Browse other project"         ">" #'doom/browse-in-other-project
        :desc "Run cmd in project root"      "!" #'projectile-run-shell-command-in-root
        :desc "Add new project"              "a" #'projectile-add-known-project
-       :desc "Switch to project buffer"     "b" #'projectile-switch-to-buffer
+       :desc "Switch project buffer"        "b" #'counsel-projectile-switch-to-buffer
        :desc "Compile in project"           "c" #'projectile-compile-project
        :desc "Repeat last command"          "C" #'projectile-repeat-last-command
        :desc "Remove known project"         "d" #'projectile-remove-known-project
@@ -602,7 +749,27 @@
         :desc "Pomodoro timer"             "t" #'org-pomodoro)
        :desc "Soft line wrapping"           "w" #'visual-line-mode
        (:when (featurep! :editor word-wrap)
-        :desc "Soft line wrapping"         "w" #'+word-wrap-mode)))
+        :desc "Soft line wrapping"         "w" #'+word-wrap-mode))
+
+      ;;; <leader> w --- window
+      (:prefix-map ("w" . "window")
+       :desc "Alternate window"           "TAB" #'+my/alternate-window
+       :desc "Other window"               "w"   #'other-window
+       (:when (featurep! :editor tabs)
+        :desc "Awesome tab"                "t"   #'awesome-fast-switch/body)
+       :desc "Split window right"         "v"   #'split-window-right
+       :desc "Split window right"         "|"   #'split-window-right
+       :desc "Split window below"         "s"   #'split-window-below
+       :desc "Split window below"         "-"   #'split-window-below
+       :desc "Balance window"             "="   #'balance-windows
+       :desc "Switch to left"             "h"   #'evil-window-left
+       :desc "Switch to right"            "l"   #'evil-window-right
+       :desc "Switch to up"               "k"   #'evil-window-up
+       :desc "Switch to down"             "j"   #'evil-window-down
+       :desc "Kill other window"          "O"   #'ace-delete-other-windows
+       :desc "Kill other window"          "o"   #'delete-other-windows
+       :desc "Kill window"                "D"   #'ace-delete-window
+       :desc "Kill current window"        "d"   #'delete-window))
 
 (after! which-key
   (let ((prefix-re (regexp-opt (list doom-leader-key doom-leader-alt-key))))

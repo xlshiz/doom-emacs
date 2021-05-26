@@ -1,4 +1,4 @@
-;;; checkers/syntax/config.el -*- lexical-binding: t; -*-
+;;; tools/checkers/config.el -*- lexical-binding: t; -*-
 
 ;;
 ;;; Flycheck

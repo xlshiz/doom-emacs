@@ -17,25 +17,14 @@
   :config
   (defun +tabs-buffer-groups-fn ()
     (list
-     (cond 
-      ((or(memq major-mode '(magit-process-mode
-                          magit-status-mode
-                          magit-diff-mode
-                          magit-log-mode
-                          magit-file-mode
-                          magit-blob-mode
-                          magit-blame-mode
-			  magit-revision-mode
-                          ))
-          (string-prefix-p "*forge:" (buffer-name)))
-       (awesome-tab-get-group-name (current-buffer)))
+     (cond
       ((derived-mode-p 'eshell-mode)
        "EShell")
       ((derived-mode-p 'dired-mode)
        "Dired")
       ((string-equal "*" (substring (buffer-name) 0 1))
        "Emacs")
-      (t (awesome-tab-get-group-name (current-buffer))))))
+      (t "File"))))
 
   (defun +tabs-hide-tab (x)
     (let ((name (format "%s" x)))

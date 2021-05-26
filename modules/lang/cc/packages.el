@@ -22,4 +22,5 @@
 (if (featurep! +lsp)
     (unless (featurep! :tools lsp +eglot)
       ;; ccls package is necessary only for lsp-mode.
-      (package! ccls :pin "675a5704c14a27931e835a431beea3631d92e8e6")))
+      (when (featurep! +ccls)
+        (package! ccls :pin "675a5704c14a27931e835a431beea3631d92e8e6"))))
