@@ -1,4 +1,4 @@
-;;; editor/chinese/config.el -*- lexical-binding: t; -*-
+;;; editor/chinese/config.el -*- lexical-binding: t; no-byte-compile: t; -*-
 
 (use-package! sis
   :after evil
@@ -63,10 +63,16 @@
   :init
   (setq default-input-method "pyim")
   :config
-  ;; 使用小鹤双拼
-  ;; (setq pyim-default-scheme 'xiaohe-shuangpin)
-  ;; 使用rime
-  (setq pyim-default-scheme 'rime)
+  (unless (featurep! +rime)
+    ;; 使用小鹤双拼
+    (setq pyim-default-scheme 'xiaohe-shuangpin)
+    (require 'pyim-basedict)
+    (pyim-basedict-enable))
+  (when (featurep! +rime)
+    ;; 使用rime
+    (setq pyim-default-scheme 'rime)
+    (require 'pyim-liberime)
+    )
   (setq-default pyim-punctuation-half-width-functions
                 '(pyim-probe-punctuation-line-beginning
                   pyim-probe-punctuation-after-punctuation))
@@ -97,14 +103,12 @@
 
 (use-package! liberime
   :when (featurep! +rime)
-  :after pyim
+  :defer t
   :init
   (setq liberime-user-data-dir (expand-file-name (concat doom-etc-dir "pyim/rime")))
   (setq liberime-auto-build t)
   :config
-  (liberime-try-select-schema "pinyin_cau_flypy")
-  (setq pyim-default-scheme 'rime)
-  (require 'pyim-liberime))
+  (liberime-try-select-schema "pinyin_cau_flypy"))
 
 (after! ivy
   (setq ivy-re-builders-alist

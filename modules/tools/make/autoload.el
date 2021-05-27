@@ -1,4 +1,4 @@
-;;; tools/make/autoload.el -*- lexical-binding: t; no-byte-compile: t -*-
+;;; tools/make/autoload.el -*- lexical-binding: t; no-byte-compile: t; -*-
 
 (require 'makefile-executor)
 
