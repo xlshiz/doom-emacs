@@ -152,7 +152,11 @@ server getting expensively restarted when reverting buffers."
                                    " "))
           (add-to-list 'global-mode-string
                        '(t (:eval lsp-modeline-icon))
-                       'append))))))
+                       'append)))))
+  (custom-set-faces
+    '(lsp-face-highlight-textual ((t (:background "honeydew" :bold t))))
+    '(lsp-face-highlight-read ((t (:background "honeydew" :bold t))))
+    '(lsp-face-highlight-write ((t (:background "beige" :bold t))))))
 
 
 (use-package! lsp-ui

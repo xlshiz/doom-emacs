@@ -40,7 +40,8 @@
   (eval-when-compile (require 'evil-collection))
   (evil-collection-define-key 'normal 'color-rg-mode-map
     (kbd "M-o") 'color-rg-hydra/body
-    (kbd "RET") 'color-rg-open-file
+    (kbd "RET") 'color-rg-open-file-and-stay
+    (kbd "<tab>") 'color-rg-open-file
     "j" 'evil-next-line
     "k" 'evil-previous-line
     "h" 'evil-backward-char

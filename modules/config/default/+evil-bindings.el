@@ -192,7 +192,6 @@
        "C-x p" #'+popup/other)
 
       (:when (featurep! :editor workspaces)
-       :n "C-t"   #'+workspace/new
        :n "C-S-t" #'+workspace/display
        :g "M-1"   #'+workspace/switch-to-0
        :g "M-2"   #'+workspace/switch-to-1

@@ -18,9 +18,9 @@
   :config
   (unless (featurep! +numbers)
     (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
-  (custom-set-faces!
-    '(aw-leading-char-face :inherit font-lock-keyword-face :bold t :height 3.0)
-    '(aw-mode-line-face :inherit mode-line-emphasis :bold t))
+  (custom-set-faces
+    '(aw-leading-char-face (( t (:inherit font-lock-keyword-face :bold t :height 3.0))))
+    '(aw-mode-line-face ((t (:inherit mode-line-emphasis :bold t)))))
   (setq aw-scope 'frame
         aw-background t))
 
