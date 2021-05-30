@@ -4,6 +4,7 @@
   :after evil
   :init
   (setq sis-prefix-override-keys (list doom-leader-alt-key "C-c" "C-x" "C-h"))
+  (setq sis-respect-evil-normal-escape nil)
   :config
   ;; For Linux
   ;; (sis-ism-lazyman-config "1" "2" 'fcitx)

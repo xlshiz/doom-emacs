@@ -38,7 +38,8 @@ directives. By default, this only recognizes C directives.")
         evil-mode-line-format 'nil
         ;; more vim-like behavior
         evil-symbol-word-search t
-        ;; cursor appearance
+        ;; if the current state is obvious from the cursor's color/shape, then
+        ;; we won't need superfluous indicators to do it instead.
         evil-default-cursor '+evil-default-cursor-fn
         evil-normal-state-cursor 'box
         evil-emacs-state-cursor  '(box +evil-emacs-cursor-fn)
@@ -63,8 +64,6 @@ directives. By default, this only recognizes C directives.")
   :config
   (evil-select-search-module 'evil-search-module 'evil-search)
 
-  (put 'evil-define-key* 'lisp-indent-function 'defun)
-
   ;; stop copying each visual state move to the clipboard:
   ;; https://github.com/emacs-evil/evil/issues/336
   ;; grokked from:
@@ -82,21 +81,19 @@ directives. By default, this only recognizes C directives.")
           ("^\\*Command Line"   :size 8)))))
 
   ;; Change the cursor color in emacs state. We do it this roundabout way
-  ;; instead of changing `evil-default-cursor' (or `evil-emacs-state-cursor') so
-  ;; it won't interfere with users who have changed these variables.
-  (defvar +evil--default-cursor-color "#ffffff")
-  (defvar +evil--emacs-cursor-color "#ff9999")
-
-  (add-hook! 'doom-load-theme-hook
+  ;; to ensure changes in theme doesn't break these colors.
+  (add-hook! '(doom-load-theme-hook doom-init-modules-hook)
     (defun +evil-update-cursor-color-h ()
-      (setq +evil--default-cursor-color (face-background 'cursor)
-            +evil--emacs-cursor-color (face-foreground 'warning))))
+      (put 'cursor 'evil-emacs-color  (face-foreground 'warning))
+      (put 'cursor 'evil-normal-color (face-background 'cursor))))
 
   (defun +evil-default-cursor-fn ()
-    (evil-set-cursor-color +evil--default-cursor-color))
+    (evil-set-cursor-color (get 'cursor 'evil-normal-color)))
   (defun +evil-emacs-cursor-fn ()
-    (evil-set-cursor-color +evil--emacs-cursor-color))
+    (evil-set-cursor-color (get 'cursor 'evil-emacs-color)))
 
+  ;; Ensure `evil-shift-width' always matches `tab-width'; evil does not police
+  ;; this itself, so we must.
   (setq-hook! 'after-change-major-mode-hook evil-shift-width tab-width)
 
 

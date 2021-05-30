@@ -86,7 +86,13 @@
   (setq avy-thing-edit-jump-command #'evil-avy-goto-char-timer))
 
 (use-package! symbol-overlay
-  :commands (symbol-overlay-put symbol-overlay-remove-all))
+  :commands (symbol-overlay-put symbol-overlay-remove-all)
+  :init
+  (setq symbol-overlay-inhibit-map t)
+  :config
+  (map! :map symbol-overlay-map
+        "n"  #'symbol-overlay-jump-next
+        "p"  #'symbol-overlay-jump-prev))
 
 (use-package! color-rg
   :commands (color-rg-search-input color-rg-search-symbol

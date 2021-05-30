@@ -24,7 +24,11 @@
        "Dired")
       ((string-equal "*" (substring (buffer-name) 0 1))
        "Emacs")
-      (t "File"))))
+      ((derived-mode-p 'pdf-view-mode)
+       "PDF")
+      ((derived-mode-p 'org-mode)
+       "org-mode")
+      (t "Files"))))
 
   (defun +tabs-hide-tab (x)
     (let ((name (format "%s" x)))
@@ -75,6 +79,7 @@
        (string-prefix-p "*Buttercup*" name)
        (string-prefix-p "*taskrunner" name)
        (string-prefix-p "*Ediff " name)
+       (string-prefix-p "*company-" name)
        )))
 
   (setq awesome-tab-buffer-groups-function #'+tabs-buffer-groups-fn

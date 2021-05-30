@@ -116,16 +116,16 @@
       :n "M-C--"  #'doom/decrease-font-size)
 
 (map! :nmvo ","        nil
-      :g  "M-s"        #'save-buffer
-      :n  "ga"         #'ff-find-other-file
-      :n  "go"         (λ! (message "%S" (text-properties-at (point))))
-      :g  "C-j"        #'ace-window
-      :i  "C-f"        #'forward-char
-      :i  "C-b"        #'backward-char
-      :n  "C-t"        #'pop-tag-mark
+      :gni  "M-s"        #'save-buffer
+      :n    "ga"         #'ff-find-other-file
+      :n    "go"         (λ! (message "%S" (text-properties-at (point))))
+      :gni  "C-j"        #'ace-window
+      :i    "C-f"        #'forward-char
+      :i    "C-b"        #'backward-char
+      :n    "C-t"        #'pop-tag-mark
       ;; vterm
-      :ni  "M-n"       #'+vterm/toggle
-      :ni  [f5]        #'+vterm/toggle)
+      :ni   "M-n"       #'+vterm/toggle
+      :ni   [f5]        #'+vterm/toggle)
 
 ;;
 ;;; Module keybinds
