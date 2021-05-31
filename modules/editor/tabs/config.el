@@ -37,10 +37,6 @@
        (window-dedicated-p (selected-window))
 
        ;; Buffer name not match below blacklist.
-       (string-prefix-p "*epc" name)
-       (string-prefix-p "*helm" name)
-       (string-prefix-p "*Compile-Log*" name)
-
        (string-prefix-p "*nox doc*" name)
        (string-prefix-p "*NOX (" name)
        (string-prefix-p "*lsp" name)
@@ -59,11 +55,14 @@
        (string-prefix-p "*xref*" name)
        (string-prefix-p "*Semantic SymRef*" name)
 
+       (string-prefix-p "*epc" name)
+       (string-prefix-p "*Compile-Log*" name)
        (string-prefix-p " *snails" name)
        (string-prefix-p "*Flycheck" name)
        (string-prefix-p "*flycheck" name)
        (string-prefix-p "*Org Agenda*" name)
        (string-prefix-p " *Org todo*" name)
+       (string-prefix-p " *Org tags*" name)
        (string-prefix-p "*edit-indirect" name)
        (string-prefix-p "*shell-pop" name)
        (string-prefix-p "*MULTI-TERM-DEDICATED*" name)
@@ -80,6 +79,9 @@
        (string-prefix-p "*taskrunner" name)
        (string-prefix-p "*Ediff " name)
        (string-prefix-p "*company-" name)
+
+       (string-prefix-p "CAPTURE-refile.org" name)
+       (string-prefix-p " tq-temp-epdfinfo" name)
        )))
 
   (setq awesome-tab-buffer-groups-function #'+tabs-buffer-groups-fn
