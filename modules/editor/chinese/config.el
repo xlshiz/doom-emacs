@@ -21,7 +21,7 @@
   (sis-global-inline-mode t)
   (map! :g  "M-f"   #'pyim-forward-word
         :g  "M-b"   #'pyim-backward-word
-        :ni "C-;"   #'sis-switch))
+        :gni "C-;"   #'sis-switch))
 
 (use-package! pinyinlib
   :commands (pinyinlib-build-regexp-string pinyinlib-build-regexp-char)
