@@ -394,6 +394,14 @@ config.el instead."
     (setq-local doom-inhibit-local-var-hooks t)
     (doom-run-hooks (intern-soft (format "%s-local-vars-hook" major-mode)))))
 
+;; If the user has disabled `enable-local-variables', then
+;; `hack-local-variables-hook' is never triggered, so we trigger it at the end
+;; of `after-change-major-mode-hook':
+(defun doom-run-local-var-hooks-maybe-h ()
+  "Run `doom-run-local-var-hooks-h' if `enable-local-variables' is disabled."
+  (unless enable-local-variables
+    (doom-run-local-var-hooks-h)))
+
 
 ;;
 ;;; Incremental lazy-loading
@@ -638,8 +646,9 @@ to least)."
     ;; Load shell environment, optionally generated from 'doom env'. No need
     ;; to do so if we're in terminal Emacs, where Emacs correctly inherits
     ;; your shell environment.
-    (if (or (display-graphic-p)
-            (daemonp))
+    (if (and (or (display-graphic-p)
+                 (daemonp))
+             doom-env-file)
         (doom-load-envvars-file doom-env-file 'noerror))
 
     ;; Loads `use-package' and all the helper macros modules (and users) can use
@@ -654,7 +663,8 @@ to least)."
     (eval-after-load 'straight '(doom-initialize-packages))
 
     ;; Bootstrap the interactive session
-    (add-hook 'after-change-major-mode-hook #'doom-run-local-var-hooks-h)
+    (add-hook 'after-change-major-mode-hook #'doom-run-local-var-hooks-maybe-h 100)
+    (add-hook 'hack-local-variables-hook #'doom-run-local-var-hooks-h)
     (add-hook 'emacs-startup-hook #'doom-load-packages-incrementally-h)
     (add-hook 'window-setup-hook #'doom-display-benchmark-h)
     (doom-run-hook-on 'doom-first-buffer-hook '(find-file-hook doom-switch-buffer-hook))

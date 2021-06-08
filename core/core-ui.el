@@ -39,7 +39,8 @@ Must be a `font-spec', a font object, an XFT font string, or an XLFD string. See
 
 The defaults on macOS and Linux are Apple Color Emoji and Symbola, respectively.
 
-An omitted font size means to inherit `doom-font''s size.")
+WARNING: if you specify a size for this font it will hard-lock any usage of this
+font to that size. It's rarely a good idea to do so!")
 
 (defvar doom-emoji-fallback-font-families
   '("Apple Color Emoji"
@@ -584,12 +585,13 @@ windows, switch to `doom-fallback-buffer'. Otherwise, delegate to original
       (when doom-unicode-font
         (set-fontset-font t 'unicode doom-unicode-font))))
   (apply #'custom-set-faces
-         (append (when doom-font
-                   `((fixed-pitch ((t (:font ,doom-font))))))
-                 (when doom-serif-font
-                   `((fixed-pitch-serif ((t (:font ,doom-serif-font))))))
-                 (when doom-variable-pitch-font
-                   `((variable-pitch ((t (:font ,doom-variable-pitch-font))))))))
+         (let ((attrs '(:weight unspecified :slant unspecified :width unspecified)))
+           (append (when doom-font
+                     `((fixed-pitch ((t (:font ,doom-font ,@attrs))))))
+                   (when doom-serif-font
+                     `((fixed-pitch-serif ((t (:font ,doom-serif-font ,@attrs))))))
+                   (when doom-variable-pitch-font
+                     `((variable-pitch ((t (:font ,doom-variable-pitch-font ,@attrs)))))))))
   ;; Never save these settings to `custom-file'
   (dolist (sym '(fixed-pitch fixed-pitch-serif variable-pitch))
     (put sym 'saved-face nil))

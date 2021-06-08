@@ -23,7 +23,7 @@
 ;;   condition. It ensures all unneeded packages are removed, all needed ones
 ;;   are installed, and all metadata associated with them is generated.
 ;; + `bin/doom upgrade`: upgrades Doom Emacs and your packages to the latest
-;;   versions. There's also 'bin/doom update' for updating only your packages.
+;;   versions. There's also 'bin/doom sync -u' for updating only your packages.
 ;;
 ;; How this works is: the system reads packages.el files located in each
 ;; activated module, your private directory (`doom-private-dir'), and one in
@@ -132,8 +132,8 @@ uses a straight or package.el command directly).")
                 (and (string-match "\\_<[0-9]+\\.[0-9]+\\(\\.[0-9]+\\)\\_>" version)
                      (match-string 0 version))))
           (if version
-              (when (version< version "2.28")
-                (user-error "Git %s detected! Doom requires git 2.28 or newer!"
+              (when (version< version "2.23")
+                (user-error "Git %s detected! Doom requires git 2.23 or newer!"
                             version)))))
       (print! (start "Installing straight..."))
       (print-group!
@@ -159,10 +159,8 @@ uses a straight or package.el command directly).")
                             "--branch" straight-repository-branch))
                (make-directory repo-dir 'recursive)
                (let ((default-directory repo-dir))
-                 ;; git init's -b switch was introduced in 2.28. As much as I'd
-                 ;; like to, the dependency is unavoidable because straight.el
-                 ;; uses it internally.
-                 (funcall call "git" "init" "-b" straight-repository-branch)
+                 (funcall call "git" "init")
+                 (funcall call "git" "branch" "-m" straight-repository-branch)
                  (funcall call "git" "remote" "add" "origin" repo-url
                           "--master" straight-repository-branch)
                  (funcall call "git" "fetch" "origin" pin
@@ -171,12 +169,20 @@ uses a straight or package.el command directly).")
                  (funcall call "git" "reset" "--hard" pin)))))))))
     (require 'straight (concat repo-dir "/straight.el"))
     (doom-log "Initializing recipes")
-    (with-temp-buffer
-      (insert-file-contents (doom-path repo-dir "bootstrap.el"))
-      ;; Don't install straight for us -- we've already done that -- only set
-      ;; up its recipe repos for us.
-      (eval-region (search-forward "(require 'straight)")
-                   (point-max)))))
+    (mapc #'straight-use-recipes
+          '((org-elpa :local-repo nil)
+            (melpa              :type git :host github
+                                :repo "melpa/melpa"
+                                :build nil)
+            (gnu-elpa-mirror    :type git :host github
+                                :repo "emacs-straight/gnu-elpa-mirror"
+                                :build nil)
+            (el-get             :type git :host github
+                                :repo "dimitri/el-get"
+                                :build nil)
+            (emacsmirror-mirror :type git :host github
+                                :repo "emacs-straight/emacsmirror-mirror"
+                                :build nil)))))
 
 (defun doom--ensure-core-packages (packages)
   (doom-log "Installing core packages")
