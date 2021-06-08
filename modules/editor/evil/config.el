@@ -446,9 +446,6 @@ directives. By default, this only recognizes C directives.")
        :n "gT"   #'+workspace:switch-previous
        :n "]w"   #'+workspace/switch-right
        :n "[w"   #'+workspace/switch-left)
-      (:when (featurep! :editor tabs)
-       :n "gt"   #'centaur-tabs-forward
-       :n "gT"   #'centaur-tabs-backward)
 
       ;; custom vim-unmpaired-esque keys
       :m  "]#"    #'+evil/next-preproc-directive
@@ -485,6 +482,7 @@ directives. By default, this only recognizes C directives.")
        :nv "gd"  #'+lookup/definition
        :nv "gD"  #'+lookup/references
        :nv "gf"  #'+lookup/file
+       :nv "gt"  #'+lookup/type-definition
        :nv "gI"  #'+lookup/implementations
        :nv "gA"  #'+lookup/assignments)
       (:when (featurep! :tools eval)

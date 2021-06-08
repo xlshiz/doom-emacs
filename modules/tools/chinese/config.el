@@ -70,6 +70,9 @@
     (require 'pyim-basedict)
     (pyim-basedict-enable))
   (when (featurep! +rime)
+    ;; 支持中文词移动
+    (setq pyim-dicts
+          `((:name "we" :file ,(concat doom-etc-dir "pyim/we.pyim"))))
     ;; 使用rime
     (setq pyim-default-scheme 'rime)
     (require 'pyim-liberime)
@@ -83,8 +86,6 @@
   (setq pyim-page-tooltip 'posframe)
   ;; 选词框显示5个候选词
   (setq pyim-page-length 3)
-  ; (setq pyim-dicts
-        ; `((:name "be" :file ,(concat doom-etc-dir "pyim/be.pyim"))))
   (setq pyim-dcache-directory (concat doom-cache-dir "pyim/dcache/"))
   ;; 设置以词定字的函数，使用 [  ]
   (setq pyim-magic-converter #'+my|pyim-converter)

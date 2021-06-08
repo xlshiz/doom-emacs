@@ -6,7 +6,7 @@
 (package! evil-pinyin :recipe (:host github :repo "laishulu/evil-pinyin"))
 (package! pyim :pin "1344bc16f2b5ff38655b94f5678c7e5f0cd09de0")
 (if (featurep! +rime)
-  (package! liberime :pin "8d4d1d4f2924dc560bce1d79680df36dcc086d49" :recipe (:host github :repo "merrickluo/liberime" :files ("CMakeLists.txt" "Makefile" "src" "liberime*.el" "liberime.el")))
+    (package! liberime :pin "8d4d1d4f2924dc560bce1d79680df36dcc086d49" :recipe (:host github :repo "merrickluo/liberime" :files ("CMakeLists.txt" "Makefile" "src" "liberime*.el" "liberime.el")))
   (package! pyim-basedict))
 (package! pangu-spacing)
 (package! company-english-helper :recipe (:host github :repo "manateelazycat/company-english-helper"))

@@ -1,7 +1,6 @@
 ;;; emacs/vc/autoload/hydra.el -*- lexical-binding: t; -*-
-;;;###if (featurep! :editor hydra)
 
-;;;###autoload (autoload '+vc/smerge-hydra/body "emacs/vc/autoload/hydra" nil t)
+;;;###autoload (autoload '+vc/smerge-hydra/body "editor/vc/autoload/hydra" nil t)
 (defhydra +vc/smerge-hydra (:hint nil
                             :pre (if (not smerge-mode) (smerge-mode 1))
                             ;; Disable `smerge-mode' when quitting hydra if
