@@ -27,10 +27,9 @@
         company-backends '(company-capf)
 
         ;; These auto-complete the current selection when
-        ;; `company-auto-complete-chars' is typed. This is too magical. We
+        ;; `company-auto-commit-chars' is typed. This is too magical. We
         ;; already have the much more explicit RET and TAB.
-        company-auto-complete nil
-        company-auto-complete-chars nil
+        company-auto-commit nil
 
         ;; Only search the current buffer for `company-dabbrev' (a backend that
         ;; suggests text your open buffers). This prevents Company from causing
@@ -40,6 +39,7 @@
         ;; domain-specific words with particular casing.
         company-dabbrev-ignore-case nil
         company-dabbrev-downcase nil)
+
   (when (featurep! +tng)
     (add-hook 'global-company-mode-hook #'company-tng-mode))
 
@@ -65,6 +65,7 @@
       (company-abort)))
 
   (add-hook 'after-change-major-mode-hook #'+company-init-backends-h 'append)
+
 
   ;; NOTE Fix #1335: ensure `company-emulation-alist' is the first item of
   ;;      `emulation-mode-map-alists', thus higher priority than keymaps of
@@ -99,7 +100,6 @@
   (setq company-box-show-single-candidate t
         company-box-backends-colors nil
         company-box-max-candidates 50
-        ;; company-box-doc-enable nil
         company-box-icons-alist 'company-box-icons-all-the-icons
         company-box-icons-functions
         (cons #'+company-box-icons--elisp-fn

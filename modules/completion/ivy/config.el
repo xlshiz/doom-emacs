@@ -64,7 +64,6 @@ results buffer.")
         ivy-fixed-height-minibuffer t
         ivy-read-action-function #'ivy-hydra-read-action
         ivy-read-action-format-function #'ivy-read-action-format-columns
-        projectile-completion-system 'ivy
         ;; don't show recent files in switch-buffer
         ivy-use-virtual-buffers nil
         ;; ...but if that ever changes, show their full path
@@ -388,11 +387,11 @@ results buffer.")
   ;; REVIEW Remove when raxod502/prescient.el#102 is resolved
   (add-to-list 'ivy-sort-functions-alist '(ivy-resume))
   (setq ivy-prescient-sort-commands
-        '(:not swiper swiper-isearch ivy-switch-buffer
-          lsp-ivy-workspace-symbol ivy-resume ivy--restore-session
-          counsel-grep counsel-git-grep counsel-rg counsel-ag counsel-ack
-          counsel-fzf counsel-pt counsel-imenu counsel-yank-pop counsel-recentf
-          counsel-buffer-or-recentf counsel-outline counsel-jq)
+        '(:not swiper swiper-isearch ivy-switch-buffer lsp-ivy-workspace-symbol
+          ivy-resume ivy--restore-session counsel-grep counsel-git-grep
+          counsel-rg counsel-ag counsel-ack counsel-fzf counsel-pt counsel-imenu
+          counsel-yank-pop counsel-recentf counsel-buffer-or-recentf
+          counsel-outline counsel-org-goto counsel-jq)
         ivy-prescient-retain-classic-highlighting t)
   (defun +ivy-prescient-non-fuzzy (str)
     (let ((prescient-filter-method '(literal regexp)))

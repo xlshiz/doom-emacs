@@ -26,7 +26,7 @@ buffer.")
 (defvar +eshell-aliases
   '(("q"  "exit")           ; built-in
     ("f"  "find-file $1")
-    ("ff" "find-file $1")
+    ("ff" "find-file-other-window $1")
     ("d"  "dired $1")
     ("bd" "eshell-up $1")
     ("rg" "rg --color=always $*")
@@ -73,9 +73,7 @@ You should use `set-eshell-alias!' to change this.")
         eshell-prompt-function #'+eshell-default-prompt-fn
         ;; em-glob
         eshell-glob-case-insensitive t
-        eshell-error-if-no-glob t
-        ;; Shell config
-        eshell-term-name "xterm-256color")
+        eshell-error-if-no-glob t)
 
   ;; Consider eshell buffers real
   (add-hook 'eshell-mode-hook #'doom-mark-buffer-as-real-h)
