@@ -84,6 +84,7 @@
   ;; 为 'posframe, 速度很快并且菜单不会变形，不过需要用户
   ;; 手动安装 posframe 包。
   (setq pyim-page-tooltip 'posframe)
+  (setq pyim-indicator-list nil)
   ;; 选词框显示5个候选词
   (setq pyim-page-length 3)
   (setq pyim-dcache-directory (concat doom-cache-dir "pyim/dcache/"))
