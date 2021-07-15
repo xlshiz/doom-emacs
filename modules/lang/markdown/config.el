@@ -26,6 +26,10 @@ capture, the end position, and the output buffer.")
         markdown-gfm-additional-languages '("sh")
         markdown-make-gfm-checkboxes-buttons t
 
+        ;; HACK Due to jrblevin/markdown-mode#578, invoking `imenu' throws a
+        ;;      'wrong-type-argument consp nil' error if you use native-comp.
+        markdown-nested-imenu-heading-index (not (ignore-errors (native-comp-available-p)))
+
         ;; `+markdown-compile' offers support for many transpilers (see
         ;; `+markdown-compile-functions'), which it tries until one succeeds.
         markdown-command #'+markdown-compile
@@ -53,7 +57,8 @@ capture, the end position, and the output buffer.")
     (add-to-list 'org-src-lang-modes '("md" . markdown)))
 
   :config
-  (set-popup-rules! '(("^\\*edit-indirect " :size 0.3 :quit nil :select t :ttl nil)))
+  (set-flyspell-predicate! '(markdown-mode gfm-mode)
+    #'+markdown-flyspell-word-p)
   (set-lookup-handlers! '(markdown-mode gfm-mode)
     ;; `markdown-follow-thing-at-point' may open an external program or a
     ;; buffer. No good way to tell, so pretend it's async.
@@ -73,7 +78,7 @@ capture, the end position, and the output buffer.")
 
   ;; HACK Prevent mis-fontification of YAML metadata blocks in `markdown-mode'
   ;;      which occurs when the first line contains a colon in it. See
-  ;;      https://github.com/jrblevin/markdown-mode/issues/328.
+  ;;      jrblevin/markdown-mode#328.
   (defadvice! +markdown-disable-front-matter-fontification-a (&rest _)
     :override #'markdown-match-generic-metadata
     (ignore (goto-char (point-max))))
@@ -121,9 +126,6 @@ capture, the end position, and the output buffer.")
   :config
   (add-hook 'evil-markdown-mode-hook #'evil-normalize-keymaps)
   (map! :map evil-markdown-mode-map
-        :ni "C-j" #'ace-window
-        :n "gj"  #'evil-next-visual-line
-        :n "gk"  #'evil-previous-visual-line
         :n "TAB" #'markdown-cycle
         :n [backtab] #'markdown-shifttab
         :i "M-*" #'markdown-insert-list-item

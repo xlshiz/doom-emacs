@@ -722,8 +722,7 @@
       ;;; <leader> t --- toggle
       (:prefix-map ("t" . "toggle")
        :desc "Big mode"                     "b" #'doom-big-font-mode
-       (:when (featurep! :editor fill-column)
-        :desc "Fill Column Indicator"       "c" #'+fill-column/toggle)
+       :desc "Fill Column Indicator"       "c" #'+fill-column/toggle
        :desc "Flymake"                      "f" #'flymake-mode
        (:when (featurep! :tools checker)
         :desc "Flycheck"                   "f" #'flycheck-mode)
