@@ -11,4 +11,4 @@
 (package! pangu-spacing)
 (package! company-english-helper :recipe (:host github :repo "manateelazycat/company-english-helper"))
 (package! insert-translated-name :recipe (:host github :repo "manateelazycat/insert-translated-name"))
-(package! sis :recipe (:host github :repo "laishulu/emacs-smart-input-source"))
+(package! sis :pin "f2d4031711714b100ec81aac321917c40cf20dc9" :recipe (:host github :repo "laishulu/emacs-smart-input-source"))

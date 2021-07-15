@@ -100,6 +100,7 @@
   (setq company-box-show-single-candidate t
         company-box-backends-colors nil
         company-box-max-candidates 50
+        company-box-doc-enable nil
         company-box-icons-alist 'company-box-icons-all-the-icons
         company-box-icons-functions
         (cons #'+company-box-icons--elisp-fn

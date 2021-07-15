@@ -1,7 +1,7 @@
 ;;; editor/chinese/config.el -*- lexical-binding: t; no-byte-compile: t; -*-
 
 (use-package! sis
-  :after evil
+  :after-call doom-first-input-hook
   :init
   (setq sis-prefix-override-keys (list doom-leader-alt-key "C-c" "C-x" "C-h"))
   (setq sis-respect-evil-normal-escape nil)
