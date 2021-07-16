@@ -57,8 +57,7 @@ capture, the end position, and the output buffer.")
     (add-to-list 'org-src-lang-modes '("md" . markdown)))
 
   :config
-  (set-flyspell-predicate! '(markdown-mode gfm-mode)
-    #'+markdown-flyspell-word-p)
+  (set-popup-rules! '(("^\\*edit-indirect " :size 0.3 :quit nil :select t :ttl nil)))
   (set-lookup-handlers! '(markdown-mode gfm-mode)
     ;; `markdown-follow-thing-at-point' may open an external program or a
     ;; buffer. No good way to tell, so pretend it's async.
@@ -126,6 +125,9 @@ capture, the end position, and the output buffer.")
   :config
   (add-hook 'evil-markdown-mode-hook #'evil-normalize-keymaps)
   (map! :map evil-markdown-mode-map
+        :ni "C-j" #'ace-window
+        :n "gj"  #'evil-next-visual-line
+        :n "gk"  #'evil-previous-visual-line
         :n "TAB" #'markdown-cycle
         :n [backtab] #'markdown-shifttab
         :i "M-*" #'markdown-insert-list-item
