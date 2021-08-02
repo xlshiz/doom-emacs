@@ -369,14 +369,14 @@
 
       :desc "M-x"                   "SPC"  #'execute-extended-command
       :desc "Jump to bookmark"      "RET"  #'bookmark-jump
-      :desc "Alternate buffer"      "TAB"  #'+my/alternate-buffer-in-persp
+      :desc "Alternate buffer"      "TAB"  #'+default/alternate-buffer-in-persp
       :desc "Find everything"       "a"    #'snail
-      (:when (featurep! :config default +snails)
+      (:when (featurep! :editor search +snails)
        :desc "Find everything"      "a"    #'snails)
 
       ;;; <leader> b --- buffer
       (:prefix-map ("b" . "buffer")
-       :desc "Alternate buffer"           "TAB"  #'+my/alternate-buffer-in-persp
+       :desc "Alternate buffer"           "TAB"  #'+default/alternate-buffer-in-persp
        :desc "Toggle narrowing"            "-"   #'doom/toggle-narrow-buffer
        :desc "Previous buffer"             "["   #'previous-buffer
        :desc "Next buffer"                 "]"   #'next-buffer
@@ -639,8 +639,8 @@
         :desc "Project sidebar"              "p" #'+neotree/open
         :desc "Find file in project sidebar" "P" #'+neotree/find-this-file)
        (:when (featurep! :editor treemacs)
-        :desc "Project sidebar" "p" #'+treemacs/toggle
-        :desc "Find file in project sidebar" "P" #'treemacs-find-file)
+        :desc "Open project sidebar" "p" #'treemacs-select-window
+        :desc "Toggle project sidebar" "P" #'+treemacs/toggle)
        (:when (featurep! :term vterm)
         :desc "Toggle vterm popup"    "t" #'+vterm/toggle
         :desc "Open vterm here"       "T" #'+vterm/here)
@@ -650,7 +650,7 @@
 
       ;;; <leader> p --- project
       (:prefix-map ("p" . "project")
-       :desc "Search project"               "n" #'+my/evil-search-to-project
+       :desc "Search project"               "n" #'+default/evil-search-to-project
        :desc "Run shell in project"         "'" #'+vterm/here
        :desc "Browse project"               "." #'+default/browse-project
        :desc "Browse other project"         ">" #'doom/browse-in-other-project
@@ -743,7 +743,7 @@
 
       ;;; <leader> w --- window
       (:prefix-map ("w" . "window")
-       :desc "Alternate window"           "TAB" #'+my/alternate-window
+       :desc "Alternate window"           "TAB" #'+default/alternate-window
        :desc "Other window"               "w"   #'other-window
        (:when (featurep! :editor tabs)
         :desc "Awesome tab"                "t"   #'awesome-fast-switch/body)

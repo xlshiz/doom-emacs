@@ -1,4 +1,5 @@
 ;;; editor/search/autoload/snail.el -*- lexical-binding: t; -*-
+;;;###if (featurep! :completion ivy)
 
 ;;;###autoload
 (defun snail--project-files (&rest _)

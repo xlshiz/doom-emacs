@@ -46,7 +46,7 @@ If ARG (universal argument), runs `compile' from the current directory."
   (server-start))
 
 ;;;###autoload
-(defun +my/proxy()
+(defun +default/proxy()
   (interactive)
   ;; english font
   (setq url-proxy-services
@@ -55,7 +55,7 @@ If ARG (universal argument), runs `compile' from the current directory."
           ("https" . "127.0.0.1:8118"))))
 
 ;;;###autoload
-(defun +my/alternate-buffer-in-persp ()
+(defun +default/alternate-buffer-in-persp ()
   "Switch back and forth between current and last buffer in the
 current perspective."
   (interactive)
@@ -63,7 +63,7 @@ current perspective."
                           (switch-to-buffer (other-buffer (current-buffer) t))))
 
 ;;;###autoload
-(defun +my/alternate-window ()
+(defun +default/alternate-window ()
   "Switch back and forth between current and last window in the
 current frame."
   (interactive)

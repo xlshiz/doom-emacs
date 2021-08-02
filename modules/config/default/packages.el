@@ -7,11 +7,3 @@
 
 (unless (featurep! :editor evil)
   (package! expand-region :pin "4b8322774d9c1d8b64a0049d1dbbc1e7ce80c1a0"))
-
-(package! thing-edit :recipe (:host github :repo "manateelazycat/thing-edit"))
-(package! avy-thing-edit :recipe (:host github :repo "xlshiz/avy-thing-edit"))
-(package! imenu-list)
-(package! symbol-overlay)
-(package! color-rg :recipe (:host github :repo "manateelazycat/color-rg" :build (autoloads)))
-(when (featurep! +snails)
-  (package! snails :recipe (:host github :repo "xlshiz/snails" :files ("*.el" "*.sh") :build (autoloads))))

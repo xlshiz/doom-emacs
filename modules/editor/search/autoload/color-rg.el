@@ -1,7 +1,7 @@
 ;;; editor/search/autoload/color-rg.el -*- lexical-binding: t; -*-
 
 ;;;###autoload
-(defun +my/color-rg-jump-next-keyword ()
+(defun +search/color-rg-jump-next-keyword ()
   (interactive)
   (let* ((next-position (color-rg-find-next-position color-rg-regexp-position)))
     (if next-position
@@ -12,7 +12,7 @@
       (message "Reach to last line."))))
 
 ;;;###autoload
-(defun +my/color-rg-jump-prev-keyword ()
+(defun +search/color-rg-jump-prev-keyword ()
   (interactive)
   (let ((prev-match-pos
          (if (save-excursion (search-backward-regexp color-rg-regexp-position nil t))
@@ -35,6 +35,28 @@
       (message "Reach to first line."))))
 
 ;;;###autoload
+(defun +search/swiper-to-color-rg ()
+  (interactive)
+  (let ((search-text
+         (replace-regexp-in-string
+          "\n" ""
+          (replace-regexp-in-string
+           "\\\\_<" ""
+           (replace-regexp-in-string
+            "\\\\_>" ""
+            (replace-regexp-in-string "^.*Swiper: " "" (thing-at-point 'line)))))))
+    (ivy-quit-and-run (color-rg-search-input search-text (expand-file-name (buffer-file-name))))))
+
+;;;###autoload
+(defun +search/counsel-to-color-rg ()
+  (interactive)
+  (let ((search-text
+         (replace-regexp-in-string
+          "\n" ""
+          (replace-regexp-in-string "^.*Search project \\[.*\\]: " "" (thing-at-point 'line)))))
+    (ivy-quit-and-run (color-rg-search-input search-text default-directory))))
+
+;;;###autoload
 (defun evil-collection-color-rg-setup ()
   "Set up `evil' bindings for `color-rg'."
   (eval-when-compile (require 'evil-collection))
@@ -47,8 +69,8 @@
     "h" 'evil-backward-char
     "l" 'evil-forward-char
 
-    "n" '+my/color-rg-jump-next-keyword
-    "p" '+my/color-rg-jump-prev-keyword
+    "n" '+search/color-rg-jump-next-keyword
+    "p" '+search/color-rg-jump-prev-keyword
     "N" 'color-rg-jump-next-keyword
     "P" 'color-rg-jump-prev-keyword
     "H" 'color-rg-jump-next-file
