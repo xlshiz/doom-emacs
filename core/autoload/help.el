@@ -126,11 +126,12 @@ selection of all minor-modes, active or not."
                              (<= level depth))
                          (or (null tags)
                              (not (string-match-p ":TOC" tags))))
-                (let ((path (org-get-outline-path)))
+                (let ((path  (org-get-outline-path))
+                      (title (org-collect-keywords '("TITLE") '("TITLE"))))
                   (list (string-join
                          (list (string-join
                                 (append (when include-files
-                                          (list (or (+org-get-global-property "TITLE")
+                                          (list (or (cdr (assoc "TITLE" title))
                                                     (file-relative-name (buffer-file-name)))))
                                         path
                                         (when text
@@ -226,6 +227,8 @@ will be automatically appended to the result."
                   #'+ivy-file-search)
                  ((fboundp '+helm-file-search)
                   #'+helm-file-search)
+                 ((fboundp '+vertico-file-search)
+                  #'+vertico-file-search)
                  ((rgrep
                    (read-regexp
                     "Search for" (or initial-input 'grep-tag-default)
@@ -616,7 +619,7 @@ If prefix arg is present, refresh the cache."
               (insert "This package is configured in the following locations:")
               (dolist (location configs)
                 (insert "\n" indent)
-                (cl-destructuring-bind (file line _match)
+                (cl-destructuring-bind (file line _match &rest)
                     (split-string location ":")
                   (doom--help-insert-button location
                                             (expand-file-name file doom-emacs-dir)

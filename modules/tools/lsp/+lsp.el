@@ -58,6 +58,13 @@ about it (it will be logged to *Messages* however).")
   ;; REVIEW Remove this once this is fixed upstream.
   (add-to-list 'lsp-client-packages 'lsp-racket)
 
+  (add-hook! 'doom-escape-hook
+    (defun +lsp-signature-stop-maybe-h ()
+      "Close the displayed `lsp-signature'."
+      (when lsp-signature-mode
+        (lsp-signature-stop)
+        t)))
+
   (set-popup-rule! "^\\*lsp-help" :size 0.35 :quit t :select t)
   (set-lookup-handlers! 'lsp-mode
     :definition #'+lsp-lookup-definition-handler
@@ -85,13 +92,14 @@ about it (it will be logged to *Messages* however).")
           (lsp--info "Could not guess project root."))))
     #'+lsp-optimization-mode)
 
-  (add-hook! 'lsp-completion-mode-hook
-    (defun +lsp-init-company-backends-h ()
-      (when lsp-completion-mode
-        (set (make-local-variable 'company-backends)
-             (cons +lsp-company-backends
-                   (remove +lsp-company-backends
-                           (remq 'company-capf company-backends)))))))
+  (when (featurep! :completion company)
+    (add-hook! 'lsp-completion-mode-hook
+      (defun +lsp-init-company-backends-h ()
+        (when lsp-completion-mode
+          (set (make-local-variable 'company-backends)
+               (cons +lsp-company-backends
+                     (remove +lsp-company-backends
+                             (remq 'company-capf company-backends))))))))
 
   (defvar +lsp--deferred-shutdown-timer nil)
   (defadvice! +lsp-defer-server-shutdown-a (orig-fn &optional restart)

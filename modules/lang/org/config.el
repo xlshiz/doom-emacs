@@ -1,5 +1,8 @@
 ;;; lang/org/config.el -*- lexical-binding: t; -*-
 
+(defvar +org-babel-native-async-langs '(python)
+  "Languages that will use `ob-comint' instead of `ob-async' for `:async'.")
+
 (defvar +org-babel-mode-alist
   '((c . C)
     (cpp . C)
@@ -60,6 +63,9 @@ Is relative to `org-directory', unless it is absolute. Is used in Doom's default
 
 (defvar +org-habit-graph-window-ratio 0.3
   "The ratio of the consistency graphs relative to the window width")
+
+(defvar +org-startup-with-animated-gifs nil
+  "If non-nil, and the cursor is over a gif inline-image preview, animate it!")
 
 
 ;;
@@ -176,8 +182,25 @@ Is relative to `org-directory', unless it is absolute. Is used in Doom's default
   (defadvice! +org-display-link-in-eldoc-a (&rest _)
     "Display full link in minibuffer when cursor/mouse is over it."
     :before-until #'org-eldoc-documentation-function
-    (when-let (link (org-element-property :raw-link (org-element-context)))
-      (format "Link: %s" link)))
+    (when-let* ((context (org-element-context))
+                (path (org-element-property :path context)))
+      (pcase (org-element-property :type context)
+        ("kbd"
+         (format "%s %s"
+                 (propertize "Key sequence:" 'face 'bold)
+                 (propertize (+org-read-kbd-at-point path context)
+                             'face 'help-key-binding)))
+        ("doom-module"
+         (format "%s %s"
+                 (propertize "Doom module:" 'face 'bold)
+                 (propertize (+org-read-link-description-at-point path)
+                             'face 'org-priority)))
+        ("doom-package"
+         (format "%s %s"
+                 (propertize "Doom package:" 'face 'bold)
+                 (propertize (+org-read-link-description-at-point path)
+                             'face 'org-priority)))
+        (type (format "Link: %s" (org-element-property :raw-link context))))))
 
   ;; Automatic indent detection in org files is meaningless
   (add-to-list 'doom-detect-indentation-excluded-modes 'org-mode)
@@ -215,12 +238,16 @@ Is relative to `org-directory', unless it is absolute. Is used in Doom's default
   (after! ob
     (add-to-list 'org-babel-default-lob-header-args '(:sync)))
 
-  (defadvice! +org-babel-disable-async-if-needed-a (orig-fn &optional fn arg info params)
-    "Disable ob-async when leaving it on would cause errors or issues.
+  (defadvice! +org-babel-disable-async-maybe-a (orig-fn &optional fn arg info params)
+    "Use ob-comint where supported, disable async altogether where it isn't.
 
-Such as when exporting org documents or executing babel blocks with :session
-parameters (which ob-async does not support), in which case this advice forces
-these blocks to run synchronously.
+We have access to two async backends: ob-comint or ob-async, which have
+different requirements. This advice tries to pick the best option between them,
+falling back to synchronous execution otherwise. Without this advice, they die
+with an error; terrible UX!
+
+Note: ob-comint support will only kick in for languages listed in
+`+org-babel-native-async-langs'.
 
 Also adds support for a `:sync' parameter to override `:async'."
     :around #'ob-async-org-babel-execute-src-block
@@ -228,14 +255,24 @@ Also adds support for a `:sync' parameter to override `:async'."
         (funcall orig-fn fn arg info params)
       (let* ((info (or info (org-babel-get-src-block-info)))
              (params (org-babel-merge-params (nth 2 info) params)))
-        (cond ((or (assq :sync params)
-                   (not (assq :async params))
-                   (member (car info) ob-async-no-async-languages-alist))
-               (funcall fn arg info params))
-              ((not (member (cdr (assq :session params)) '("none" nil)))
-               (message "Org babel :: :session is incompatible with :async. Executing synchronously!")
-               nil)
-              ((funcall orig-fn fn arg info params))))))
+        (if (or (assq :sync params)
+                (not (assq :async params))
+                (member (car info) ob-async-no-async-languages-alist)
+                ;; ob-comint requires a :session, ob-async does not, so fall
+                ;; back to ob-async if no :session is provided.
+                (unless (member (alist-get :session params) '("none" nil))
+                  (unless (memq (let* ((lang (nth 0 info))
+                                       (lang (cond ((symbolp lang) lang)
+                                                   ((stringp lang) (intern lang)))))
+                                  (or (alist-get lang +org-babel-mode-alist)
+                                      lang))
+                                +org-babel-native-async-langs)
+                    (message "Org babel: %s :session is incompatible with :async. Executing synchronously!"
+                             (car info))
+                    (sleep-for 0.2))
+                  t))
+            (funcall fn arg info params)
+          (funcall orig-fn fn arg info params)))))
 
   (defadvice! +org-fix-newline-and-indent-in-src-blocks-a (&optional indent _arg _interactive)
     "Mimic `newline-and-indent' in src blocks w/ lang-appropriate indentation."
@@ -448,7 +485,7 @@ relative to `org-directory', unless it is an absolute path."
 
 
 (defun +org-init-custom-links-h ()
-  ;; Highlight broken file links
+  ;; Modify default file: links to colorize broken file links red
   (org-link-set-parameters
    "file"
    :face (lambda (path)
@@ -459,7 +496,7 @@ relative to `org-directory', unless it is an absolute path."
                'org-link
              '(warning org-link))))
 
-  ;; Add custom link types
+  ;; Additional custom links for convenience
   (pushnew! org-link-abbrev-alist
             '("github"      . "https://github.com/%s")
             '("youtube"     . "https://youtube.com/watch?v=%s")
@@ -475,6 +512,22 @@ relative to `org-directory', unless it is an absolute path."
   (+org-define-basic-link "doom" 'doom-emacs-dir)
   (+org-define-basic-link "doom-docs" 'doom-docs-dir)
   (+org-define-basic-link "doom-modules" 'doom-modules-dir)
+
+  ;; Add "lookup" links for packages and keystrings; useful for Emacs
+  ;; documentation -- especially Doom's!
+  (org-link-set-parameters
+   "kbd"
+   :follow (lambda (_) (minibuffer-message "%s" (+org-display-link-in-eldoc-a)))
+   :help-echo #'+org-read-kbd-at-point
+   :face 'help-key-binding)
+  (org-link-set-parameters
+   "doom-package"
+   :follow #'+org-link--doom-package-follow-fn
+   :face (lambda (_) '(:inherit org-priority :slant italic)))
+  (org-link-set-parameters
+   "doom-module"
+   :follow #'+org-link--doom-module-follow-fn
+   :face #'+org-link--doom-module-face-fn)
 
   ;; Allow inline image previews of http(s)? urls or data uris.
   ;; `+org-http-image-data-fn' will respect `org-display-remote-inline-images'.
@@ -567,6 +620,27 @@ mutating hooks on exported output, like formatters."
   ;; Open directory links in dired
   (add-to-list 'org-file-apps '(directory . emacs))
   (add-to-list 'org-file-apps '(remote . emacs))
+
+  ;; Open help:* links with helpful-* instead of describe-*
+  (advice-add #'org-link--open-help :around #'doom-use-helpful-a)
+
+  (defadvice! +org--show-parents-a (&optional arg)
+    "Show all headlines in the buffer, like a table of contents.
+With numerical argument N, show content up to level N."
+    :override #'org-content
+    (interactive "p")
+    (org-show-all '(headings drawers))
+    (save-excursion
+      (goto-char (point-max))
+      (let ((regexp (if (and (wholenump arg) (> arg 0))
+                        (format "^\\*\\{%d,%d\\} " (1- arg) arg)
+                      "^\\*+ "))
+            (last (point)))
+        (while (re-search-backward regexp nil t)
+          (when (or (not (wholenump arg))
+                    (= (org-current-level) arg))
+            (org-flag-region (line-end-position) last t 'outline))
+          (setq last (line-end-position 0))))))
 
   ;; Some uses of `org-fix-tags-on-the-fly' occur without a check on
   ;; `org-auto-align-tags', such as in `org-self-insert-command' and
@@ -685,6 +759,11 @@ between the two."
             #'+org-delete-backward-char-and-realign-table-maybe-h)
 
   (map! :map org-mode-map
+        ;; Recently, a [tab] keybind in `outline-mode-cycle-map' has begun
+        ;; overriding org's [tab] keybind in GUI Emacs. This is needed to undo
+        ;; that, and should probably be PRed to org.
+        [tab]        #'org-cycle
+
         "C-c C-S-l"  #'+org/remove-link
         "C-c C-i"    #'org-toggle-inline-images
         ;; textmate-esque newline insertion
@@ -717,12 +796,15 @@ between the two."
         (:when (featurep! :completion helm)
          "." #'helm-org-in-buffer-headings
          "/" #'helm-org-agenda-files-headings)
+        (:when (featurep! :completion vertico)
+         "." #'consult-org-heading
+         "/" #'consult-org-agenda)
         "A" #'org-archive-subtree
         "e" #'org-export-dispatch
         "f" #'org-footnote-new
         "h" #'org-toggle-heading
         "i" #'org-toggle-item
-        "I" #'org-toggle-inline-images
+        "I" #'org-id-get-create
         "n" #'org-store-link
         "o" #'org-set-property
         "q" #'org-set-tags-command
@@ -800,6 +882,9 @@ between the two."
          (:when (featurep! :completion helm)
           "g" #'helm-org-in-buffer-headings
           "G" #'helm-org-agenda-files-headings)
+         (:when (featurep! :completion vertico)
+          "g" #'consult-org-heading
+          "G" #'consult-org-agenda)
          "c" #'org-clock-goto
          "C" (cmd! (org-clock-goto 'select))
          "i" #'org-id-goto
@@ -1187,6 +1272,10 @@ compelling reason, so..."
   ;; Save target buffer after archiving a node.
   (setq org-archive-subtree-save-file-p t)
 
+  ;; Don't number headings with these tags
+  (setq org-num-face '(:inherit org-special-keyword :underline nil :weight bold)
+        org-num-skip-tags '("noexport" "nonum"))
+
   ;; Prevent modifications made in invisible sections of an org document, as
   ;; unintended changes can easily go unseen otherwise.
   (setq org-catch-invisible-edits 'smart)
@@ -1201,4 +1290,17 @@ compelling reason, so..."
     :before-while '(org-id-locations-save org-id-locations-load)
     (file-writable-p org-id-locations-file))
 
-  (add-hook 'org-open-at-point-functions #'doom-set-jump-h))
+  (add-hook 'org-open-at-point-functions #'doom-set-jump-h)
+
+  ;; Add the ability to play gifs, at point or throughout the buffer. However,
+  ;; 'playgifs' is stupid slow and there's not much I can do to fix it; use at
+  ;; your own risk.
+  (add-to-list 'org-startup-options '("inlinegifs" +org-startup-with-animated-gifs at-point))
+  (add-to-list 'org-startup-options '("playgifs"   +org-startup-with-animated-gifs t))
+  (add-hook! 'org-mode-local-vars-hook
+    (defun +org-init-gifs-h ()
+      (remove-hook 'post-command-hook #'+org-play-gif-at-point-h t)
+      (remove-hook 'post-command-hook #'+org-play-all-gifs-h t)
+      (pcase +org-startup-with-animated-gifs
+        (`at-point (add-hook 'post-command-hook #'+org-play-gif-at-point-h nil t))
+        (`t (add-hook 'post-command-hook #'+org-play-all-gifs-h nil t))))))

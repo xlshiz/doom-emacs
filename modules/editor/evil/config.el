@@ -470,6 +470,7 @@ directives. By default, this only recognizes C directives.")
       :v  "gp"    #'+evil/alt-paste
       :nv "g@"    #'+evil:apply-macro
       :nv "gc"    #'evilnc-comment-operator
+      :nv "gO"    #'imenu
       :nv "gx"    #'evil-exchange
       :nv "gy"    #'+evil:yank-unindented
       :n  "g="    #'evil-numbers/inc-at-pt
@@ -491,9 +492,12 @@ directives. By default, this only recognizes C directives.")
        :v  "gR"  #'+eval:replace-region
        ;; Restore these keybinds, since the blacklisted/overwritten gr/gR will
        ;; undo them:
+       (:after helpful
+        :map helpful-mode-map
+        :n "gr" #'helpful-update)
        (:after compile
-	:map (compilation-mode-map compilation-minor-mode-map)
-	:n "gr" #'recompile)
+        :map (compilation-mode-map compilation-minor-mode-map)
+        :n "gr" #'recompile)
        (:after dired
         :map dired-mode-map
         :n "gr" #'revert-buffer)

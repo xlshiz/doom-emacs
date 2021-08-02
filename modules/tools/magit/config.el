@@ -1,4 +1,4 @@
-;;; tools/magit/config.el -*- lexical-binding: t; no-byte-compile: t; -*-
+;;; tools/magit/config.el -*- lexical-binding: t; -*-
 
 (defvar +magit-open-windows-in-direction 'right
   "What direction to open new windows from the status buffer.
@@ -18,7 +18,7 @@ Only has an effect in GUI Emacs.")
 
 (use-package! magit
   :commands magit-file-delete
-  :defer-incrementally (dash f s with-editor git-commit package eieio lv transient)
+  :defer-incrementally (dash f s with-editor git-commit package eieio transient)
   :init
   (setq magit-auto-revert-mode nil)  ; we do this ourselves further down
   ;; Must be set early to prevent ~/.emacs.d/transient from being created
