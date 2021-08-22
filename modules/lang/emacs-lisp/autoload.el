@@ -191,7 +191,7 @@ https://emacs.stackexchange.com/questions/10230/how-to-indent-keywords-aligned"
          (load-path (append (list (doom-path "test")
                                   default-directory)
                             load-path))
-	 (buttercup-suites nil))
+         (buttercup-suites nil))
     (buttercup-run-discover)))
 
 ;;;###autoload
@@ -274,7 +274,7 @@ verbosity when editing a file in `doom-private-dir' or `doom-emacs-dir'."
     (goto-char (match-beginning 0))
     (and (stringp (plist-get (sexp-at-point) :pin))
          (search-forward ":pin" nil t)
-         (let ((start (re-search-forward "\"[^\"\n]\\{10\\}" nil t))
+         (let ((start (re-search-forward "\"[^\"\n]\\{12\\}" nil t))
                (finish (and (re-search-forward "\"" (line-end-position) t)
                             (match-beginning 0))))
            (when (and start finish)

@@ -39,6 +39,7 @@
       ert
       free-keys
       helm
+      help
       indent
       image
       kotlin-mode
@@ -251,10 +252,10 @@ and complains if a module is loaded too early (during startup)."
       (with-demoted-errors "evil-collection error: %s"
         (evil-collection-init (list module)))))
 
-  (defadvice! +evil-collection-disable-blacklist-a (orig-fn)
+  (defadvice! +evil-collection-disable-blacklist-a (fn)
     :around #'evil-collection-vterm-toggle-send-escape  ; allow binding to ESC
     (let (evil-collection-key-blacklist)
-      (funcall-interactively orig-fn)))
+      (funcall-interactively fn)))
 
   ;; These modes belong to packages that Emacs always loads at startup, causing
   ;; evil-collection and it's co-packages to all load immediately. We avoid this
@@ -280,9 +281,8 @@ and complains if a module is loaded too early (during startup)."
   (after! evil
     ;; Emacs loads these two packages immediately, at startup, which needlessly
     ;; convolutes load order for evil-collection-help.
-    (defer-feature! help help-mode)
-    (defer-feature! help-mode help-mode)
-
+    (add-transient-hook! 'help-mode
+      (+evil-collection-init 'help))
     (add-transient-hook! 'Buffer-menu-mode
       (+evil-collection-init '(buff-menu "buff-menu")))
     (add-transient-hook! 'calc-mode
