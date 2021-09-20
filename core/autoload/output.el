@@ -1,5 +1,6 @@
 ;;; core/autoload/output.el -*- lexical-binding: t; -*-
 
+;;;###autoload
 (defvar doom-output-ansi-alist
   '(;; fx
     (bold       1 :weight bold)
@@ -34,6 +35,7 @@
 This serves as the cipher for converting (COLOR ...) function calls in `print!'
 and `format!' into colored output, where COLOR is any car of this list.")
 
+;;;###autoload
 (defvar doom-output-class-alist
   `((color . doom--output-color)
     (class . doom--output-class)
@@ -77,12 +79,15 @@ and `format!' into colored output, where COLOR is any car of this list.")
 Any of these classes can be called like functions from within `format!' and
 `print!' calls, which will transform their input.")
 
+;;;###autoload
 (defvar doom-output-indent 0
   "Level to rigidly indent text returned by `format!' and `print!'.")
 
+;;;###autoload
 (defvar doom-output-indent-increment 2
   "Steps in which to increment `doom-output-indent' for consecutive levels.")
 
+;;;###autoload
 (defvar doom-output-backend
   (if doom-interactive-p 'text-properties 'ansi)
   "Determines whether to print colors with ANSI codes or with text properties.

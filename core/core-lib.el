@@ -215,8 +215,20 @@ See `eval-if!' for details on this macro's purpose."
 (defmacro fn! (arglist &rest body)
   "Returns (cl-function (lambda ARGLIST BODY...))
 The closure is wrapped in `cl-function', meaning ARGLIST will accept anything
-`cl-defun' will. "
+`cl-defun' will. Implicitly adds `&allow-other-keys' if `&key' is present in
+ARGLIST."
   (declare (indent defun) (doc-string 1) (pure t) (side-effect-free t))
+  ;; Don't complain about undeclared keys.
+  (when (memq '&key arglist)
+    (if (memq '&aux arglist)
+        (let (newarglist arg)
+          (while arglist
+            (setq arg (pop arglist))
+            (when (eq arg '&aux)
+              (push '&allow-other-keys newarglist))
+            (push arg newarglist))
+          (setq arglist (nreverse newarglist)))
+      (setq arglist (append arglist (list '&allow-other-keys)))))
   `(cl-function (lambda ,arglist ,@body)))
 
 (defmacro cmd! (&rest body)
@@ -366,16 +378,14 @@ This is a wrapper around `eval-after-load' that:
               ;; macros/packages.
               `(eval-after-load ',package ',(macroexp-progn body))))
     (let ((p (car package)))
-      (cond ((not (keywordp p))
-             `(after! (:and ,@package) ,@body))
-            ((memq p '(:or :any))
+      (cond ((memq p '(:or :any))
              (macroexp-progn
               (cl-loop for next in (cdr package)
                        collect `(after! ,next ,@body))))
             ((memq p '(:and :all))
-             (dolist (next (cdr package))
-               (setq body `((after! ,next ,@body))))
-             (car body))))))
+             (dolist (next (reverse (cdr package)) (car body))
+               (setq body `((after! ,next ,@body)))))
+            (`(after! (:and ,@package) ,@body))))))
 
 (defun doom--handle-load-error (e target path)
   (let* ((source (file-name-sans-extension target))
