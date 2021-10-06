@@ -115,16 +115,19 @@ Is relative to `org-directory', unless it is absolute. Is used in Doom's default
         org-fontify-whole-heading-line t
         org-hide-leading-stars t
         org-image-actual-width nil
-        org-imenu-depth 8
-        ;; Sub-lists should have different bullets
-        org-list-demote-modify-bullet '(("+" . "-") ("-" . "+") ("*" . "+") ("1." . "a."))
+        org-imenu-depth 6
         org-priority-faces
         '((?A . error)
           (?B . warning)
           (?C . success))
         org-startup-indented t
         org-tags-column 0
-        org-use-sub-superscripts '{})
+        org-use-sub-superscripts '{}
+        ;; `showeverything' is org's default, but it doesn't respect
+        ;; `org-hide-block-startup' (#+startup: hideblocks), archive trees,
+        ;; hidden drawers, or VISIBILITY properties. `nil' is equivalent, but
+        ;; respects these settings.
+        org-startup-folded nil)
 
   (setq org-refile-targets
         '((nil :maxlevel . 3)
@@ -305,7 +308,9 @@ Also adds support for a `:sync' parameter to override `:async'."
   (add-hook 'org-babel-after-execute-hook #'org-redisplay-inline-images)
 
   (after! python
-    (setq org-babel-python-command python-shell-interpreter))
+    (unless org-babel-python-command
+      (setq org-babel-python-command
+            (concat python-shell-interpreter " " python-shell-interpreter-args))))
 
   (after! ob-ditaa
     ;; TODO Should be fixed upstream
@@ -919,6 +924,7 @@ between the two."
         (:prefix ("s" . "tree/subtree")
          "a" #'org-toggle-archive-tag
          "b" #'org-tree-to-indirect-buffer
+         "c" #'org-clone-subtree-with-time-shift
          "d" #'org-cut-subtree
          "h" #'org-promote-subtree
          "j" #'org-move-subtree-down
@@ -1063,7 +1069,9 @@ compelling reason, so..."
         ;; Resume when clocking into task with open clock
         org-clock-in-resume t
         ;; Remove log if task was clocked for 0:00 (accidental clocking)
-        org-clock-out-remove-zero-time-clocks t)
+        org-clock-out-remove-zero-time-clocks t
+        ;; The default value (5) is too conservative.
+        org-clock-history-length 20)
   (add-hook 'kill-emacs-hook #'org-clock-save))
 
 
@@ -1204,6 +1212,7 @@ compelling reason, so..."
   (defvar org-directory nil)
   (defvar org-id-locations-file nil)
   (defvar org-attach-id-dir nil)
+  (defvar org-babel-python-command nil)
 
   (setq org-publish-timestamp-directory (concat doom-cache-dir "org-timestamps/")
         org-preview-latex-image-directory (concat doom-cache-dir "org-latex/")

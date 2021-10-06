@@ -108,10 +108,11 @@ Only has an effect in GUI Emacs.")
 
   ;; Clean up after magit by killing leftover magit buffers and reverting
   ;; affected buffers (or at least marking them as need-to-be-reverted).
-  (define-key magit-mode-map "q" nil)
-  (define-key magit-mode-map "Q" nil)
   (define-key magit-mode-map "q" #'+magit/quit)
   (define-key magit-mode-map "Q" #'+magit/quit-all)
+  (map! (:map magit-mode-map
+         :nv "q" #'+magit/quit
+         :nv "Q" #'+magit/quit-all))
 
   ;; Close transient with ESC
   (define-key transient-map [escape] #'transient-quit-one)

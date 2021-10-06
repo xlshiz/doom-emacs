@@ -17,7 +17,7 @@
   (let ((dir (doom-path doom-emacs-dir ".git/hooks"))
         (default-directory doom-emacs-dir))
     (make-directory dir 'parents)
-    (dolist (hook '("commit-msg"))
+    (dolist (hook '("commit-msg" "pre-push"))
       (let ((file (doom-path dir hook)))
         (with-temp-file file
           (insert "#!/usr/bin/env sh\n"
@@ -62,8 +62,9 @@
                     (string-blank-p summary))
             (cons 'error "Commit has no summary")))
 
-        (fn! (&key summary subject)
-          (and (stringp summary)
+        (fn! (&key type summary subject)
+          (and (not (eq type 'revert))
+               (stringp summary)
                (string-match-p "^[A-Z][^-]" summary)
                (not (string-match-p "\\(SPC\\|TAB\\|ESC\\|LFD\\|DEL\\|RET\\)" summary))
                (cons 'error (format "%S in summary is capitalized; do not capitalize the summary"
@@ -146,12 +147,14 @@
         (fn! (&key body)
           (with-temp-buffer
             (insert body)
-            (catch 'result
-              (let ((bump-re "^\\(?:https?://.+\\|[^/]+\\)/[^/]+@\\([a-z0-9]+\\)"))
-                (while (re-search-backward bump-re nil t)
-                  (when (/= (length (match-string 1)) 12)
-                    (throw 'result (cons 'error (format "Commit hash in %S must be 12 characters long"
-                                                        (match-string 0))))))))))
+            (let ((bump-re "\\<\\(?:https?://[^@]+\\|[^/]+\\)/[^/]+@\\([a-z0-9]+\\)")
+                  refs)
+              (while (re-search-backward bump-re nil t)
+                (when (/= (length (match-string 1)) 12)
+                  (push (match-string 0) refs)))
+              (when refs
+                (cons 'error (format "%d commit hash(s) not 12 characters long: %s"
+                                     (length refs) (string-join (nreverse refs) ", ")))))))
 
         ;; TODO Add bump validations for revert: type.
 
@@ -186,7 +189,37 @@
 
         ;; TODO Ensure your diff corraborates your SCOPE
 
-        ))
+        )
+  "A list of validator functions to run against a commit.
+
+Each function is N-arity and is passed a plist with the following keys:
+
+  :bang
+    (Boolean) If `t', the commit is declared to contain a breaking change.
+    e.g. 'refactor!: this commit breaks everything'
+  :body
+    (String) Contains the whole BODY of a commit message. This includes the
+    subject line (the first line) and the footer.
+  :refs
+    (List<String>) Contains a list of reference lines, i.e. All Fix, Ref, Close,
+    or Revert lines with a valid reference (an URL, commit hash, or valid Github
+    issue/PR reference).
+  :scopes
+    (List<Symbol>) Contains a list of scopes, as symbols. e.g. with
+    'feat(org,lsp): so on and so forth', this contains '(org lsp).
+  :subject
+    (String) Contains the whole first line of a commit message.
+  :summary
+    (String) Contains the summary following the type and scopes. e.g. In
+    'feat(org): fix X, Y, and Z' the summary is 'fix X, Y, and Z.
+  :type
+    (Symbol) The type of commit this is. E.g. `feat', `fix', `bump', etc.
+
+Each function should return nothing if there was no error, otherwise return a
+cons cell whose CAR is the type of incident as a symbol (one of `error' or
+`warn') and whose CDR is an explanation (string) for the result.
+
+Note: warnings are not considered failures.")
 
 (defun doom-cli--ci-hook-commit-msg (file)
   (with-temp-buffer
@@ -198,6 +231,39 @@
                               (if (re-search-forward "^# Please enter the commit message" nil t)
                                   (match-beginning 0)
                                 (point-max))))))))
+
+(defun doom-cli--ci-hook-pre-push (_remote _url)
+  (with-temp-buffer
+      (let ((z40 "0000000000000000000000000000000000000000")
+            line range errors)
+        (while (setq line (ignore-errors (read-from-minibuffer "")))
+          (catch 'continue
+            (cl-destructuring-bind (local-ref local-sha remote-ref remote-sha)
+                (split-string line " ")
+              (unless (or (string-match-p "^refs/heads/\\(master\\|main\\)$" remote-ref)
+                          (equal local-sha z40))
+                (throw 'continue t))
+              (setq
+               range (if (equal remote-sha z40)
+                         local-sha
+                       (format "%s..%s" remote-sha local-sha)))
+
+              (dolist (type '("WIP" "squash!" "fixup!" "FIXUP"))
+                (let ((commits
+                       (split-string
+                        (cdr (doom-call-process
+                              "git" "rev-list" "--grep" (concat "^" type) range))
+                        "\n" t)))
+                  (dolist (commit commits)
+                    (push (cons type commit) errors))))
+
+              (if (null errors)
+                  (print! (success "No errors during push"))
+                (print! (error "Aborting push due to lingering WIP, squash!, or fixup! commits"))
+                (print-group!
+                 (dolist (error errors)
+                   (print! (info "%s commit in %s" (car error) (cdr error)))))
+                (throw 'exit 1))))))))
 
 
 ;;
@@ -229,31 +295,32 @@
              (when (looking-at "^\\([a-zA-Z0-9_-]+\\)\\(!?\\)\\(?:(\\([^)]+\\))\\)?: \\([^\n]+\\)")
                (setq type (intern (match-string 1))
                      bang (equal (match-string 2) "!")
-                     scopes (ignore-errors (split-string (match-string 3) ","))
-                     summary (match-string 4)))))
-         (dolist (fn doom-cli-commit-rules)
-           (pcase (funcall fn
-                           :bang bang
-                           :body body
-                           :refs refs
-                           :scopes scopes
-                           :subject subject
-                           :summary summary
-                           :type type)
-             (`(,type . ,msg)
-              (push msg (if (eq type 'error) errors warnings)))))
-         (if (and (null errors) (null warnings))
-             (print! (success "%s %s") (substring (car commit) 0 7) subject)
-           (print! (start "%s %s") (substring (car commit) 0 7) subject))
-         (print-group!
-          (when errors
-            (cl-incf errors?)
-            (dolist (e (reverse errors))
-              (print! (error "%s" e))))
-          (when warnings
-            (cl-incf warnings?)
-            (dolist (e (reverse warnings))
-              (print! (warn "%s" e))))))))
+                     summary (match-string 4)
+                     scopes (ignore-errors (split-string (match-string 3) ","))))))
+         (unless (string-match-p "^\\(?:\\(?:fixup\\|squash\\)!\\|FIXUP\\|WIP\\) " subject)
+           (dolist (fn doom-cli-commit-rules)
+             (pcase (funcall fn
+                             :bang bang
+                             :body body
+                             :refs refs
+                             :scopes scopes
+                             :subject subject
+                             :summary summary
+                             :type type)
+               (`(,type . ,msg)
+                (push msg (if (eq type 'error) errors warnings)))))
+           (if (and (null errors) (null warnings))
+               (print! (success "%s %s") (substring (car commit) 0 7) subject)
+             (print! (start "%s %s") (substring (car commit) 0 7) subject))
+           (print-group!
+            (when errors
+              (cl-incf errors?)
+              (dolist (e (reverse errors))
+                (print! (error "%s" e))))
+            (when warnings
+              (cl-incf warnings?)
+              (dolist (e (reverse warnings))
+                (print! (warn "%s" e)))))))))
     (when (> warnings? 0)
       (print! (warn "Warnings: %d") warnings?))
     (when (> errors? 0)

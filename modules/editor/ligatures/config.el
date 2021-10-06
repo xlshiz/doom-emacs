@@ -81,14 +81,14 @@ font.")
 The car is the character ASCII number, cdr is a regex which will call
 `font-shape-gstring' when matched.
 
-Because of the underlying code in :editor ligatures module, the regex should match a
+Because of the underlying code in :ui ligatures module, the regex should match a
 string starting with the character contained in car.
 
 This variable is used only if you built Emacs with Harfbuzz on a version >= 28")
 
 (defvar +ligatures-in-modes
   '(not special-mode comint-mode eshell-mode term-mode vterm-mode Info-mode
-	elfeed-search-mode elfeed-show-mode)
+        elfeed-search-mode elfeed-show-mode)
   "List of major modes where ligatures should be enabled.
 
   If t, enable it everywhere (except `fundamental-mode').
@@ -105,7 +105,7 @@ controls where these are enabled.
   If t, enable it everywhere (except `fundamental-mode').
   If the first element is 'not, enable it in any mode besides what is listed.
   If nil, don't enable these extra ligatures anywhere (though it's more
-efficient to remove the `+extra' flag from the :editor ligatures module instead).")
+efficient to remove the `+extra' flag from the :ui ligatures module instead).")
 
 (defvar +ligatures--init-font-hook nil)
 
@@ -189,7 +189,7 @@ and cannot run in."
       (dolist (char-regexp +ligatures-composition-alist)
         (set-char-table-range
          +ligature--composition-table
-         (car char-regexp) `([,(concat "." (cdr char-regexp)) 0 font-shape-gstring])))
+         (car char-regexp) `([,(cdr char-regexp) 0 font-shape-gstring])))
       (set-char-table-parent +ligature--composition-table composition-function-table))))
 
  ;; Fallback ligature support for certain, patched fonts. Install them with
