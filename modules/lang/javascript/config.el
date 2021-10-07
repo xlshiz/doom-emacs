@@ -104,7 +104,7 @@
                          #'typescript-tsx-mode
                        #'typescript-mode)))
 
-  (when (featurep! :checkers syntax)
+  (when (featurep! :tools checker)
     (after! flycheck
       (flycheck-add-mode 'javascript-eslint 'web-mode)
       (flycheck-add-mode 'javascript-eslint 'typescript-mode)

@@ -413,14 +413,6 @@ directives. By default, this only recognizes C directives.")
 (map! :v  "@"     #'+evil:apply-macro
       :m  [C-i]   #'evil-jump-forward
 
-      ;; implement dictionary keybinds
-      ;; evil already defines 'z=' to `ispell-word' = correct word at point
-      (:when (featurep! :checkers spell)
-       :n  "zg"   #'+spell/add-word
-       :n  "zw"   #'+spell/remove-word
-       :m  "[s"   #'+spell/previous-error
-       :m  "]s"   #'+spell/next-error)
-
       ;; ported from vim-unimpaired
       :n  "] SPC" #'+evil/insert-newline-below
       :n  "[ SPC" #'+evil/insert-newline-above

@@ -11,7 +11,7 @@
 (package! overseer :pin "02d49f582e80e36b4334c9187801c5ecfb027789")
 (package! elisp-def :pin "dfca043ec0cbead67bd9c526cb009daf771d0fa2")
 (package! elisp-demos :pin "924b07d28e4f5b82f0e1377bcde800068f0a6d9d")
-(when (featurep! :tools syntax)
+(when (featurep! :tools checker)
   (package! flycheck-package :pin "ecd03f83790611888d693c684d719e033f69cb40")
   (package! flycheck-cask :pin "4b2ede6362ded4a45678dfbef1876faa42edbd58"))
 

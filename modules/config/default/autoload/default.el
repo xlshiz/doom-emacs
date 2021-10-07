@@ -63,7 +63,7 @@ current project. Otherwise list them for the current buffer"
               (featurep! :tools lsp)
               (bound-and-true-p lsp-mode))
          (consult-lsp-diagnostics arg))
-        ((and (featurep! :checkers syntax)
+        ((and (featurep! :tools checker)
               (bound-and-true-p flycheck-mode))
          (flycheck-list-errors))
         ((bound-and-true-p flymake-mode)
