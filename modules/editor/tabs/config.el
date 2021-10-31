@@ -111,3 +111,7 @@
     ("C-k" kill-current-buffer)
     ("C-S-k" awesome-tab-kill-other-buffers-in-current-group)
     ("q" nil "quit")))
+
+(use-package! sort-tab
+  ; :hook (doom-first-file . sort-tab-mode)
+  :defer t)
