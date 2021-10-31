@@ -115,11 +115,6 @@ This is ignored by ccls.")
   (after! ffap
     (add-to-list 'ffap-alist '(c-mode . ffap-c-mode))))
 
-(use-package! ggtags
-  :commands (ggtags-mode ggtags-find-tag-dwim))
-(use-package! counsel-gtags
-  :commands (counsel-gtags-dwim))
-
 (use-package! modern-cpp-font-lock
   :hook (c++-mode . modern-c++-font-lock-mode))
 
@@ -154,11 +149,11 @@ This is ignored by ccls.")
 ;; LSP
 
 (when (featurep! +lsp)
-  (add-hook! '(c-mode-local-vars-hook
-               c++-mode-local-vars-hook
-               objc-mode-local-vars-hook
-               cmake-mode-local-vars-hook)
-             #'lsp!)
+  ; (add-hook! '(c-mode-local-vars-hook
+               ; c++-mode-local-vars-hook
+               ; objc-mode-local-vars-hook
+               ; cmake-mode-local-vars-hook)
+             ; #'lsp!)
 
   (setq lsp-clients-clangd-args '("-j=3"
                                   "--background-index"
@@ -167,86 +162,4 @@ This is ignored by ccls.")
                                   "--header-insertion=never"
                                   "--header-insertion-decorators=0"))
   (unless (featurep! +ccls)
-    (after! lsp-clangd (set-lsp-priority! 'clangd 1)))
-
-  (when (featurep! :tools lsp +eglot)
-    ;; Map eglot specific helper
-    (map! :localleader
-          :after cc-mode
-          :map c++-mode-map
-          :desc "Show type inheritance hierarchy" "ct" #'+cc/eglot-ccls-inheritance-hierarchy)
-
-    ;; NOTE : This setting is untested yet
-    (after! eglot
-      ;; IS-MAC custom configuration
-      (when IS-MAC
-        (add-to-list 'eglot-workspace-configuration
-                     `((:ccls . ((:clang . ,(list :extraArgs ["-isystem/Library/Developer/CommandLineTools/usr/include/c++/v1"
-                                                              "-isystem/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
-                                                              "-isystem/usr/local/include"]
-                                                  :resourceDir (cdr (doom-call-process "clang" "-print-resource-dir"))))))))))))
-
-(use-package! ccls
-  :when (and (featurep! +lsp) (featurep! +ccls))
-  :unless (featurep! :tools lsp +eglot)
-  :hook (lsp-lens-mode . ccls-code-lens-mode)
-  :init
-  (defvar ccls-sem-highlight-method 'font-lock)
-  (after! projectile
-    (add-to-list 'projectile-globally-ignored-directories ".ccls-cache")
-    (add-to-list 'projectile-project-root-files-bottom-up ".ccls-root")
-    (add-to-list 'projectile-project-root-files-top-down-recurring "compile_commands.json"))
-  ;; Avoid using `:after' because it ties the :config below to when `lsp-mode'
-  ;; loads, rather than `ccls' loads.
-  (after! lsp-mode (require 'ccls))
-  :config
-  (set-evil-initial-state! 'ccls-tree-mode 'emacs)
-  ;; Disable `ccls-sem-highlight-method' if `lsp-enable-semantic-highlighting'
-  ;; is nil. Otherwise, it appears ccls bypasses it.
-  (setq-hook! 'lsp-configure-hook
-    ccls-sem-highlight-method (if lsp-enable-semantic-highlighting
-                                  ccls-sem-highlight-method))
-  (when (or IS-MAC IS-LINUX)
-    (setq ccls-initialization-options
-          `(:index (:trackDependency 1
-                    :threads ,(max 1 (/ (doom-system-cpus) 2))))))
-
-  (when IS-LINUX
-    (setq ccls-initialization-options
-          (append ccls-initialization-options
-                  `(:clang
-                    (:excludeArgs
-                     ;; Linux's gcc options. See ccls/wiki
-                     ["-falign-jumps=1" "-falign-loops=1" "-fconserve-stack" "-fmerge-constants" "-fno-code-hoisting" "-fno-schedule-insns" "-fno-var-tracking-assignments" "-fsched-pressure"
-                      "-mhard-float" "-mindirect-branch-register" "-mindirect-branch=thunk-inline" "-mpreferred-stack-boundary=2" "-mpreferred-stack-boundary=3" "-mpreferred-stack-boundary=4" "-mrecord-mcount" "-mindirect-branch=thunk-extern" "-mno-fp-ret-in-387" "-mskip-rax-setup"
-                      "--param=allow-store-data-races=0" "-Wa arch/x86/kernel/macros.s" "-Wa -"]
-                     :extraArgs ["--gcc-toolchain=/usr"])
-                    :completion
-                    (:include
-                     (:blacklist
-                      ["^/usr/(local/)?include/c\\+\\+/[0-9\\.]+/(bits|tr1|tr2|profile|ext|debug)/"
-                       "^/usr/(local/)?include/c\\+\\+/v1/"
-                       ]))
-                    :index (:trackDependency 1)))))
-
-  (when IS-MAC
-    (setq ccls-initialization-options
-          (append ccls-initialization-options
-                  `(:clang ,(list :extraArgs ["-isystem/Library/Developer/CommandLineTools/usr/include/c++/v1"
-                                              "-isystem/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
-                                              "-isystem/usr/local/include"]
-                                  :resourceDir (cdr (doom-call-process "clang" "-print-resource-dir")))))))
-
-  (map! :map (c-mode-map c++-mode-map)
-        (:localleader
-         :desc "Preprocess file"        "lp" #'ccls-preprocess-file
-         :desc "Reload cache & CCLS"    "lf" #'ccls-reload)
-        (:after lsp-ui-peek
-         (:localleader
-          :desc "Callers list"          "c" #'+cc/ccls-show-caller
-          :desc "Callees list"          "C" #'+cc/ccls-show-callee
-          :desc "References (address)"  "a" #'+cc/ccls-show-references-address
-          :desc "References (not call)" "f" #'+cc/ccls-show-references-not-call
-          :desc "References (Macro)"    "m" #'+cc/ccls-show-references-macro
-          :desc "References (Read)"     "r" #'+cc/ccls-show-references-read
-          :desc "References (Write)"    "w" #'+cc/ccls-show-references-write))))
+    (after! lsp-clangd (set-lsp-priority! 'clangd 1))))

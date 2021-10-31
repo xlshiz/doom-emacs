@@ -16,8 +16,6 @@
       :recipe (:host github :repo "Kaali/company-glsl")
       :pin "404cd0694ab34971f9c01eb22126cd2e7d3f9dc4")))
 
-(package! ggtags)
-(package! counsel-gtags)
 (package! citre)
 
 (if (featurep! +lsp)
