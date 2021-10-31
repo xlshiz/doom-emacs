@@ -18,6 +18,7 @@
 
 (package! ggtags)
 (package! counsel-gtags)
+(package! citre)
 
 (if (featurep! +lsp)
     (unless (featurep! :tools lsp +eglot)

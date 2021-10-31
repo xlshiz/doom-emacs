@@ -208,9 +208,11 @@ users).")
       shared-game-score-directory  (concat doom-etc-dir "shared-game-score/"))
 
 (defadvice! doom--write-to-sane-paths-a (fn &rest args)
-  "When enabling a disabled command, the `put' call is written to
-~/.emacs.d/init.el, which causes issues for Doom, so write it to the user's
-config.el instead."
+  "Write 3rd party files to `doom-etc-dir' to keep `user-emacs-directory' clean.
+
+Also writes `put' calls for saved safe-local-variables to `custom-file' instead
+of `user-init-file' (which `en/disable-command' in novice.el.gz is hardcoded to
+do)."
   :around #'en/disable-command
   :around #'locate-user-emacs-file
   (let ((user-emacs-directory doom-etc-dir)
@@ -270,6 +272,12 @@ config.el instead."
 --strict-tofu --priority='SECURE192:+SECURE128:-VERS-ALL:+VERS-TLS1.2:+VERS-TLS1.3' %h"
                     ;; compatibility fallbacks
                     "gnutls-cli -p %p %h"))
+
+;; Emacs stores `authinfo' in $HOME and in plain-text. Let's not do that, mkay?
+;; This file stores usernames, passwords, and other such treasures for the
+;; aspiring malicious third party.
+(setq auth-sources (list (concat doom-etc-dir "authinfo.gpg")
+                         "~/.authinfo.gpg"))
 
 ;; A second, case-insensitive pass over `auto-mode-alist' is time wasted, and
 ;; indicates misconfiguration (don't rely on case insensitivity for file names).
