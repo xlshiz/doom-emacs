@@ -21,6 +21,7 @@
   (custom-set-faces
     '(aw-leading-char-face (( t (:inherit font-lock-keyword-face :bold t :height 3.0))))
     '(aw-mode-line-face ((t (:inherit mode-line-emphasis :bold t)))))
+  (push "*sort-tab*" aw-ignored-buffers)
   (setq aw-scope 'frame
         aw-background t))
 

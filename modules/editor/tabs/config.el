@@ -113,5 +113,7 @@
     ("q" nil "quit")))
 
 (use-package! sort-tab
-  ; :hook (doom-first-file . sort-tab-mode)
-  :defer t)
+  :defer t
+  :config
+  (setq sort-tab-height 20)
+  (sort-tab-mode t))
