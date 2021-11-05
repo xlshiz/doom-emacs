@@ -128,7 +128,7 @@
       :i    "C-b"        #'backward-char
       :n    "C-t"        #'pop-tag-mark
       ;; vterm
-      :ni   "M-n"       #'+vterm/toggle
+      :ni   "M-t"       #'+vterm/toggle
       :ni   [f5]        #'+vterm/toggle)
 
 ;;
