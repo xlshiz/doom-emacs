@@ -48,7 +48,7 @@ Accapted value types can be one or more of ref, hash, url, username, or name.")
   '((ref      . "^\\(https?://[^ ]+\\|[^/]+/[^/]+\\)?#[0-9]+$")
     (hash     . "^\\(https?://[^ ]+\\|[^/]+/[^/]+@\\)?[a-z0-9]\\{12\\}$")
     (url      . "^https?://")
-    (name     . "^[a-zA-Z0-9-_ ]+<[^@]+@[^.]+\\.[^>]+>$")
+    (name     . "^[a-zA-Z0-9-_ \\.]+<[^@]+@[^.]+\\.[^>]+>$")
     (username . "^@[^a-zA-Z0-9_-]+$"))
   "An alist of valid trailer keys and their accepted value types.
 
@@ -67,10 +67,11 @@ Accapted value types can be one or more of ref, hash, url, username, or name.")
                      scope)
             (user-error "%s commits should never have a scope" type)))
         (fn! (scope _)
-          (doom-glob doom-modules-dir
-                     (if (string-prefix-p ":" scope)
-                         (format "%s" (substring scope 1))
-                       (format "*/%s" scope)))))
+          (seq-find (doom-rpartial
+                     #'doom-glob (if (string-prefix-p ":" scope)
+                                     (format "%s" (substring scope 1))
+                                   (format "*/%s" scope)))
+                    doom-modules-dirs)))
   "A list of valid commit scopes as strings or functions.
 
 Functions should take two arguments: a single scope (symbol) and a commit plist
@@ -88,9 +89,9 @@ representing the current commit being checked against. See
           (let ((len (length subject)))
             (cond ((<= len 10)
                    (fail! "Subject is too short (<10) and should be more descriptive"))
+                  ((memq type '(bump revert)))
                   ((<= len 20)
                    (warn! "Subject is short (<20); are you sure it's descriptive enough?"))
-                  ((memq type '(bump revert)))
                   ((> len 72)
                    (fail! "Subject is %d characters, above the 72 maximum"
                           len))
@@ -194,7 +195,6 @@ representing the current commit being checked against. See
                        (length refs) (string-join (nreverse refs) ", "))))))
 
         ;; TODO Add bump validations for revert: type.
-
         (fn! (&key body trailers)
           "Validate commit trailers."
           (let* ((keys   (mapcar #'car doom-cli-commit-trailer-keys))
@@ -219,7 +219,8 @@ representing the current commit being checked against. See
                        (truncate-string-to-width (string-trim line) 16 nil nil "…")
                        (match-string 1 line))))
             (pcase-dolist (`(,key . ,value) trailers)
-              (if (string-match-p " " value)
+              (if (and (not (memq 'name (cdr (assoc key doom-cli-commit-trailer-keys))))
+                       (string-match-p " " value))
                   (fail! "Found %S, but only one value allowed per trailer"
                          (truncate-string-to-width (concat key ": " value) 20 nil nil "…"))
                 (when-let (allowed-types (cdr (assoc key doom-cli-commit-trailer-keys)))
@@ -374,18 +375,18 @@ Note: warnings are not considered failures.")
        (let* ((commit   (doom-cli--parse-commit commitmsg))
               (shortref (substring ref 0 7))
               (subject  (plist-get commit :subject)))
-         (letf! ((defun skip! (reason &rest args)
-                   (print! (warn "Skipped because: %s") (apply #'format reason args))
-                   (cl-return-from 'linter))
-                 (defun warn! (reason &rest args)
-                   (cl-incf warnings)
-                   (print! (warn "%s") (apply #'format reason args)))
-                 (defun fail! (reason &rest args)
-                   (cl-incf failures)
-                   (print! (error "%s") (apply #'format reason args))))
-           (print! (start "%s %s") shortref subject)
-           (print-group!
-            (cl-block 'linter
+         (cl-block 'linter
+           (letf! ((defun skip! (reason &rest args)
+                     (print! (warn "Skipped because: %s") (apply #'format reason args))
+                     (cl-return-from 'linter))
+                   (defun warn! (reason &rest args)
+                     (cl-incf warnings)
+                     (print! (warn "%s") (apply #'format reason args)))
+                   (defun fail! (reason &rest args)
+                     (cl-incf failures)
+                     (print! (error "%s") (apply #'format reason args))))
+             (print! (start "%s %s") shortref subject)
+             (print-group!
               (mapc (doom-rpartial #'apply commit)
                     doom-cli-commit-rules)))))))
     (let ((issues (+ warnings failures)))
