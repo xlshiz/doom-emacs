@@ -262,25 +262,24 @@
         :n "s-9"   #'+workspace/switch-to-8
         :n "s-0"   #'+workspace/switch-to-final))
       (:when (featurep! :editor tabs)
-       (:after awesome-tab
-        :ni "M-j"       #'awesome-tab-ace-jump
-        :ni "M-h"       #'awesome-tab-backward
-        :ni "M-l"       #'awesome-tab-forward)
+       :ni "M-j"       #'+tabs/ace-jump
+       :ni "M-h"       #'+tabs/prev
+       :ni "M-l"       #'+tabs/next
        (:after org
         :map org-mode-map
-        :ni "M-j"       #'awesome-tab-ace-jump
-        :ni "M-h"       #'awesome-tab-backward
-        :ni "M-l"       #'awesome-tab-forward)
+        :ni "M-j"       #'+tabs/ace-jump
+        :ni "M-h"       #'+tabs/prev
+        :ni "M-l"       #'+tabs/next)
        (:after evil-org
         :map evil-org-mode-map
-        :ni "M-j"       #'awesome-tab-ace-jump
-        :ni "M-h"       #'awesome-tab-backward
-        :ni "M-l"       #'awesome-tab-forward)
+        :ni "M-j"       #'+tabs/ace-jump
+        :ni "M-h"       #'+tabs/prev
+        :ni "M-l"       #'+tabs/next)
        (:after evil-markdown
         :map evil-markdown-mode-map
-        :ni "M-j"       #'awesome-tab-ace-jump
-        :ni "M-h"       #'awesome-tab-backward
-        :ni "M-l"       #'awesome-tab-forward)
+        :ni "M-j"       #'+tabs/ace-jump
+        :ni "M-h"       #'+tabs/prev
+        :ni "M-l"       #'+tabs/next)
        (:after info
         :map Info-mode-map
         :ni "C-j"       #'ace-window)))
@@ -846,7 +845,7 @@
        :desc "Alternate window"           "TAB" #'+default/alternate-window
        :desc "Other window"               "w"   #'other-window
        (:when (featurep! :editor tabs)
-        :desc "Awesome tab"                "t"   #'awesome-fast-switch/body)
+        :desc "Tab hydra"                 "t"   #'tabs-fast-switch/body)
        :desc "Split window right"         "v"   #'split-window-right
        :desc "Split window right"         "|"   #'split-window-right
        :desc "Split window below"         "s"   #'split-window-below

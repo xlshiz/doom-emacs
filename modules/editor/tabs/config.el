@@ -1,6 +1,7 @@
 ;;; editor/tabs/config.el -*- lexical-binding: t; -*-
 
 (use-package! awesome-tab
+  :unless (featurep! +sort)
   :hook (doom-first-file . awesome-tab-mode)
   :init
   (setq awesome-tab-display-icon t)
@@ -87,7 +88,7 @@
   (setq awesome-tab-buffer-groups-function #'+tabs-buffer-groups-fn
         awesome-tab-hide-tab-function #'+tabs-hide-tab)
 
-  (defhydra awesome-fast-switch (:hint nil)
+  (defhydra tabs-fast-switch (:hint nil)
     "
     ^^^^Fast Move             ^^^^Tab                    ^^Search            ^^Misc
    -^^^^--------------------+-^^^^---------------------+-^^----------------+-^^---------------------------
@@ -113,7 +114,24 @@
     ("q" nil "quit")))
 
 (use-package! sort-tab
-  :defer t
+  :when (featurep! +sort)
+  :defer 0.2
   :config
+  (defhydra tabs-fast-switch (:hint nil)
+    "
+    ^^^^Tab                    ^^Misc
+   -^^^^---------------------+-^^---------------------------
+    _C-a_^^     select first | _C-k_    close tab
+    _C-e_^^     select last  | _C-j_^^  ace jump
+    _h_   _l_  switch tab    | ^^
+   -^^^^---------------------+-^^---------------------------
+  "
+    ("h" sort-tab-select-prev-tab)
+    ("l" sort-tab-select-next-tab)
+    ("C-a" sort-tab-select-first-tab)
+    ("C-e" sort-tab-select-last-tab)
+    ("C-k" sort-tab-close-current-tab)
+    ("C-j" awesome-tab-ace-jump)
+    ("q" nil "quit"))
   (setq sort-tab-height 20)
   (sort-tab-mode t))
