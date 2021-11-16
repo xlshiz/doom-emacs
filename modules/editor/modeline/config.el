@@ -3,9 +3,12 @@
 (when (featurep! +light)
   (load! "+light"))
 
+(when (featurep! +mini)
+  (load! "+mini"))
+
 
 (use-package! doom-modeline
-  :unless (featurep! +light)
+  :unless (or (featurep! +light) (featurep! +mini))
   :hook (after-init . doom-modeline-mode)
   :hook (doom-modeline-mode . size-indication-mode) ; filesize in modeline
   :hook (doom-modeline-mode . column-number-mode)   ; cursor column in modeline
