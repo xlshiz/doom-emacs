@@ -3,4 +3,8 @@
 ;; Warning: this is still a WIP!
 
 (use-package! awesome-tray
-  :hook (after-init . awesome-tray-mode))
+  :hook (after-init . awesome-tray-mode)
+  :config
+  (setq awesome-tray-active-modules
+        '("evil" "buffer-name"  "location" "mode-name" "git"))
+  )
