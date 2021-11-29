@@ -118,7 +118,7 @@
   :defer 0.2
   :config
   (window-divider-mode -1)
-  (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
+  (setq uniquify-buffer-name-style 'forward)
   (defhydra tabs-fast-switch (:hint nil)
     "
     ^^^^Tab                    ^^Misc
