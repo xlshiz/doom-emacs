@@ -4,7 +4,7 @@
 (package! pinyinlib.el :recipe (:host github :repo "xlshiz/pinyinlib.el"))
 (package! ace-pinyin :recipe (:host github :repo "xlshiz/ace-pinyin"))
 (package! evil-pinyin :recipe (:host github :repo "laishulu/evil-pinyin"))
-(package! pyim :pin "bacb6251e6f3ca1910fce6f8b8098750a6f85428")
+(package! pyim :pin "0e8c1c5ab5a1fc2015036e6ef0e6147b7e1dc225")
 (if (featurep! +rime)
     (package! liberime :pin "8d4d1d4f2924dc560bce1d79680df36dcc086d49" :recipe (:host github :repo "merrickluo/liberime" :files ("CMakeLists.txt" "Makefile" "src" "liberime*.el" "liberime.el")))
   (package! pyim-basedict))
