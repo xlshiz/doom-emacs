@@ -301,11 +301,10 @@
        :v  "M-D"   #'evil-multiedit-match-and-prev
        :nv "C-M-d" #'evil-multiedit-restore
        (:after evil-multiedit
-        (:map evil-multiedit-state-map
-         "M-d"    #'evil-multiedit-match-and-next
-         "M-D"    #'evil-multiedit-match-and-prev
-         "RET"    #'evil-multiedit-toggle-or-restrict-region
-         [return] #'evil-multiedit-toggle-or-restrict-region))))
+        (:map evil-multiedit-mode-map
+         :nv "M-d" #'evil-multiedit-match-and-next
+         :nv "M-D" #'evil-multiedit-match-and-prev
+         [return]  #'evil-multiedit-toggle-or-restrict-region))))
 
 ;;; :tools
 (when (featurep! :tools eval)
@@ -587,7 +586,7 @@
        :desc "Current file name"             "f"   #'+default/insert-file-path
        :desc "Current file path"             "F"   (cmd!! #'+default/insert-file-path t)
        :desc "Evil ex path"                  "p"   (cmd! (evil-ex "R!echo "))
-       :desc "From evil register"            "r"   #'evil-ex-registers
+       :desc "From evil register"            "r"   #'evil-show-registers
        :desc "Snippet"                       "s"   #'yas-insert-snippet
        :desc "Unicode"                       "u"   #'insert-char
        :desc "From clipboard"                "y"   #'+default/yank-pop)
@@ -640,7 +639,7 @@
        :desc "Org agenda"                   "a" #'org-agenda
        (:when (featurep! :tools biblio)
         :desc "Bibliographic entries"        "b"
-        (cond ((featurep! :completion vertico)  #'bibtex-actions-open-entry)
+        (cond ((featurep! :completion vertico)  #'citar-open-entry)
               ((featurep! :completion ivy)      #'ivy-bibtex)
               ((featurep! :completion helm)     #'helm-bibtex)))
 

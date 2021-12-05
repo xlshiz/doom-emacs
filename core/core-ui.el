@@ -309,7 +309,7 @@ windows, switch to `doom-fallback-buffer'. Otherwise, delegate to original
 (setq resize-mini-windows 'grow-only)
 
 ;; Typing yes/no is obnoxious when y/n will do
-(fset #'yes-or-no-p #'y-or-n-p)
+(advice-add #'yes-or-no-p :override #'y-or-n-p)
 
 ;; Try to keep the cursor out of the read-only portions of the minibuffer.
 (setq minibuffer-prompt-properties '(read-only t intangible t cursor-intangible t face minibuffer-prompt))
@@ -648,7 +648,7 @@ windows, switch to `doom-fallback-buffer'. Otherwise, delegate to original
   (defun doom-is-childframes-p ()
     "`whitespace-mode' inundates child frames with whitespace markers, so
 disable it to fix all that visual noise."
-    (frame-parameter nil 'parent-frame))
+    (null (frame-parameter nil 'parent-frame)))
   (add-function :before-while whitespace-enable-predicate #'doom-is-childframes-p))
 
 (provide 'core-ui)

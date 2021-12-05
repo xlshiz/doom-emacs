@@ -4,11 +4,10 @@
   FOLLOWING CRITERIA:
 
   - [ ] It targets the develop branch
-  - [ ] I've searched for similar pull requests and found nothing
-  - [ ] This change is NOT in Doom's do-not-PR list: https://doomemacs.org/d/do-not-pr
-  - [ ] If I've bumped any packages, I've done so according to https://doomemacs.org/d/how2bump
-  - [ ] I've linked any relevant issues and PRs below
-  - [ ] All my commit messages are descriptive and distinct
+  - [ ] No other pull requests exist for this issue
+  - [ ] The issue is NOT in Doom's do-not-PR list: https://gist.github.com/hlissner/bb6365626d825aeaf5e857b1c03c9837
+  - [ ] Any relevant issues and PRs have been linked to
+  - [ ] Commit messages conform to our conventions: https://gist.github.com/hlissner/4d78e396acb897d9b2d8be07a103a854
 
 -->
 

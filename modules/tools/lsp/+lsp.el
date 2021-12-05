@@ -65,7 +65,7 @@ about it (it will be logged to *Messages* however).")
         (lsp-signature-stop)
         t)))
 
-  (set-popup-rule! "^\\*lsp-help" :size 0.35 :quit t :select t)
+  (set-popup-rule! "^\\*lsp-\\(help\\|install\\)" :size 0.35 :quit t :select t)
   (set-lookup-handlers! 'lsp-mode
     :definition #'+lsp-lookup-definition-handler
     :references #'+lsp-lookup-references-handler
@@ -201,10 +201,7 @@ instead is more sensible."
         lsp-ui-sideline-show-hover nil
         ;; Re-enable icon scaling (it's disabled by default upstream for Emacs
         ;; 26.x compatibility; see emacs-lsp/lsp-ui#573)
-        lsp-ui-sideline-actions-icon lsp-ui-sideline-actions-icon-default
-        ;; REVIEW Temporarily disabled, due to immense slowness on every
-        ;;        keypress. See emacs-lsp/lsp-ui#613
-        lsp-ui-doc-enable nil)
+        lsp-ui-sideline-actions-icon lsp-ui-sideline-actions-icon-default)
 
   (map! :map lsp-ui-peek-mode-map
         "j"   #'lsp-ui-peek--select-next
