@@ -22,8 +22,8 @@
 
 
   :config
-  (set-popup-rule! "^\\*vterm" :size 0.25 :vslot -4 :select t :quit nil :ttl 0)
-  (set-popup-rule! "^\\*doom:vterm" :size 0.25 :vslot -4 :select t :quit nil :ttl 0)
+  ; (set-popup-rule! "^\\*vterm" :size 0.25 :vslot -4 :select t :quit nil :ttl 0)
+  ; (set-popup-rule! "^\\*doom:vterm" :size 0.25 :vslot -4 :select t :quit nil :ttl 0)
 
   ;; "C-j" to ace-window
   (add-to-list 'vterm-keymap-exceptions "C-j")

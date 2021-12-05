@@ -10,7 +10,7 @@
     citre-project-root-function #'projectile-project-root
     citre-default-create-tags-file-location 'project-cache
     citre-use-project-root-when-creating-tags t
-    citre-peek-fill-fringe nil
+    ; citre-peek-fill-fringe nil
     citre-prompt-language-for-ctags-command t)
   (map! (:after citre-peek :map citre-peek-keymap
           "M-n"     #'citre-peek-next-line
