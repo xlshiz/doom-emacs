@@ -729,8 +729,8 @@
         :desc "Project sidebar"              "p" #'+neotree/open
         :desc "Find file in project sidebar" "P" #'+neotree/find-this-file)
        (:when (featurep! :editor treemacs)
-        :desc "Open project sidebar" "p" #'treemacs-select-window
-        :desc "Toggle project sidebar" "P" #'+treemacs/toggle)
+        :desc "Open project sidebar" "P" #'treemacs-select-window
+        :desc "Toggle project sidebar" "p" #'+treemacs/toggle)
        (:when (featurep! :term vterm)
         :desc "Toggle vterm popup"    "t" #'+vterm/toggle
         :desc "Open vterm here"       "T" #'+vterm/here)
