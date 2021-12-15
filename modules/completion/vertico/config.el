@@ -157,7 +157,7 @@ orderless."
          ("C-x C-j" . consult-dir-jump-file)))
 
 (use-package! consult-flycheck
-  :when (featurep! :checkers syntax)
+  :when (featurep! :tools checker)
   :after (consult flycheck))
 
 
@@ -185,7 +185,6 @@ orderless."
            (remq #'embark-which-key-indicator embark-indicators)))
       (apply fn args)))
   (cl-nsubstitute #'+vertico-embark-which-key-indicator #'embark-mixed-indicator embark-indicators)
-  (add-to-list 'embark-indicators #'+vertico-embark-vertico-indicator)
   ;; add the package! target finder before the file target finder,
   ;; so we don't get a false positive match.
   (let ((pos (or (cl-position
@@ -207,7 +206,7 @@ orderless."
          :desc "Open target with sudo" "s" #'doom/sudo-find-file
          (:when (featurep! :tools magit)
           :desc "Open magit-status of target" "g"   #'+vertico/embark-magit-status)
-         (:when (featurep! :ui workspaces)
+         (:when (featurep! :editor workspaces)
           :desc "Open in new workspace" "TAB" #'+vertico/embark-open-in-new-workspace))))
 
 
