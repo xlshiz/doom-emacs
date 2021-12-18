@@ -9,11 +9,11 @@
   :init
   (setq company-minimum-prefix-length 2
         company-tooltip-limit 14
-        company-show-numbers t
         company-tooltip-align-annotations t
         company-require-match 'never
         company-global-modes
         '(not erc-mode
+              circe-mode
               message-mode
               help-mode
               gud-mode
@@ -90,6 +90,7 @@
 ;;; Packages
 
 (after! company-files
+  ;; Fix `company-files' completion for org file:* links
   (add-to-list 'company-files--regexps "file:\\(\\(?:\\.\\{1,2\\}/\\|~/\\|/\\)[^\]\n]*\\)"))
 
 
@@ -100,8 +101,9 @@
   (setq company-box-show-single-candidate t
         company-box-backends-colors nil
         company-box-max-candidates 50
-        company-box-doc-enable nil
         company-box-icons-alist 'company-box-icons-all-the-icons
+        ;; Move company-box-icons--elisp to the end, because it has a catch-all
+        ;; clause that ruins icons from other backends in elisp buffers.
         company-box-icons-functions
         (cons #'+company-box-icons--elisp-fn
               (delq 'company-box-icons--elisp
