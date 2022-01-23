@@ -7,12 +7,6 @@
   "The backends to prepend to `company-backends' in `lsp-mode' buffers.
 Can be a list of backends; accepts any value `company-backends' accepts.")
 
-(defvar +lsp-prompt-to-install-server t
-  "If non-nil, prompt to install a server if no server is present.
-
-If set to `quiet', suppress the install prompt and don't visibly inform the user
-about it (it will be logged to *Messages* however).")
-
 
 ;;
 ;;; Packages
@@ -127,24 +121,7 @@ server getting expensively restarted when reverting buffers."
                        (+lsp-optimization-mode -1))))
              lsp--cur-workspace))))
 
-  (defadvice! +lsp-dont-prompt-to-install-servers-maybe-a (fn &rest args)
-    :around #'lsp
-    (when (buffer-file-name)
-      (require 'lsp-mode)
-      (lsp--require-packages)
-      (if (or (lsp--filter-clients
-               (-andfn #'lsp--matching-clients?
-                       #'lsp--server-binary-present?))
-              (not (memq +lsp-prompt-to-install-server '(nil quiet))))
-          (apply fn args)
-        ;; HACK `lsp--message' overrides `inhibit-message', so use `quiet!'
-        (let ((doom-debug-p
-               (or doom-debug-p
-                   (not (eq +lsp-prompt-to-install-server 'quiet)))))
-          (doom-shut-up-a #'lsp--info "No language server available for %S"
-                          major-mode)))))
-
-  (when (featurep! :editor modeline +light)
+  (when (featurep! :ui modeline +light)
     (defvar-local lsp-modeline-icon nil)
 
     (add-hook! '(lsp-before-initialize-hook

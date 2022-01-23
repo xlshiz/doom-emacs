@@ -192,6 +192,7 @@ ensure it is built when we actually use Forge."
 
 
 (use-package! code-review
+  :when (featurep! +forge)
   :after magit
   :init
   ;; TODO This needs to either a) be cleaned up or better b) better map things
@@ -236,6 +237,9 @@ ensure it is built when we actually use Forge."
   ;; q is enough; ESC is way too easy for a vimmer to accidentally press,
   ;; especially when traversing modes in magit buffers.
   (evil-define-key* 'normal magit-status-mode-map [escape] nil)
+
+  (after! code-review
+    (undefine-key! code-review-mode-map "M-1" "M-2" "M-3" "M-4" "1" "2" "3" "4" "0"))
 
   ;; Some extra vim-isms I thought were missing from upstream
   (evil-define-key* '(normal visual) magit-mode-map

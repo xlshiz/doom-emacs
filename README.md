@@ -5,7 +5,7 @@
 [Install](#install) • [Documentation] • [FAQ] • [Screenshots] • [Contribute](#contribute)
 
 ![Made with Doom Emacs](https://img.shields.io/github/tag/hlissner/doom-emacs.svg?style=flat-square&label=release&color=58839b)
-![Minimum Emacs version supported: 26.3](https://img.shields.io/badge/Emacs-26.3+-blueviolet.svg?style=flat-square&logo=GNU%20Emacs&logoColor=white)
+![Minimum Emacs version supported: 27.1](https://img.shields.io/badge/Emacs-27.1+-blueviolet.svg?style=flat-square&logo=GNU%20Emacs&logoColor=white)
 ![Latest commit](https://img.shields.io/github/last-commit/hlissner/doom-emacs/develop?style=flat-square)
 ![Build status: develop](https://img.shields.io/github/workflow/status/hlissner/doom-emacs/CI/develop?style=flat-square)
 [![Discord Server](https://img.shields.io/discord/406534637242810369?color=738adb&label=Discord&logo=discord&logoColor=white&style=flat-square)][Discord]
@@ -99,7 +99,7 @@ Check out [the FAQ][FAQ] for answers to common questions about the project.
 
 # Prerequisites
 + Git 2.23+
-+ Emacs 26.3+ (*27.1 is recommended*, or [native-comp](https://www.emacswiki.org/emacs/GccEmacs)).
++ Emacs 27.1+ (*27.2 is recommended*, or [native-comp](https://www.emacswiki.org/emacs/GccEmacs)).
 + [ripgrep] 11.0+
 + GNU `find`
 + *OPTIONAL:* [fd] 7.3.0+ (improves file indexing performance for some commands)
@@ -139,13 +139,13 @@ Doom is an active and ongoing project. To make that development more
 transparent, its roadmap (and other concerns) are published across three github
 project boards and a newsletter:
 
-+ [Development Roadmap](https://github.com/hlissner/doom-emacs/projects/3):
++ [Development Roadmap](https://github.com/orgs/doomemacs/projects/6):
   roughly outlines our goals between release milestones and their progress.
-+ [Plugins under review](https://github.com/hlissner/doom-emacs/projects/2):
++ [Plugins under review](https://github.com/orgs/doomemacs/projects/5):
   lists plugins we are watching and considering for inclusion, and what their
   status for inclusion is. Please consult this list before requesting new
   packages/features.
-+ [Upstream bugs](https://github.com/hlissner/doom-emacs/projects/5): lists
++ [Upstream bugs](https://github.com/orgs/doomemacs/projects/7): lists
   issues that originate from elsewhere, and whether or not we have local
   workarounds or temporary fixes for them.
 + ~~Doom's newsletter~~ (not finished) will contain changelogs in between
