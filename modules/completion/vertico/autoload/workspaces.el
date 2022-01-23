@@ -1,5 +1,5 @@
 ;;; completion/vertico/autoload/workspaces.el -*- lexical-binding: t; -*-
-;;;###if (featurep! :editor workspaces)
+;;;###if (featurep! :ui workspaces)
 
 ;;;###autoload
 (defun +vertico--workspace-nth-source (n)
