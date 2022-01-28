@@ -265,6 +265,7 @@
   ;; explicitly. Afterwards, run M-x `conda-env-activate' to switch between
   ;; environments
   (or (cl-loop for dir in (list conda-anaconda-home
+                                "~/.conda"
                                 "~/.anaconda"
                                 "~/.miniconda"
                                 "~/.miniconda3"
@@ -332,8 +333,3 @@
   (use-package! lsp-pyright
     :when (featurep! +pyright)
     :after lsp-mode))
-
-(eval-when! (and (featurep! +pyright)
-                 (featurep! :tools lsp +eglot))
-  (after! eglot
-    (add-to-list 'eglot-server-programs '(python-mode . ("pyright-langserver" "--stdio")))))
