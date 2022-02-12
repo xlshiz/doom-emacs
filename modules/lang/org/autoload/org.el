@@ -5,16 +5,16 @@
 
 (defun +org--toggle-inline-images-in-subtree (&optional beg end refresh)
   "Refresh inline image previews in the current heading/tree."
-  (let ((beg (or beg
-                 (if (org-before-first-heading-p)
-                     (line-beginning-position)
-                   (save-excursion (org-back-to-heading) (point)))))
-        (end (or end
-                 (if (org-before-first-heading-p)
-                     (line-end-position)
-                   (save-excursion (org-end-of-subtree) (point)))))
-        (overlays (cl-remove-if-not (lambda (ov) (overlay-get ov 'org-image-overlay))
-                                    (ignore-errors (overlays-in beg end)))))
+  (let* ((beg (or beg
+                  (if (org-before-first-heading-p)
+                      (save-excursion (point-min))
+                    (save-excursion (org-back-to-heading) (point)))))
+         (end (or end
+                  (if (org-before-first-heading-p)
+                      (save-excursion (org-next-visible-heading 1) (point))
+                    (save-excursion (org-end-of-subtree) (point)))))
+         (overlays (cl-remove-if-not (lambda (ov) (overlay-get ov 'org-image-overlay))
+                                     (ignore-errors (overlays-in beg end)))))
     (dolist (ov overlays nil)
       (delete-overlay ov)
       (setq org-inline-image-overlays (delete ov org-inline-image-overlays)))
@@ -30,20 +30,31 @@
     (pcase (org-element-type context)
       ;; Add a new list item (carrying over checkboxes if necessary)
       ((or `item `plain-list)
-       ;; Position determines where org-insert-todo-heading and org-insert-item
-       ;; insert the new list item.
-       (if (eq direction 'above)
-           (org-beginning-of-item)
-         (org-end-of-item)
-         (backward-char))
-       (org-insert-item (org-element-property :checkbox context))
-       ;; Handle edge case where current item is empty and bottom of list is
-       ;; flush against a new heading.
-       (when (and (eq direction 'below)
-                  (eq (org-element-property :contents-begin context)
-                      (org-element-property :contents-end context)))
-         (org-end-of-item)
-         (org-end-of-line)))
+       (let* ((item
+               (if (eq 'item (org-element-type context))
+                   context
+                 ;; if the context has type `plain-list', find closest item
+                 (let ((struct (org-element-property :structure context)))
+                   (save-excursion
+                     (goto-char
+                      (if (= (point) (org-element-property :begin context))
+                          ;; at the begin of the plain-list, we get the list and
+                          ;; not the item with `org-element-at-point'
+                          (1+ (car (car struct)))
+                        (1+ (car (car (last struct))))))
+                     (org-element-at-point)))))
+              (begin (org-element-property :begin item))
+              (end (org-element-property :end item))
+              (cnts-begin (org-element-property :contents-begin item))
+              (str (string-trim (buffer-substring begin (or cnts-begin end)) "\n+" "[ \t\r\n]+")))
+         (pcase direction
+           (`below
+            (goto-char (max (1- end) (line-end-position)))
+            (insert "\n" str " "))
+           (`above
+            (goto-char (line-beginning-position))
+            (insert str " ")
+            (save-excursion (insert "\n"))))))
 
       ;; Add a new table row
       ((or `table `table-row)
@@ -122,21 +133,30 @@
 ;;; Commands
 
 ;;;###autoload
+(defun +org/return ()
+  "Call `org-return' then indent (if `electric-indent-mode' is on)."
+  (interactive)
+  (org-return electric-indent-mode))
+
+;;;###autoload
 (defun +org/dwim-at-point (&optional arg)
   "Do-what-I-mean at point.
 
 If on a:
 - checkbox list item or todo heading: toggle it.
-- clock: update its time.
+- citation: follow it
 - headline: cycle ARCHIVE subtrees, toggle latex fragments and inline images in
   subtree; update statistics cookies/checkboxes and ToCs.
+- clock: update its time.
 - footnote reference: jump to the footnote's definition
 - footnote definition: jump to the first reference of this footnote
+- timestamp: open an agenda view for the time-stamp date/range at point.
 - table-row or a TBLFM: recalculate the table's formulas
 - table-cell: clear it and go into insert mode. If this is a formula cell,
   recaluclate it instead.
 - babel-call: execute the source block
 - statistics-cookie: update it.
+- src block: execute it
 - latex fragment: toggle it.
 - link: follow it
 - otherwise, refresh all inline images in current tree."
@@ -242,6 +262,9 @@ If on a:
                 (org-element-property :begin lineage)
                 (org-element-property :end lineage))
              (org-open-at-point arg))))
+
+        (`paragraph
+         (+org--toggle-inline-images-in-subtree))
 
         ((guard (org-element-property :checkbox (org-element-lineage context '(item) t)))
          (let ((match (and (org-at-item-checkbox-p) (match-string 1))))
@@ -391,8 +414,9 @@ Made for `org-tab-first-hook' in evil-mode."
              (org-demote)))
          t)
         ((org-in-src-block-p t)
-         (org-babel-do-in-edit-buffer
-          (call-interactively #'indent-for-tab-command))
+         (save-window-excursion
+           (org-babel-do-in-edit-buffer
+            (call-interactively #'indent-for-tab-command)))
          t)
         ((and (save-excursion
                 (skip-chars-backward " \t")

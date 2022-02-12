@@ -443,18 +443,21 @@ files, so this replace calls to `pp' with the much faster `prin1'."
       (apply fn args)))
 
   (defun doom-set-jump-maybe-a (fn &rest args)
-    "Set a jump point if fn returns non-nil."
+    "Set a jump point if fn actually moves the point."
     (let ((origin (point-marker))
           (result
            (let* ((evil--jumps-jumping t)
                   (better-jumper--jumping t))
-             (apply fn args))))
-      (unless result
+             (apply fn args)))
+          (dest (point-marker)))
+      (unless (equal origin dest)
         (with-current-buffer (marker-buffer origin)
           (better-jumper-set-jump
            (if (markerp (car args))
                (car args)
              origin))))
+      (set-marker origin nil)
+      (set-marker dest nil)
       result))
 
   (defun doom-set-jump-h ()
@@ -551,7 +554,16 @@ files, so this replace calls to `pp' with the much faster `prin1'."
       (button-type-put
        var-bt 'action
        (lambda (button)
-         (helpful-variable (button-get button 'apropos-symbol)))))))
+         (helpful-variable (button-get button 'apropos-symbol))))))
+
+  ;; HACK `help-fns--autoloaded-p's signature changed on Emacs 29. This
+  ;;   suppressed the error until it is addressed upstream.
+  (when EMACS29+
+    (defadvice! doom--fix-helpful--autoloaded-p (fn &rest args)
+      :around #'helpful--autoloaded-p
+      (letf! (defun help-fns--autoloaded-p (sym _)
+               (funcall help-fns--autoloaded-p sym))
+        (apply fn args)))))
 
 
 ;;;###package imenu

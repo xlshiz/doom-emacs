@@ -277,14 +277,27 @@ Also adds support for a `:sync' parameter to override `:async'."
             (funcall orig-fn arg info params)
           (funcall fn orig-fn arg info params)))))
 
+  ;; HACK Fix #6061. Seems `org-babel-do-in-edit-buffer' has the side effect of
+  ;;   deleting side windows. Should be reported upstream! This advice
+  ;;   suppresses this behavior wherever it is known to be used.
+  (defadvice! +org-fix-window-excursions-a (fn &rest args)
+    "Suppress changes to the window config anywhere
+`org-babel-do-in-edit-buffer' is used."
+    :around #'evil-org-open-below
+    :around #'evil-org-open-above
+    :around #'org-indent-region
+    :around #'org-indent-line
+    (save-window-excursion (apply fn args)))
+
   (defadvice! +org-fix-newline-and-indent-in-src-blocks-a (&optional indent _arg _interactive)
     "Mimic `newline-and-indent' in src blocks w/ lang-appropriate indentation."
     :after #'org-return
     (when (and indent
                org-src-tab-acts-natively
                (org-in-src-block-p t))
-      (org-babel-do-in-edit-buffer
-       (call-interactively #'indent-for-tab-command))))
+      (save-window-excursion
+        (org-babel-do-in-edit-buffer
+         (call-interactively #'indent-for-tab-command)))))
 
   (defadvice! +org-inhibit-mode-hooks-a (fn datum name &optional initialize &rest args)
     "Prevent potentially expensive mode hooks in `org-babel-do-in-edit-buffer' ops."
@@ -1168,8 +1181,8 @@ compelling reason, so..."
             ;; more intuitive RET keybinds
             :n [return]   #'+org/dwim-at-point
             :n "RET"      #'+org/dwim-at-point
-            :i [return]   (cmd! (org-return electric-indent-mode))
-            :i "RET"      (cmd! (org-return electric-indent-mode))
+            :i [return]   #'+org/return
+            :i "RET"      #'+org/return
             :i [S-return] #'+org/shift-return
             :i "S-RET"    #'+org/shift-return
             ;; more vim-esque org motion keys (not covered by evil-org-mode)
@@ -1330,6 +1343,9 @@ compelling reason, so..."
     (file-writable-p org-id-locations-file))
 
   (add-hook 'org-open-at-point-functions #'doom-set-jump-h)
+  ;; HACK For functions that dodge `org-open-at-point-functions', like
+  ;;   `org-id-open', `org-goto', or roam: links.
+  (advice-add #'org-mark-ring-push :around #'doom-set-jump-a)
 
   ;; Add the ability to play gifs, at point or throughout the buffer. However,
   ;; 'playgifs' is stupid slow and there's not much I can do to fix it; use at
