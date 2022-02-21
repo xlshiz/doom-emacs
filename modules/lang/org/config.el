@@ -951,6 +951,7 @@ between the two."
          "o" #'+org/refile-to-other-window
          "O" #'+org/refile-to-other-buffer
          "v" #'+org/refile-to-visible
+         "y" #'org-refile-copy
          "r" #'org-refile) ; to all `org-refile-targets'
         (:prefix ("s" . "tree/subtree")
          "a" #'org-toggle-archive-tag
