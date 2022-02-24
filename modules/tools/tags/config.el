@@ -3,16 +3,17 @@
 
 (use-package! citre
   :init
-  (global-set-key [remap evil-jump-to-tag] #'citre-jump)
-  (global-set-key [remap find-tag] #'citre-jump)
-  (global-set-key (kbd "M-,") #'citre-jump-back)
   (setq
     citre-project-root-function #'projectile-project-root
     citre-default-create-tags-file-location 'project-cache
     citre-use-project-root-when-creating-tags t
     ; citre-peek-fill-fringe nil
     citre-prompt-language-for-ctags-command t)
-  (map! (:after citre-peek :map citre-peek-keymap
+  (global-set-key [remap evil-jump-to-tag] #'citre-jump)
+  (global-set-key [remap find-tag] #'citre-jump)
+  (global-set-key (kbd "M-,") #'citre-jump-back)
+  (map! :n "g C-]"  #'citre-peek
+    (:after citre-peek :map citre-peek-keymap
           "M-n"     #'citre-peek-next-line
           "M-p"     #'citre-peek-prev-line
           "M-N"     #'citre-peek-next-definition
