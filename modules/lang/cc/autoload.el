@@ -187,6 +187,9 @@ header files."
 ;;;###autoload
 (defun +cc/enable-lsp ()
   (interactive)
+  (map! :map c-mode-map :n [remap pop-tag-mark] #'pop-tag-mark)
+  (set-lookup-handlers! 'c-mode
+    :definition nil)
   (add-hook! '(c-mode-local-vars-hook
                c++-mode-local-vars-hook
                objc-mode-local-vars-hook

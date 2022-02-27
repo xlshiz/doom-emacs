@@ -266,24 +266,48 @@
         :n "s-9"   #'+workspace/switch-to-8
         :n "s-0"   #'+workspace/switch-to-final))
       (:when (featurep! :editor tabs)
-       :ni "M-j"       #'+tabs/ace-jump
-       :ni "M-h"       #'+tabs/prev
-       :ni "M-l"       #'+tabs/next
+       :ni "M-j"
+       (cond ((featurep! :editor tabs +sort)    nil)
+             ((featurep! :editor tabs)          #'awesome-tab-ace-jump))
+       :ni "M-h"
+       (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-prev-tab)
+             ((featurep! :editor tabs)          #'awesome-tab-backward-tab))
+       :ni "M-l"
+       (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-next-tab)
+             ((featurep! :editor tabs)          #'awesome-tab-forward-tab))
        (:after org
         :map org-mode-map
-        :ni "M-j"       #'+tabs/ace-jump
-        :ni "M-h"       #'+tabs/prev
-        :ni "M-l"       #'+tabs/next)
+        :ni "M-j"
+        (cond ((featurep! :editor tabs +sort)    nil)
+              ((featurep! :editor tabs)          #'awesome-tab-ace-jump))
+        :ni "M-h"
+        (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-prev-tab)
+              ((featurep! :editor tabs)          #'awesome-tab-backward-tab))
+        :ni "M-l"
+        (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-next-tab)
+              ((featurep! :editor tabs)          #'awesome-tab-forward-tab)))
        (:after evil-org
         :map evil-org-mode-map
-        :ni "M-j"       #'+tabs/ace-jump
-        :ni "M-h"       #'+tabs/prev
-        :ni "M-l"       #'+tabs/next)
+        :ni "M-j"
+        (cond ((featurep! :editor tabs +sort)    nil)
+              ((featurep! :editor tabs)          #'awesome-tab-ace-jump))
+        :ni "M-h"
+        (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-prev-tab)
+              ((featurep! :editor tabs)          #'awesome-tab-backward-tab))
+        :ni "M-l"
+        (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-next-tab)
+              ((featurep! :editor tabs)          #'awesome-tab-forward-tab)))
        (:after evil-markdown
         :map evil-markdown-mode-map
-        :ni "M-j"       #'+tabs/ace-jump
-        :ni "M-h"       #'+tabs/prev
-        :ni "M-l"       #'+tabs/next)
+        :ni "M-j"
+        (cond ((featurep! :editor tabs +sort)    nil)
+              ((featurep! :editor tabs)          #'awesome-tab-ace-jump))
+        :ni "M-h"
+        (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-prev-tab)
+              ((featurep! :editor tabs)          #'awesome-tab-backward-tab))
+        :ni "M-l"
+        (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-next-tab)
+              ((featurep! :editor tabs)          #'awesome-tab-forward-tab)))
        (:after info
         :map Info-mode-map
         :ni "C-j"       #'ace-window)))

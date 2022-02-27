@@ -113,7 +113,10 @@ This is ignored by ccls.")
     (setf (alist-get 'other c-default-style) "doom"))
 
   (after! ffap
-    (add-to-list 'ffap-alist '(c-mode . ffap-c-mode))))
+    (add-to-list 'ffap-alist '(c-mode . ffap-c-mode)))
+  (map! :map c-mode-map :n [remap pop-tag-mark]    #'citre-jump-back)
+  (set-lookup-handlers! 'c-mode
+    :definition #'citre-jump))
 
 (use-package! modern-cpp-font-lock
   :hook (c++-mode . modern-c++-font-lock-mode))
