@@ -6,7 +6,7 @@
   (setq
    citre-project-root-function #'projectile-project-root
    citre-default-create-tags-file-location 'project-cache
-   citre-use-project-root-when-creating-tags t
+   citre-use-project-root-when-creating-tags nil
    ;; citre-peek-fill-fringe nil
    citre-prompt-language-for-ctags-command t)
   :defer 0.1
