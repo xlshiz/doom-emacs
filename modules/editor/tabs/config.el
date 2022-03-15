@@ -137,4 +137,12 @@
     ("C-j" awesome-tab-ace-jump)
     ("q" nil "quit"))
   (setq sort-tab-height 20)
+  (defadvice! +sort-tab-buffer-need-hide (fn &rest args)
+    :around #'sort-tab-buffer-need-hide-p
+    (let ((ret (apply fn args)))
+      (if ret
+          ret
+        (with-current-buffer (car args)
+          (or (derived-mode-p 'dired-mode)
+              (derived-mode-p 'pdf-view-mode))))))
   (sort-tab-mode t))
