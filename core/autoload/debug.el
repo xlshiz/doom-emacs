@@ -57,12 +57,40 @@ symbol and CDR is the value to set it to when `doom-debug-mode' is activated.")
     ;; potentially define one of `doom-debug-variables'), in case some of them
     ;; aren't defined when `doom-debug-mode' is first loaded.
     (cond (enabled
+           (advice-add #'message :before #'doom--timestamped-message-a)
            (add-variable-watcher 'doom-debug-variables #'doom--watch-debug-vars-h)
            (add-hook 'after-load-functions #'doom--watch-debug-vars-h))
           (t
+           (advice-remove #'message #'doom--timestamped-message-a)
            (remove-variable-watcher 'doom-debug-variables #'doom--watch-debug-vars-h)
            (remove-hook 'after-load-functions #'doom--watch-debug-vars-h)))
     (message "Debug mode %s" (if enabled "on" "off"))))
+
+
+;;
+;;; Time-stamped *Message* logs
+
+(defun doom--timestamped-message-a (format-string &rest args)
+  "Advice to run before `message' that prepends a timestamp to each message.
+
+Activate this advice with:
+(advice-add 'message :before 'doom--timestamped-message-a)"
+  (when (and (stringp format-string)
+             message-log-max
+             (not (string-equal format-string "%s%s")))
+    (with-current-buffer "*Messages*"
+      (let ((timestamp (format-time-string "[%F %T] " (current-time)))
+            (deactivate-mark nil))
+        (with-silent-modifications
+          (goto-char (point-max))
+          (if (not (bolp))
+              (newline))
+          (insert timestamp))))
+    (let ((window (get-buffer-window "*Messages*")))
+      (when (and window (not (equal (selected-window) window)))
+        (with-current-buffer "*Messages*"
+          (goto-char (point-max))
+          (set-window-point window (point-max)))))))
 
 
 ;;
@@ -230,16 +258,19 @@ ready to be pasted in a bug report on github."
           "GNU Emacs"
           emacs-version
           emacs-repository-version)
-  (let ((default-directory doom-core-dir))
-    (print! "%-13s v%-15s %s"
-            "Doom core"
-            doom-core-version
-            (or (cdr (doom-call-process "git" "log" "-1" "--format=%D %h %ci"))
-                "n/a")))
   (let ((default-directory doom-emacs-dir))
     (print! "%-13s v%-15s %s"
-            "Doom modules"
+            "Doom core"
             doom-version
+            (or (cdr (doom-call-process "git" "log" "-1" "--format=%D %h %ci"))
+                "n/a")))
+  ;; NOTE This is a placeholder. Our modules will be moved to its own repo
+  ;;   eventually, and Doom core will later be capable of managing them like
+  ;;   package sources.
+  (let ((default-directory doom-modules-dir))
+    (print! "%-13s v%-15s %s"
+            "Doom modules"
+            doom-modules-version
             (or (cdr (doom-call-process "git" "log" "-1" "--format=%D %h %ci"))
                 "n/a"))))
 

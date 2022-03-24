@@ -548,6 +548,29 @@ relative to `org-directory', unless it is an absolute path."
   (+org-define-basic-link "doom-docs" 'doom-docs-dir)
   (+org-define-basic-link "doom-modules" 'doom-modules-dir)
 
+  ;; TODO PR this upstream
+  (defadvice! +org--follow-search-string-a (fn link arg)
+    "Support ::SEARCH syntax for id: links."
+    :around #'org-id-open
+    :around #'org-roam-id-open
+    (save-match-data
+      (cl-destructuring-bind (id &optional search)
+          (split-string link "::")
+        (prog1 (funcall fn id arg)
+          (cond ((null search))
+                ((string-match-p "\\`[0-9]+\\'" search)
+                 ;; Move N lines after the ID (in case it's a heading), instead
+                 ;; of the start of the buffer.
+                 (forward-line (string-to-number option)))
+                ((string-match "^/\\([^/]+\\)/$" search)
+                 (let ((match (match-string 1 search)))
+                   (save-excursion (org-link-search search))
+                   ;; `org-link-search' only reveals matches. Moving the point
+                   ;; to the first match after point is a sensible change.
+                   (when (re-search-forward match)
+                     (goto-char (match-beginning 0)))))
+                ((org-link-search search)))))))
+
   ;; Add "lookup" links for packages and keystrings; useful for Emacs
   ;; documentation -- especially Doom's!
   (org-link-set-parameters
@@ -659,23 +682,35 @@ mutating hooks on exported output, like formatters."
   ;; Open help:* links with helpful-* instead of describe-*
   (advice-add #'org-link--open-help :around #'doom-use-helpful-a)
 
-  (defadvice! +org--show-parents-a (&optional arg)
-    "Show all headlines in the buffer, like a table of contents.
-With numerical argument N, show content up to level N."
-    :override #'org-content
-    (interactive "p")
-    (org-show-all '(headings drawers))
-    (save-excursion
-      (goto-char (point-max))
-      (let ((regexp (if (and (wholenump arg) (> arg 0))
-                        (format "^\\*\\{%d,%d\\} " (1- arg) arg)
-                      "^\\*+ "))
-            (last (point)))
-        (while (re-search-backward regexp nil t)
-          (when (or (not (wholenump arg))
-                    (= (org-current-level) arg))
-            (org-flag-region (line-end-position) last t 'outline))
-          (setq last (line-end-position 0))))))
+  ;; Unlike the stock showNlevels options, these will also show the parents of
+  ;; the target level, recursively.
+  (pushnew! org-startup-options
+            '("show2levels*" org-startup-folded show2levels*)
+            '("show3levels*" org-startup-folded show3levels*)
+            '("show4levels*" org-startup-folded show4levels*)
+            '("show5levels*" org-startup-folded show5levels*))
+
+  (defadvice! +org--more-startup-folded-options-a ()
+    "Adds support for 'showNlevels*' startup options.
+Unlike showNlevels, this will also unfold parent trees."
+    :before #'org-set-startup-visibility
+    (when-let (n (pcase org-startup-folded
+                   (`show2levels* 2)
+                   (`show3levels* 3)
+                   (`show4levels* 4)
+                   (`show5levels* 5)))
+      (org-show-all '(headings drawers))
+      (save-excursion
+        (goto-char (point-max))
+        (let ((regexp (if (and (wholenump n) (> n 0))
+                          (format "^\\*\\{%d,%d\\} " (1- n) n)
+                        "^\\*+ "))
+              (last (point)))
+          (while (re-search-backward regexp nil t)
+            (when (or (not (wholenump n))
+                      (= (org-current-level) n))
+              (org-flag-region (line-end-position) last t 'outline))
+            (setq last (line-end-position 0)))))))
 
   ;; Some uses of `org-fix-tags-on-the-fly' occur without a check on
   ;; `org-auto-align-tags', such as in `org-self-insert-command' and
