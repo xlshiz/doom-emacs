@@ -159,7 +159,7 @@ orderless."
          ("C-x C-j" . consult-dir-jump-file)))
 
 (use-package! consult-flycheck
-  :when (featurep! :checkers syntax)
+  :when (featurep! :tools checker)
   :after (consult flycheck))
 
 
@@ -209,7 +209,7 @@ orderless."
          :desc "Open target with sudo"        "s"   #'doom/sudo-find-file
          (:when (featurep! :tools magit)
           :desc "Open magit-status of target" "g"   #'+vertico/embark-magit-status)
-         (:when (featurep! :ui workspaces)
+         (:when (featurep! :editor workspaces)
           :desc "Open in new workspace"       "TAB" #'+vertico/embark-open-in-new-workspace))))
 
 

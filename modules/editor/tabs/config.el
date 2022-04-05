@@ -108,7 +108,6 @@
     ("C-j" awesome-tab-ace-jump)
     ("C-h" awesome-tab-move-current-tab-to-left)
     ("C-l" awesome-tab-move-current-tab-to-right)
-    ("b" ivy-switch-buffer)
     ("g" awesome-tab-counsel-switch-group)
     ("C-k" kill-current-buffer)
     ("C-S-k" awesome-tab-kill-other-buffers-in-current-group)

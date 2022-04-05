@@ -171,4 +171,6 @@ If prefix ARG is set, prompt for a known project to search from."
            (+ivy/project-search nil (rxt-quote-pcre symbol)))
           ((featurep! :completion helm)
            (+helm/project-search nil (rxt-quote-pcre symbol)))
+          ((featurep! :completion vertico)
+           (+vertico/project-search nil (rxt-quote-pcre symbol)))
           ((rgrep (regexp-quote symbol))))))
