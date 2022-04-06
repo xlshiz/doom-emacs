@@ -39,6 +39,8 @@
   (when (featurep! :completion ivy)
     (define-key! swiper-map "<M-return>" #'+search/swiper-to-color-rg)
     (define-key! counsel-ag-map "<M-return>" #'+search/counsel-to-color-rg))
+  (when (featurep! :completion vertico)
+    (define-key! vertico-map "<M-return>" #'+search/consult-to-color-rg))
   (defconst evil-collection-color-rg-maps '(color-rg-mode-map
                                              color-rg-mode-edit-map))
   :config

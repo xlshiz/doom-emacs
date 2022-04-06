@@ -15,7 +15,7 @@
   (when (featurep! +lsp)
     (add-hook 'zig-mode-local-vars-hook #'lsp!))
 
-  (when (featurep! :tools checker)
+  (when (featurep! :checkers syntax)
     (flycheck-define-checker zig
       "A zig syntax checker using the zig-fmt interpreter."
       :command ("zig" "fmt" (eval (buffer-file-name)))

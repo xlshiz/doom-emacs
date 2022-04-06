@@ -9,5 +9,5 @@
 
 
 (use-package! flycheck-raku
-  :when (featurep! :tools checker)
+  :when (featurep! :checkers syntax)
   :after raku-mode)

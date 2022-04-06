@@ -1,4 +1,4 @@
-;;; editor/search/autoload/snail.el -*- lexical-binding: t; -*-
+;;; editor/search/autoload/snail-ivy.el -*- lexical-binding: t; -*-
 ;;;###if (featurep! :completion ivy)
 
 ;;;###autoload

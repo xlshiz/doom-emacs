@@ -313,7 +313,7 @@
 
 (use-package! flycheck-cython
   :when (featurep! +cython)
-  :when (featurep! :tools checker)
+  :when (featurep! :checkers syntax)
   :after cython-mode)
 
 

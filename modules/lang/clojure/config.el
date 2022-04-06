@@ -242,5 +242,5 @@
 
 
 (use-package! flycheck-clj-kondo
-  :when (featurep! :tools checker)
+  :when (featurep! :checkers syntax)
   :after flycheck)

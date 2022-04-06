@@ -5,7 +5,7 @@
 (package! pip-requirements :pin "216cd1690f80cc965d4ae47b8753fc185f778ff6")
 (when (featurep! +cython)
   (package! cython-mode :pin "5b325c98609a11e89c2d14f52afba25744a79379")
-  (when (featurep! :tools checker)
+  (when (featurep! :checkers syntax)
     (package! flycheck-cython :pin "ecc4454d35ab5317ab66a04406f36f0c1dbc0b76")))
 
 ;; LSP

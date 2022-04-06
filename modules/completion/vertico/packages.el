@@ -10,7 +10,7 @@
 
 (package! consult :pin "2106eee75f84206715631da45eae08827da266f9")
 (package! consult-dir :pin "08f543ae6acbfc1ffe579ba1d00a5414012d5c0b")
-(when (featurep! :tools checker)
+(when (featurep! :checkers syntax)
   (package! consult-flycheck :pin "0ad7e8ff15683a4d64b79c29b3fcf847edfe244b"))
 
 (package! embark :pin "56e28c23d56da3ae4b755bfa50a181bdedf439e6")

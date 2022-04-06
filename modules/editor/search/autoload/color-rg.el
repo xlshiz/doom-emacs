@@ -57,6 +57,14 @@
     (ivy-quit-and-run (color-rg-search-input search-text default-directory))))
 
 ;;;###autoload
+(defun +search/consult-to-color-rg ()
+  (interactive)
+  (let ((search-text (minibuffer-contents-no-properties)))
+    (if (equal (substring search-text 0 1) "#")
+        (color-rg-search-input (substring search-text 1) default-directory)
+      (color-rg-search-input search-text default-directory))))
+
+;;;###autoload
 (defun evil-collection-color-rg-setup ()
   "Set up `evil' bindings for `color-rg'."
   (eval-when-compile (require 'evil-collection))

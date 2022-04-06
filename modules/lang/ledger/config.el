@@ -38,7 +38,7 @@
 
 
 (use-package! flycheck-ledger
-  :when (featurep! :tools checker)
+  :when (featurep! :checkers syntax)
   :after ledger-mode)
 
 

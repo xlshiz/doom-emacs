@@ -93,8 +93,8 @@
     "
     ^^^^Fast Move             ^^^^Tab                    ^^Search            ^^Misc
    -^^^^--------------------+-^^^^---------------------+-^^----------------+-^^---------------------------
-      ^_k_^   prev group    | _C-a_^^     select first | _b_ search buffer | _C-k_   kill buffer
-    _h_   _l_  switch tab   | _C-e_^^     select last  | _g_ search group  | _C-S-k_ kill others in group
+      ^_k_^   prev group    | _C-a_^^     select first | _g_ search group  | _C-k_   kill buffer
+    _h_   _l_  switch tab   | _C-e_^^     select last  |                   | _C-S-k_ kill others in group
       ^_j_^   next group    | _C-j_^^     ace jump     | ^^                | ^^
     ^^0 ~ 9^^ select window | _C-h_/_C-l_ move current | ^^                | ^^
    -^^^^--------------------+-^^^^---------------------+-^^----------------+-^^---------------------------

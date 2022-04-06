@@ -119,7 +119,7 @@ orderless."
   (unless +vertico-consult-fd-args
     (setq +vertico-consult-fd-args
           (if doom-projectile-fd-binary
-              (format "%s --color=never -i -H -E .git --regex %s"
+              (format "%s --color=never -i -H -E .git %s"
                       doom-projectile-fd-binary
                       (if IS-WINDOWS "--path-separator=/" ""))
             consult-find-args)))
@@ -159,7 +159,7 @@ orderless."
          ("C-x C-j" . consult-dir-jump-file)))
 
 (use-package! consult-flycheck
-  :when (featurep! :tools checker)
+  :when (featurep! :checkers syntax)
   :after (consult flycheck))
 
 

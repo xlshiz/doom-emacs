@@ -74,5 +74,5 @@
   (setq company-go-show-annotation t))
 
 (use-package! flycheck-golangci-lint
-  :when (featurep! :tools checker)
+  :when (featurep! :checkers syntax)
   :hook (go-mode . flycheck-golangci-lint-setup))
