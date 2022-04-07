@@ -89,7 +89,7 @@
   (setq pyim-page-length 3)
   (setq pyim-dcache-directory (concat doom-cache-dir "pyim/dcache/"))
   ;; 设置以词定字的函数，使用 [  ]
-  (setq pyim-magic-converter #'+chinese|pyim-converter)
+  (setq pyim-magic-converter #'+chinese-pyim-converter)
   ;; 绑定 pyim 输入时的快捷键，esc删除输入，.下一页，,上一页
   (map! :map pyim-mode-map
         [escape] #'pyim-quit-clear
@@ -115,10 +115,10 @@
 
 (after! ivy
   (setq ivy-re-builders-alist
-        '(
-          (t . +intel/re-builder-pinyin)
-          ))
-  )
+        '((t . +intel-ivy-regex-pinyin-builder))))
+
+(after! orderless
+  (add-to-list 'orderless-matching-styles '+intel-consult-regex-pinyin-builder))
 
 (after! org
   (defadvice org-html-paragraph (before org-html-paragraph-advice

@@ -12,6 +12,21 @@
                                                         (projectile-current-project-files)))))))
 
 ;;;###autoload
+(defvar snail--source-buffer
+  `(:name     "Buffer"
+    :narrow   ?b
+    :category buffer
+    :face     consult-buffer
+    :history  buffer-name-history
+    :state    ,#'consult--buffer-state
+    :default  t
+    :items
+    ,(lambda () (consult--buffer-query :sort 'visibility
+                                       :exclude '(" .*" "\\*sort-tab\\*")
+                                       :as #'buffer-name)))
+  "Buffer candidate source for `snail'.")
+
+;;;###autoload
 (defvar snail--source-recent-file
   `(:name "Recent Files"
     :narrow ?r
@@ -29,7 +44,7 @@
                  (seq-remove (lambda (x)
                                (gethash x ht))
                              recentf-list)))))
-  "Recent file candidate source for `snail recent file'.")
+  "Recent file candidate source for `snail'.")
 
 ;;;###autoload
 (defvar snail--source-project-file
@@ -40,12 +55,12 @@
     :action nil
     :require-match nil
     :items snail--project-files)
-  "Project buffer candidate source for `snail project file'.")
+  "Project buffer candidate source for `snail'.")
 
 ;;;###autoload
 (defvar snail-sources
   '(consult--source-hidden-buffer
-    consult--source-buffer
+    snail--source-buffer
     snail--source-project-file
     snail--source-recent-file))
 
@@ -60,6 +75,6 @@
                                  :history nil
                                  :sort nil))
     (if (cdr sel)
-      (if (string= (plist-get (cdr sel) :name) "Project File")
-          (find-file (projectile-expand-root (car sel))))
+        (if (string= (plist-get (cdr sel) :name) "Project File")
+            (find-file (projectile-expand-root (car sel))))
       (consult--buffer-action (car sel)))))

@@ -132,11 +132,14 @@ orderless."
    +default/search-cwd +default/search-other-cwd
    +default/search-notes-for-symbol-at-point
    +default/search-emacsd
+   snail--source-buffer
+   snail--source-project-file
+   snail--source-recent-file
    consult--source-recent-file consult--source-project-recent-file consult--source-bookmark
-   :preview-key (kbd "C-SPC"))
+   :preview-key (kbd "M-."))
   (consult-customize
    consult-theme
-   :preview-key (list (kbd "C-SPC") :debounce 0.5 'any))
+   :preview-key (list (kbd "M-.") :debounce 0.5 'any))
   (after! org
     (defvar +vertico--consult-org-source
       `(:name     "Org"

@@ -1,14 +1,18 @@
 ;;; editor/chinese/autoload.el -*- lexical-binding: t; -*-
 
 ;;;###autoload
-(defun +intel/re-builder-pinyin (str)
-  (or (+intel/pinyin-to-utf8 str)
+(defun +intel-ivy-regex-pinyin-builder (str)
+  (or (+intel-pinyin-to-utf8 str)
       (ivy--regex-plus str)
       (ivy--regex-ignore-order str)
       ))
 
 ;;;###autoload
-(defun +intel/pinyinlib-build-regexp-string (str)
+(defun +intel-consult-regex-pinyin-builder (str)
+  (orderless-regexp (pinyinlib-build-regexp-string str)))
+
+;;;###autoload
+(defun +intel-pinyinlib-build-regexp-string (str)
   (progn
     (cond ((equal str ".*")
            ".*")
@@ -17,7 +21,7 @@
   )
 
 ;;;###autoload
-(defun +intel/pinyin-regexp-helper (str)
+(defun +intel-pinyin-regexp-helper (str)
   (cond ((equal str " ")
          ".*")
         ((equal str "")
@@ -26,18 +30,18 @@
          str)))
 
 ;;;###autoload
-(defun +intel/pinyin-to-utf8 (str)
+(defun +intel-pinyin-to-utf8 (str)
   (cond ((equal 0 (length str))
          nil)
         ((equal (substring str 0 1) "!")
-         (mapconcat '+intel/pinyinlib-build-regexp-string
-                    (remove nil (mapcar '+intel/pinyin-regexp-helper (split-string
+         (mapconcat '+intel-pinyinlib-build-regexp-string
+                    (remove nil (mapcar '+intel-pinyin-regexp-helper (split-string
                                                                   (substring str 1) "")))
                     ""))
         (t nil)))
 
 ;;;###autoload
-(defun +chinese|pyim-converter (str)
+(defun +chinese-pyim-converter (str)
   (cond ((<= (length str) 1) str)
         ((equal str "【】") str)
         ((equal str "】【") str)

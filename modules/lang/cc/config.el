@@ -166,3 +166,12 @@ This is ignored by ccls.")
                                   "--header-insertion-decorators=0"))
   (unless (featurep! +ccls)
     (after! lsp-clangd (set-lsp-priority! 'clangd 1))))
+
+(when (featurep! :completion vertico)
+  (after! consult-imenu
+    (add-to-list 'consult-imenu-config '(c-mode :toplevel "function"
+                                                :types ((?f "function" font-lock-function-name-face)
+                                                        (?m "macro"    font-lock-function-name-face)
+                                                        (?p "prototype"  font-lock-constant-face)
+                                                        (?v "variable" font-lock-variable-name-face)
+                                                        (?t "typedef"      font-lock-type-face))))))

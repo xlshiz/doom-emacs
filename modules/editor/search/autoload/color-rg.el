@@ -57,12 +57,25 @@
     (ivy-quit-and-run (color-rg-search-input search-text default-directory))))
 
 ;;;###autoload
+(defmacro +search-minibuf-quit-and-run (&rest body)
+  "Quit the minibuffer and run BODY afterwards."
+  (declare (indent 0))
+  `(progn
+     (put 'quit 'error-message "")
+     (run-at-time nil nil
+                  (lambda ()
+                    (put 'quit 'error-message "Quit")
+                    (with-demoted-errors "Error: %S"
+                      ,@body)))
+     (abort-recursive-edit)))
+
+;;;###autoload
 (defun +search/consult-to-color-rg ()
   (interactive)
   (let ((search-text (minibuffer-contents-no-properties)))
     (if (equal (substring search-text 0 1) "#")
-        (color-rg-search-input (substring search-text 1) default-directory)
-      (color-rg-search-input search-text default-directory))))
+        (+search-minibuf-quit-and-run (color-rg-search-input (substring search-text 1) default-directory))
+      (+search-minibuf-quit-and-run (color-rg-search-input search-text default-directory)))))
 
 ;;;###autoload
 (defun evil-collection-color-rg-setup ()
