@@ -4,6 +4,8 @@
 
 (use-package! awesome-tray
   :hook (after-init . awesome-tray-mode)
+  :init
+  (setq awesome-tray-minibuffer nil)
   :config
   (defun my-location-info ()
     (format "%s:%s"

@@ -12,6 +12,49 @@
                                                         (projectile-current-project-files)))))))
 
 ;;;###autoload
+(defun snail--project-grep (&rest _)
+  (declare (indent defun))
+  (unless (executable-find "rg")
+    (user-error "Couldn't find ripgrep in your PATH"))
+  (setq deactivate-mark t)
+  (let* ((project-root (or (doom-project-root) default-directory))
+         (directory project-root)
+         (consult-ripgrep-args
+          (concat "rg "
+                  "--null --line-buffered --color=never --max-columns=1000 "
+                  "--path-separator /   --smart-case --no-heading --line-number "
+                  "--hidden -g !.git -g !.svn -g !.hg "
+                  " ."))
+         (prompt "Search")
+         (query (when (doom-region-active-p)
+                      (regexp-quote (doom-thing-at-point-or-region))))
+         (consult-async-split-style consult-async-split-style)
+         (consult-async-split-styles-alist consult-async-split-styles-alist)
+         (read-process-output-max (max read-process-output-max (* 1024 1024))))
+    ;; Change the split style if the initial query contains the separator.
+    (when query
+      (cl-destructuring-bind (&key type separator initial)
+          (consult--async-split-style)
+        (pcase type
+          (`separator
+           (replace-regexp-in-string (regexp-quote (char-to-string separator))
+                                     (concat "\\" (char-to-string separator))
+                                     query t t))
+          (`perl
+           (when (string-match-p initial query)
+             (setf (alist-get 'perlalt consult-async-split-styles-alist)
+                   `(:initial ,(or (cl-loop for char in (list "%" "@" "!" "&" "/" ";")
+                                            unless (string-match-p char query)
+                                            return char)
+                                   "%")
+                     :type perl)
+                   consult-async-split-style 'perlalt))))))
+    ;; (consult--async-command #'consult--ripgrep-builder
+    ;;   (consult--grep-format #'consult--ripgrep-builder)
+    ;;   :file-handler t)
+    ))
+
+;;;###autoload
 (defvar snail--source-buffer
   `(:name     "Buffer"
     :narrow   ?b
@@ -29,7 +72,7 @@
 ;;;###autoload
 (defvar snail--source-recent-file
   `(:name "Recent Files"
-    :narrow ?r
+    :narrow (?r . "Recent")
     :category file
     :face consult-file
     :history file-name-history
@@ -58,11 +101,28 @@
   "Project buffer candidate source for `snail'.")
 
 ;;;###autoload
+(defvar snail--source-project-grep
+  `(:name     "Project Grep"
+    :narrow   (?g . "Grep")
+    :category file
+    :lookup #'consult--lookup-member
+    :add-history (consult--async-split-thingatpt 'symbol)
+    :require-match t
+    :hidden t
+    :action nil
+    :sort nil
+    :items snail--project-grep)
+  "Project grep candidate source for `snail'.")
+
+;;;###autoload
 (defvar snail-sources
-  '(consult--source-hidden-buffer
-    snail--source-buffer
+  '(snail--source-buffer
     snail--source-project-file
-    snail--source-recent-file))
+    snail--source-recent-file
+    ;; hiden
+    consult--source-hidden-buffer
+    ;; snail--source-project-grep
+    ))
 
 ;;;###autoload
 (defun snail ()

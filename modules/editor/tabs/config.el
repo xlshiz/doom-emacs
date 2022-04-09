@@ -122,17 +122,18 @@
   (defhydra tabs-fast-switch (:hint nil)
     "
     ^^^^Tab                    ^^Misc
-   -^^^^---------------------+-^^---------------------------
-    _C-a_^^     select first | _C-k_    close tab
-    _C-e_^^     select last  | _C-j_^^  ace jump
-    _h_   _l_  switch tab    | ^^
-   -^^^^---------------------+-^^---------------------------
+   -^^^^---------------------+-^^^^---------------------------
+    _C-a_^^     select first | _C-k_^^   close tab
+    _C-e_^^     select last  | _C-j_^^   ace jump
+    _h_   _l_  switch tab    | _C-S-k_  close all tabs
+   -^^^^---------------------+-^^^^---------------------------
   "
     ("h" sort-tab-select-prev-tab)
     ("l" sort-tab-select-next-tab)
     ("C-a" sort-tab-select-first-tab)
     ("C-e" sort-tab-select-last-tab)
     ("C-k" sort-tab-close-current-tab)
+    ("C-S-k" sort-tab-close-all-tabs)
     ("C-j" awesome-tab-ace-jump)
     ("q" nil "quit"))
   (setq sort-tab-height 20)
