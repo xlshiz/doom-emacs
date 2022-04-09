@@ -452,7 +452,7 @@
       :desc "Alternate buffer"      "TAB"  #'+default/alternate-buffer-in-persp
       :desc "Find everything"       "a"    #'snail
       (:when (featurep! :editor search +snails)
-       :desc "Find everything"      "a"    #'snail)
+       :desc "Find everything"      "a"    #'snails)
 
       ;;; <leader> b --- buffer
       (:prefix-map ("b" . "buffer")
