@@ -175,9 +175,9 @@ orderless."
   (setq which-key-use-C-h-commands nil
         prefix-help-command #'embark-prefix-help-command)
   (map! [remap describe-bindings] #'embark-bindings
-        "C-;"               #'embark-act  ; to be moved to :config default if accepted
+        "M-o"               #'embark-act  ; to be moved to :config default if accepted
         (:map minibuffer-local-map
-         "C-;"               #'embark-act
+         "M-o"               #'embark-act
          "C-c C-;"           #'embark-export
          "C-c C-s"           #'embark-collect-snapshot
          :desc "Export to writable buffer" "C-c C-e" #'+vertico/embark-export-write)
