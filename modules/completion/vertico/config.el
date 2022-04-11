@@ -178,6 +178,7 @@ orderless."
         "M-o"               #'embark-act  ; to be moved to :config default if accepted
         (:map minibuffer-local-map
          "M-o"               #'embark-act
+         "C-."               #'embark-become
          "C-c C-;"           #'embark-export
          "C-c C-s"           #'embark-collect-snapshot
          :desc "Export to writable buffer" "C-c C-e" #'+vertico/embark-export-write)

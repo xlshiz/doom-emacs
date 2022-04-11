@@ -101,27 +101,12 @@
   "Project buffer candidate source for `snail'.")
 
 ;;;###autoload
-(defvar snail--source-project-grep
-  `(:name     "Project Grep"
-    :narrow   (?g . "Grep")
-    :category file
-    :lookup #'consult--lookup-member
-    :add-history (consult--async-split-thingatpt 'symbol)
-    :require-match t
-    :hidden t
-    :action nil
-    :sort nil
-    :items snail--project-grep)
-  "Project grep candidate source for `snail'.")
-
-;;;###autoload
 (defvar snail-sources
   '(snail--source-buffer
     snail--source-project-file
     snail--source-recent-file
     ;; hiden
     consult--source-hidden-buffer
-    ;; snail--source-project-grep
     ))
 
 ;;;###autoload

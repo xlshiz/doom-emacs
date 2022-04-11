@@ -131,6 +131,24 @@
                       (+snail-colorfull-candidate (:width 0.8))))))
   (ivy-rich-mode 1))
 
+(after! consult
+  (consult-customize
+   snail--source-buffer
+   snail--source-project-file
+   snail--source-recent-file
+   :preview-key (kbd "M-.")))
+(after! embark
+  (embark-define-keymap +embark-become-snail-map
+    "Keymap for Embark become."
+    ("D" consult-dir)
+    ("d" find-file)
+    ("g" +default/search-project)
+    ("G" +default/search-other-cwd)
+    ("f" +default/find-file-under-here)
+    ("a" snails)
+    ("A" snail))
+  (add-to-list 'embark-become-keymaps '+embark-become-snail-map))
+
 ;; Fix project.el
 (defun +search|projectile-project-find-function (dir)
   (let ((root (projectile-project-root dir)))
