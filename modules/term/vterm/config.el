@@ -17,6 +17,8 @@
   (defadvice evil-collection-vterm-setup (after +evil-collection-vterm-setup-h activate)
     (evil-collection-define-key 'insert 'vterm-mode-map
       (kbd "C-j") 'ace-window)
+    (evil-collection-define-key 'insert 'vterm-mode-map
+      (kbd "C-x C-f") 'find-file)
     (evil-collection-define-key 'normal 'vterm-mode-map
       (kbd "C-j") 'ace-window))
 
