@@ -138,13 +138,46 @@
    snail--source-recent-file
    :preview-key (kbd "M-.")))
 (after! embark
+  (defun +embark/find-file ()
+    (interactive)
+    (+search-minibuf-quit-and-run (call-interactively 'find-file)))
+
+  (defun +embark/search-file-cwd ()
+    "Perform a recursive file search from the current directory."
+    (interactive)
+    (doom-project-find-file default-directory))
+
+  (defun +embark/search-file-other ()
+    "Perform a recursive file search from the current directory."
+    (interactive)
+    (let* ((projectile-project-root nil)
+           (disabled-command-function nil)
+           (default-directory
+             (if-let (projects (projectile-relevant-known-projects))
+                 (completing-read "Search project: " projects nil t)
+               (user-error "There are no known projects"))))
+      (doom-project-find-file default-directory)))
+
+  (defun +embark/grep-project ()
+    (interactive)
+    (+default/search-project))
+
+  (defun +embark/grep-other-cwd ()
+    (interactive)
+    (+search-minibuf-quit-and-run (+default/search-other-cwd)))
+
+  (defun +embark/grep-other-project ()
+    (interactive)
+    (+search-minibuf-quit-and-run (+default/search-project 'other)))
+
   (embark-define-keymap +embark-become-snail-map
     "Keymap for Embark become."
-    ("D" consult-dir)
-    ("d" find-file)
-    ("g" +default/search-project)
-    ("G" +default/search-other-cwd)
-    ("f" +default/find-file-under-here)
+    ("." +embark/find-file)
+    ("f" +embark/search-file-cwd)
+    ("F" +embark/search-file-other)
+    ("g" +embark/grep-project)
+    ("G" +embark/grep-other-cwd)
+    ("P" +embark/grep-other-project)
     ("a" snails)
     ("A" snail))
   (add-to-list 'embark-become-keymaps '+embark-become-snail-map))
