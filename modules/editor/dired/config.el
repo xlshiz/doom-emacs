@@ -48,6 +48,8 @@ Fixes #3939: unsortable dired entries on Windows."
                        (not ls-lisp-use-insert-directory-program)))
           (setq-local dired-actual-switches (car args))))))
 
+  (remove-hook 'dired-mode-hook #'doom--recentf-add-dired-directory-h)
+
   ;; Don't complain about this command being disabled when we use it
   (put 'dired-find-alternate-file 'disabled nil)
 
