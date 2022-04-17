@@ -128,21 +128,18 @@ orderless."
             consult-find-args)))
 
   (consult-customize
-   consult-ripgrep consult-git-grep consult-grep
-   consult-bookmark consult-recent-file
-   +default/search-project +default/search-other-project
-   +default/search-project-for-symbol-at-point
-   +default/search-cwd +default/search-other-cwd
-   +default/search-notes-for-symbol-at-point
-   +default/search-emacsd
-   snail--source-buffer
-   snail--source-project-file
-   snail--source-recent-file
-   consult--source-recent-file consult--source-project-recent-file consult--source-bookmark
-   :preview-key (kbd "M-."))
+    consult-ripgrep consult-git-grep consult-grep
+    consult-bookmark consult-recent-file
+    +default/search-project +default/search-other-project
+    +default/search-project-for-symbol-at-point
+    +default/search-cwd +default/search-other-cwd
+    +default/search-notes-for-symbol-at-point
+    +default/search-emacsd
+    consult--source-recent-file consult--source-project-recent-file consult--source-bookmark
+    :preview-key (kbd "C-."))
   (consult-customize
    consult-theme
-   :preview-key (list (kbd "M-.") :debounce 0.5 'any))
+   :preview-key (list (kbd "C-.") :debounce 0.5 'any))
   (after! org
     (defvar +vertico--consult-org-source
       `(:name     "Org"
@@ -178,7 +175,7 @@ orderless."
         "M-o"               #'embark-act  ; to be moved to :config default if accepted
         (:map minibuffer-local-map
          "M-o"               #'embark-act
-         "C-."               #'embark-become
+         "M-."               #'embark-become
          "C-c C-;"           #'embark-export
          "C-c C-s"           #'embark-collect-snapshot
          :desc "Export to writable buffer" "C-c C-e" #'+vertico/embark-export-write)
