@@ -228,7 +228,8 @@ results buffer.")
 
   ;; Integrate with `helpful'
   (setq counsel-describe-function-function #'helpful-callable
-        counsel-describe-variable-function #'helpful-variable)
+        counsel-describe-variable-function #'helpful-variable
+        counsel-descbinds-function #'helpful-callable)
 
   ;; Decorate `doom/help-custom-variable' results the same way as
   ;; `counsel-describe-variable' (adds value and docstring columns).
@@ -287,10 +288,13 @@ results buffer.")
     :override #'counsel--find-return-list
     (cl-destructuring-bind (find-program . args)
         (cond ((when-let (fd (executable-find (or doom-projectile-fd-binary "fd") t))
-                 (append (list fd "-H" "-I" "--color=never" "--type" "file" "--type" "symlink" "--follow")
+                 (append (list fd "--hidden" "--type" "file" "--type" "symlink" "--follow" "--color=never")
+                         (cl-loop for dir in projectile-globally-ignored-directories
+                                  collect "--exclude"
+                                  collect dir)
                          (if IS-WINDOWS '("--path-separator=/")))))
               ((executable-find "rg" t)
-               (append (list "rg" "--files" "--follow" "--color=never" "--hidden" "-g!.git" "--no-messages")
+               (append (list "rg" "--hidden" "--files" "--follow" "--color=never" "--no-messages")
                        (cl-loop for dir in projectile-globally-ignored-directories
                                 collect "--glob"
                                 collect (concat "!" dir))

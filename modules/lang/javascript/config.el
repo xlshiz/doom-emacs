@@ -2,7 +2,7 @@
 
 (after! projectile
   (pushnew! projectile-project-root-files "package.json")
-  (pushnew! projectile-globally-ignored-directories "node_modules" "flow-typed"))
+  (pushnew! projectile-globally-ignored-directories "^node_modules$" "^flow-typed$"))
 
 
 ;;
@@ -93,8 +93,10 @@
 (use-package! typescript-mode
   :hook (typescript-mode . rainbow-delimiters-mode)
   :hook (typescript-tsx-mode . rainbow-delimiters-mode)
-  :commands typescript-tsx-mode
   :init
+  (when (featurep! :lang web)
+    (autoload 'typescript-tsx-mode "typescript-mode" nil t))
+
   ;; REVIEW We associate TSX files with `typescript-tsx-mode' derived from
   ;;        `web-mode' because `typescript-mode' does not officially support
   ;;        JSX/TSX. See emacs-typescript/typescript.el#4
@@ -122,7 +124,10 @@
                     'jsx-tide)))))
   :config
   (when (fboundp 'web-mode)
-    (define-derived-mode typescript-tsx-mode web-mode "TypeScript-TSX"))
+    (define-derived-mode typescript-tsx-mode web-mode "TypeScript-TSX")
+    (when (featurep! +lsp)
+      (after! lsp-mode
+        (add-to-list 'lsp--formatting-indent-alist '(typescript-tsx-mode . typescript-indent-level)))))
 
   (set-docsets! '(typescript-mode typescript-tsx-mode)
     :add "TypeScript" "AngularTS")

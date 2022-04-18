@@ -27,7 +27,7 @@
 (defconst doom-version "3.0.0-dev"
   "Current version of Doom Emacs core.")
 
-(defconst doom-modules-version "22.03.0-dev"
+(defconst doom-modules-version "22.04.0-dev"
   "Current version of Doom Emacs.")
 
 (defvar doom-debug-p (or (getenv-internal "DEBUG") init-file-debug)
@@ -171,7 +171,7 @@ users).")
 
   (with-eval-after-load 'comp
     ;; HACK Disable native-compilation for some troublesome packages
-    (mapc (doom-partial #'add-to-list 'native-comp-deferred-compilation-deny-list)
+    (mapc (apply-partially #'add-to-list 'native-comp-deferred-compilation-deny-list)
           (let ((local-dir-re (concat "\\`" (regexp-quote doom-local-dir))))
             (list (concat local-dir-re ".*/emacs-jupyter.*\\.el\\'")
                   (concat local-dir-re ".*/evil-collection-vterm\\.el\\'")
