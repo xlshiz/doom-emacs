@@ -51,17 +51,18 @@
   (let* ((projectile-project-root nil)
          (disabled-command-function nil)
          (default-directory (expand-file-name (read-directory-name "Search directory: "))))
+    (setq this-command #'+embark-grep-other-cwd)
     (embark--quit-and-run #'+vertico/project-search nil input default-directory)))
 
 ;;;###autoload
 (defun +embark-grep-other-project (&optional input)
-  (interactive)
   (let* ((projectile-project-root nil)
          (disabled-command-function nil)
          (default-directory
            (if-let (projects (projectile-relevant-known-projects))
                (completing-read "Search project: " projects nil t)
              (user-error "There are no known projects"))))
+    (setq this-command #'+embark-grep-other-project)
     (embark--quit-and-run #'+vertico/project-search nil input default-directory)))
 
 ;;;###autoload

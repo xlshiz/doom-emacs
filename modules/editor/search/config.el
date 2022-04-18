@@ -136,7 +136,6 @@
    snail--source-buffer snail--source-project-file snail--source-recent-file
    +embark-find-file +embark-search-file-cwd +embark-search-file-other-dir +embark-search-file-other-project
    +embark/grep-project +embark-grep-other-cwd +embark-grep-other-project
-   +vertico/project-search
    :preview-key (kbd "C-.")))
 
 (after! embark
@@ -145,6 +144,7 @@
   (defadvice! +embark-become-command-a (fn &rest args)
     :around #'embark--become-command
     (let ((command (cl-first args))
+          (use-dialog-box nil)
           (input (cl-second args)))
       (if (equal (substring (format "%s" command) 0 8) "+embark-")
           (funcall command input)
