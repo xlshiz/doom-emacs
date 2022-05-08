@@ -89,6 +89,7 @@ Modules that reconfigure or augment packages or features built into Emacs.
 + wanderlust =+gmail= - TODO
 
 * :input
++ [[file:../modules/input/bidi/README.org][bidi]] - (tfel ot) thgir etirw uoy gnipleh
 + [[file:../modules/input/chinese/README.org][chinese]] - TODO
 + [[file:../modules/input/japanese/README.org][japanese]] - TODO
 + [[file:../modules/input/layout/README.org][layout]] =+azerty +bepo= - TODO
@@ -117,7 +118,7 @@ Modules that bring support for a language or group of languages to Emacs.
 + [[file:../modules/lang/fstar/README.org][fstar]] - F* support
 + [[file:../modules/lang/gdscript/README.org][gdscript]] =+lsp= - TODO
 + [[file:../modules/lang/go/README.org][go]] =+lsp= - TODO
-+ [[file:../modules/lang/haskell/README.org][haskell]] =+dante +ghcide +lsp= - TODO
++ [[file:../modules/lang/haskell/README.org][haskell]] =+lsp= - TODO
 + hy - TODO
 + [[file:../modules/lang/idris/README.org][idris]] - TODO
 + java =+meghanada +eclim +lsp= - TODO

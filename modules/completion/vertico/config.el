@@ -29,6 +29,7 @@ overrides `completion-styles' during company completion sessions.")
   ;; cleans ~/foo/bar/// to /, and ~/foo/bar/~/ to ~/.
   (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
   (add-hook 'minibuffer-setup-hook #'vertico-repeat-save)
+  (map! :map vertico-map "DEL" #'vertico-directory-delete-char)
   (map! :map vertico-map
         "M-j" #'vertico-next-group
         "M-k" #'vertico-previous-group)
