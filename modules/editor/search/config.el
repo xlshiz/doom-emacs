@@ -166,7 +166,8 @@
     ("p" +embark/grep-project)
     ("P" +embark-grep-other-project)
     ("G" +embark-grep-other-cwd)
-    ("b" +default/search-buffer))
+    ("g" +default/search-project-for-symbol-at-point)
+    ("b" +embark-grep-buffer))
   (add-to-list 'embark-become-keymaps '+embark-become-grep-map)
   )
 

@@ -445,7 +445,7 @@
       :desc "Run terminal"          "'"    #'vterm
 
       :desc "Search for symbol in project" "*" #'+default/search-project-for-symbol-at-point
-      :desc "Search project"               "/" #'+default/search-buffer
+      :desc "Search project"               "/" #'+embark/grep-project
 
       :desc "M-x"                   "SPC"  #'execute-extended-command
       :desc "Jump to bookmark"      "RET"  #'bookmark-jump

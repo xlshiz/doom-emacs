@@ -42,9 +42,20 @@
          (doom-project-find-file default-directory))))))
 
 ;;;###autoload
+(defun +embark-clean-input(input)
+  (if (string= (substring input 0 1) "#")
+      (substring input 1)
+    input))
+
+;;;###autoload
 (defun +embark/grep-project ()
   (interactive)
   (+default/search-project))
+
+;;;###autoload
+(defun +embark-grep-buffer (&optional input)
+  (interactive)
+  (embark--quit-and-run #'consult-line (+embark-clean-input input)))
 
 ;;;###autoload
 (defun +embark-grep-other-cwd (&optional input)
@@ -52,7 +63,7 @@
          (disabled-command-function nil)
          (default-directory (expand-file-name (read-directory-name "Search directory: "))))
     (setq this-command #'+embark-grep-other-cwd)
-    (embark--quit-and-run #'+vertico/project-search nil input default-directory)))
+    (embark--quit-and-run #'+vertico/project-search nil (+embark-clean-input input) default-directory)))
 
 ;;;###autoload
 (defun +embark-grep-other-project (&optional input)
@@ -63,7 +74,7 @@
                (completing-read "Search project: " projects nil t)
              (user-error "There are no known projects"))))
     (setq this-command #'+embark-grep-other-project)
-    (embark--quit-and-run #'+vertico/project-search nil input default-directory)))
+    (embark--quit-and-run #'+vertico/project-search nil (+embark-clean-input input) default-directory)))
 
 ;;;###autoload
 (defun snail--project-files (&rest _)
