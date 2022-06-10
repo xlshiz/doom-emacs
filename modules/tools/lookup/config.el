@@ -7,39 +7,11 @@
 ;;                                project
 ;;   + `+lookup/references': find a symbol's references in the current project
 ;;   + `+lookup/file': open the file referenced at point
-;;   + `+lookup/online'; look up a symbol on online resources
 ;;   + `+lookup/in-docsets': look up in Dash docsets
 ;;
 ;; This module uses `xref', an experimental new library in Emacs. It may change
 ;; in the future. When xref can't be depended on it will fall back to
 ;; `dumb-jump' to find what you want.
-
-(defvar +lookup-provider-url-alist
-  (append '(("Doom Emacs issues" "https://github.com/hlissner/doom-emacs/issues?q=is%%3Aissue+%s")
-            ("Google"            +lookup--online-backend-google "https://google.com/search?q=%s")
-            ("Google images"     "https://www.google.com/images?q=%s")
-            ("Google maps"       "https://maps.google.com/maps?q=%s")
-            ("Project Gutenberg" "http://www.gutenberg.org/ebooks/search/?query=%s")
-            ("DuckDuckGo"        +lookup--online-backend-duckduckgo "https://duckduckgo.com/?q=%s")
-            ("DevDocs.io"        "https://devdocs.io/#q=%s")
-            ("StackOverflow"     "https://stackoverflow.com/search?q=%s")
-            ("Github"            "https://github.com/search?ref=simplesearch&q=%s")
-            ("Youtube"           "https://youtube.com/results?aq=f&oq=&search_query=%s")
-            ("Wolfram alpha"     "https://wolframalpha.com/input/?i=%s")
-            ("Wikipedia"         "https://wikipedia.org/search-redirect.php?language=en&go=Go&search=%s")
-            ("MDN"               "https://developer.mozilla.org/en-US/search?q=%s"))
-          (when (featurep! :lang rust)
-            '(("Rust Docs" "https://doc.rust-lang.org/std/?search=%s"))))
-  "An alist that maps online resources to either:
-
-  1. A search url (needs on '%s' to substitute with an url encoded query),
-  2. A non-interactive function that returns the search url in #1,
-  3. An interactive command that does its own search for that provider.
-
-Used by `+lookup/online'.")
-
-(defvar +lookup-open-url-fn #'browse-url
-  "Function to use to open search urls.")
 
 (defvar +lookup-definition-functions
   '(+lookup-dictionary-definition-backend-fn
@@ -88,7 +60,7 @@ argument: the identifier at point. See `set-lookup-handlers!' about adding to
 this list.")
 
 (defvar +lookup-documentation-functions
-  '(+lookup-online-backend-fn)
+  nil
   "Functions for `+lookup/documentation' to try, before resorting to
 `dumb-jump'. Stops at the first function to return non-nil or change the current
 window/point.
@@ -132,9 +104,7 @@ Dictionary.app behind the scenes to get definitions.")
         dumb-jump-prefer-searcher 'rg
         dumb-jump-aggressive nil
         dumb-jump-selector
-        (cond ((featurep! :completion ivy)  'ivy)
-              ((featurep! :completion helm) 'helm)
-              ('popup)))
+        (cond ('popup)))
   (add-hook 'dumb-jump-after-jump-hook #'better-jumper-set-jump))
 
 
@@ -161,25 +131,6 @@ Dictionary.app behind the scenes to get definitions.")
     ;; Use `better-jumper' instead of xref's marker stack
     (advice-add #'xref-push-marker-stack :around #'doom-set-jump-a))
 
-  (use-package! ivy-xref
-    :when (featurep! :completion ivy)
-    :config
-    (set-popup-rule! "^\\*xref\\*$" :ignore t)
-    (setq xref-show-definitions-function #'ivy-xref-show-defs
-          xref-show-xrefs-function       #'ivy-xref-show-xrefs)
-
-    ;; HACK Fix #4386: `ivy-xref-show-xrefs' calls `fetcher' twice, which has
-    ;; side effects that breaks in some cases (i.e. on `dired-do-find-regexp').
-    (defadvice! +lookup--fix-ivy-xrefs (fn fetcher alist)
-      :around #'ivy-xref-show-xrefs
-      (when (functionp fetcher)
-        (setf (alist-get 'fetched-xrefs alist)
-              (funcall fetcher)))
-      (funcall fn fetcher alist)))
-
-  (use-package! helm-xref
-    :when (featurep! :completion helm))
-
   (use-package! consult-xref
     :when (featurep! :completion vertico)
     :defer t
@@ -200,12 +151,7 @@ Dictionary.app behind the scenes to get definitions.")
   (setq dash-docs-enable-debugging doom-debug-p
         dash-docs-docsets-path (concat doom-etc-dir "docsets/")
         dash-docs-min-length 2
-        dash-docs-browser-func #'eww)
-
-  (cond ((featurep! :completion helm)
-         (require 'helm-dash nil t))
-        ((featurep! :completion ivy)
-         (require 'counsel-dash nil t))))
+        dash-docs-browser-func #'eww))
 
 
 ;;
@@ -222,4 +168,4 @@ Dictionary.app behind the scenes to get definitions.")
 
 
 ;;;###package synosaurus
-(setq synosaurus-choose-method 'default) ; use ivy/helm instead of ido
+(setq synosaurus-choose-method 'default)

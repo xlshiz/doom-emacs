@@ -42,3 +42,6 @@
     confirm-kill-processes nil
     ;; Prevent premature horizontal scrolling
     hscroll-margin 0))
+
+(map! :ni   "M-t"       #'+vterm/toggle
+      :ni   [f5]        #'+vterm/toggle)

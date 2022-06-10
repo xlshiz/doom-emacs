@@ -31,23 +31,6 @@
   (set-repl-handler! 'php-mode #'+php/open-repl)
   (set-lookup-handlers! 'php-mode :documentation #'php-search-documentation)
   (set-formatter! 'php-mode #'php-cs-fixer-fix)
-  (set-ligatures! 'php-mode
-    ;; Functional
-    :lambda "function()" :lambda "fn"
-    :def "function"
-    ;; Types
-    :null "null"
-    :true "true" :false "false"
-    :int "int" :float "float"
-    :str "string"
-    :bool "list"
-    ;; Flow
-    :not "!"
-    :and "&&" :and "and"
-    :or "||" :or "or"
-    :for "for"
-    :return "return"
-    :yield "use")
 
   (if (not (featurep! +lsp))
       ;; `+php-company-backend' uses `company-phpactor', `php-extras-company' or

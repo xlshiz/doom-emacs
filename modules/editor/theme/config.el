@@ -1,4 +1,4 @@
-;;; ui/doom/config.el -*- lexical-binding: t; -*-
+;;; editor/theme/config.el -*- lexical-binding: t; -*-
 
 ;;;###package pos-tip
 (setq pos-tip-internal-border-width 6

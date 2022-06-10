@@ -1,4 +1,4 @@
-;;; tools/dired/config.el -*- lexical-binding: t; -*-
+;;; editor/dired/config.el -*- lexical-binding: t; -*-
 
 (use-package! dired
   :commands dired-jump

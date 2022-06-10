@@ -206,19 +206,7 @@ Is relative to `org-directory', unless it is absolute. Is used in Doom's default
         (type (format "Link: %s" (org-element-property :raw-link context))))))
 
   ;; Automatic indent detection in org files is meaningless
-  (add-to-list 'doom-detect-indentation-excluded-modes 'org-mode)
-
-  (set-ligatures! 'org-mode
-    :name "#+NAME:"
-    :name "#+name:"
-    :src_block "#+BEGIN_SRC"
-    :src_block "#+begin_src"
-    :src_block_end "#+END_SRC"
-    :src_block_end "#+end_src"
-    :quote "#+BEGIN_QUOTE"
-    :quote "#+begin_quote"
-    :quote_end "#+END_QUOTE"
-    :quote_end "#+end_quote"))
+  (add-to-list 'doom-detect-indentation-excluded-modes 'org-mode))
 
 
 (defun +org-init-babel-h ()
@@ -862,12 +850,6 @@ between the two."
         "," #'org-switchb
         "." #'org-goto
         "@" #'org-cite-insert
-        (:when (featurep! :completion ivy)
-         "." #'counsel-org-goto
-         "/" #'counsel-org-goto-all)
-        (:when (featurep! :completion helm)
-         "." #'helm-org-in-buffer-headings
-         "/" #'helm-org-agenda-files-headings)
         (:when (featurep! :completion vertico)
          "." #'consult-org-heading
          "/" #'consult-org-agenda)
@@ -1144,7 +1126,7 @@ compelling reason, so..."
 
 
 (use-package! org-pdftools
-  :when (featurep! :tools pdf)
+  :when (featurep! :editor pdf)
   :commands org-pdftools-export
   :init
   (after! org

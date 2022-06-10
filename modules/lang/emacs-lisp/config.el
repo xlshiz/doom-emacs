@@ -33,17 +33,6 @@ employed so that flycheck still does *some* helpful linting.")
     :definition    #'+emacs-lisp-lookup-definition
     :documentation #'+emacs-lisp-lookup-documentation)
   (set-docsets! '(emacs-lisp-mode lisp-interaction-mode) "Emacs Lisp")
-  (set-ligatures! 'emacs-lisp-mode :lambda "lambda")
-  (set-rotate-patterns! 'emacs-lisp-mode
-    :symbols '(("t" "nil")
-               ("let" "let*")
-               ("when" "unless")
-               ("advice-add" "advice-remove")
-               ("defadvice!" "undefadvice!")
-               ("add-hook" "remove-hook")
-               ("add-hook!" "remove-hook!")
-               ("it" "xit")
-               ("describe" "xdescribe")))
 
   (setq-hook! 'emacs-lisp-mode-hook
     ;; Emacs' built-in elisp files use a hybrid tab->space indentation scheme

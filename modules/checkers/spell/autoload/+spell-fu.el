@@ -34,15 +34,6 @@
         ((goto-char orig-pt)
          nil)))
 
-(defun +spell-correct-ivy-fn (candidates word)
-  (ivy-read (format "Corrections for %S: " word) candidates))
-
-(defun +spell-correct-helm-fn (candidates word)
-  (helm :sources (helm-build-sync-source
-                  "Ispell"
-                  :candidates candidates)
-        :prompt (format "Corrections for %S: " word)))
-
 (defun +spell-correct-generic-fn (candidates word)
   (completing-read (format "Corrections for %S: " word) candidates))
 
@@ -61,9 +52,7 @@
   (ispell-set-spellchecker-params)
   (save-current-buffer
     (ispell-accept-buffer-local-defs))
-  (if (not (or (featurep! :completion ivy)
-               (featurep! :completion helm)
-               (featurep! :completion vertico)))
+  (if (not (featurep! :completion vertico))
       (call-interactively #'ispell-word)
     (cl-destructuring-bind (start . end)
         (or (bounds-of-thing-at-point 'word)

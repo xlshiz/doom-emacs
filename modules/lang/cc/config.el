@@ -53,10 +53,6 @@ This is ignored by ccls.")
   (set-docsets! 'c-mode "C")
   (set-docsets! 'c++-mode "C++" "Boost")
   (set-electric! '(c-mode c++-mode objc-mode java-mode) :chars '(?\n ?\} ?\{))
-  (set-rotate-patterns! 'c++-mode
-    :symbols '(("public" "protected" "private")
-               ("class" "struct")))
-  (set-ligatures! '(c-mode c++-mode) nil)
 
   ;; HACK Suppress 'Args out of range' error in when multiple modifications are
   ;;      performed at once in a `c++-mode' buffer, e.g. with `iedit' or

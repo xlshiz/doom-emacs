@@ -24,15 +24,7 @@
     :chars '(?\} ?\))
     :words '("or" "and"))
 
-  (set-ligatures! 'graphql-mode
-    :null "null"
-    :true "true" :false "false"
-    :int "Int" :str "String"
-    :float "Float"
-    :bool "Bool"
-
-    :not "not"
-    :and "and" :or "or"))
+  )
 
 (use-package! graphql-doc
   :after graphql-mode)

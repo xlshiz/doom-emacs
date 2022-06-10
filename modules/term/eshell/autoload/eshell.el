@@ -146,26 +146,9 @@ Once the eshell process is killed, the previous frame layout is restored."
 
 ;;;###autoload
 (defun +eshell/search-history ()
-  "Search the eshell command history with helm, ivy or `eshell-list-history'."
+  "Search the eshell command history."
   (interactive)
-  (cond ((featurep! :completion ivy)
-         (require 'em-hist)
-         (let* ((ivy-completion-beg (eshell-bol))
-                (ivy-completion-end (point-at-eol))
-                (input (buffer-substring-no-properties
-                        ivy-completion-beg
-                        ivy-completion-end)))
-           ;; Better than `counsel-esh-history' because that doesn't
-           ;; pre-populate the initial input or selection.
-           (ivy-read "Command: "
-                     (delete-dups
-                      (when (> (ring-size eshell-history-ring) 0)
-                        (ring-elements eshell-history-ring)))
-                     :initial-input input
-                     :action #'ivy-completion-in-region-action)))
-        ((featurep! :completion helm)
-         (helm-eshell-history))
-        ((featurep! :completion vertico)
+  (cond ((featurep! :completion vertico)
          (forward-char 1) ;; Move outside of read only prompt text.
          (consult-history))
         ((eshell-list-history))))
@@ -173,7 +156,7 @@ Once the eshell process is killed, the previous frame layout is restored."
 ;;;###autoload
 (defun +eshell/pcomplete ()
   "Use pcomplete with completion-in-region backend instead of popup window at
-bottom. This ties pcomplete into ivy or helm, if they are enabled."
+bottom."
   (interactive)
   (require 'pcomplete)
   (if (and (bound-and-true-p company-mode)

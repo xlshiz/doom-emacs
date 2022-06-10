@@ -1,4 +1,4 @@
-;;; tools/eval/autoload/eval.el -*- lexical-binding: t; -*-
+;;; editor/eval/autoload/eval.el -*- lexical-binding: t; -*-
 
 ;;;###autoload
 (defun +eval-display-results-in-popup (output &optional _source-buffer)

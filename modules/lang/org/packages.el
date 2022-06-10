@@ -46,7 +46,7 @@
   (package! evil-org
     :recipe (:host github :repo "hlissner/evil-org-mode")
     :pin "a9706da260c45b98601bcd72b1d2c0a24a017700"))
-(when (featurep! :tools pdf)
+(when (featurep! :editor pdf)
   (package! org-pdftools :pin "967f48fb5038bba32915ee9da8dc4e8b10ba3376"))
 (when (featurep! :tools magit)
   (package! orgit :pin "42b7f682b3e4e487ff209a44221a729921241133")

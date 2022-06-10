@@ -222,3 +222,24 @@
           (setq +mc--compat-evil-prev-state nil))))
 
     (defvar mc--default-cmds-to-run-once nil)))
+
+(map! :prefix "gz"
+      :nv "d" #'evil-mc-make-and-goto-next-match
+      :nv "D" #'evil-mc-make-and-goto-prev-match
+      :nv "s" #'evil-mc-skip-and-goto-next-match
+      :nv "S" #'evil-mc-skip-and-goto-prev-match
+      :nv "c" #'evil-mc-skip-and-goto-next-cursor
+      :nv "C" #'evil-mc-skip-and-goto-prev-cursor
+      :nv "j" #'evil-mc-make-cursor-move-next-line
+      :nv "k" #'evil-mc-make-cursor-move-prev-line
+      :nv "m" #'evil-mc-make-all-cursors
+      :nv "n" #'evil-mc-make-and-goto-next-cursor
+      :nv "N" #'evil-mc-make-and-goto-last-cursor
+      :nv "p" #'evil-mc-make-and-goto-prev-cursor
+      :nv "P" #'evil-mc-make-and-goto-first-cursor
+      :nv "q" #'evil-mc-undo-all-cursors
+      :nv "t" #'+multiple-cursors/evil-mc-toggle-cursors
+      :nv "u" #'+multiple-cursors/evil-mc-undo-cursor
+      :nv "z" #'+multiple-cursors/evil-mc-toggle-cursor-here
+      :v  "I" #'evil-mc-make-cursor-in-visual-selection-beg
+      :v  "A" #'evil-mc-make-cursor-in-visual-selection-end)

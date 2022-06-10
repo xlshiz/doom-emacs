@@ -89,7 +89,7 @@ Docsets can be searched directly via `+lookup/in-docsets'."
   "Lookup QUERY in dash DOCSETS.
 
 QUERY is a string and docsets in an array of strings, each a name of a Dash
-docset. Requires either helm or ivy.
+docset.
 
 If prefix ARG is supplied, search all installed installed docsets. They can be
 installed with `dash-docs-install-docset'."
@@ -118,11 +118,7 @@ installed with `dash-docs-install-docset'."
                                       :initial query)
                        (user-error "Aborted"))))
              (dash-docs-browse-url (cdr (assoc result (funcall sink nil))))))
-          ((featurep! :completion ivy)
-           (counsel-dash query))
-          ((featurep! :completion helm)
-           (helm-dash query))
-          ((user-error "No dash backend is installed, enable ivy or helm.")))))
+          ((user-error "No dash backend is installed")))))
 
 ;;;###autoload
 (defun +lookup/in-all-docsets (&optional query)

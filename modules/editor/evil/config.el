@@ -87,6 +87,11 @@ directives. By default, this only recognizes C directives.")
       (put 'cursor 'evil-emacs-color  (face-foreground 'warning))
       (put 'cursor 'evil-normal-color (face-background 'cursor))))
 
+  (add-hook 'evil-insert-state-entry-hook #'delete-selection-mode)
+  (add-hook! 'evil-insert-state-exit-hook
+    (defun +default-disable-delete-selection-mode-h ()
+      (delete-selection-mode -1)))
+
   (defun +evil-default-cursor-fn ()
     (evil-set-cursor-color (get 'cursor 'evil-normal-color)))
   (defun +evil-emacs-cursor-fn ()
@@ -606,7 +611,60 @@ directives. By default, this only recognizes C directives.")
         :i "C-f"    #'company-files
         :i "C-]"    #'company-etags
         :i "s"      #'company-ispell
+        :i "e"      #'company-english-helper-search
         :i "C-s"    #'company-yasnippet
         :i "C-o"    #'company-capf
         :i "C-n"    #'+company/dabbrev
         :i "C-p"    #'+company/dabbrev-code-previous)))
+
+;; Make SPC u SPC u [...] possible (#747)
+(map! :map universal-argument-map
+      :prefix doom-leader-key     "u" #'universal-argument-more
+      :prefix doom-leader-alt-key "u" #'universal-argument-more)
+
+;; A Doom convention where C-s on popups and interactive searches will invoke
+;; ivy/helm/vertico for their superior filtering.
+(defvar +default-minibuffer-maps
+  (append '(minibuffer-local-map
+            minibuffer-local-ns-map
+            minibuffer-local-completion-map
+            minibuffer-local-must-match-map
+            minibuffer-local-isearch-map
+            read-expression-map))
+  "A list of all the keymaps used for the minibuffer.")
+(when (featurep! :completion vertico)
+  (let ((command #'consult-history))
+    (define-key!
+      :keymaps (append +default-minibuffer-maps
+                       (when (featurep! :editor evil +everywhere)
+                         '(evil-ex-completion-map)))
+      "C-s" command)))
+(define-key! :keymaps +default-minibuffer-maps
+  [escape] #'abort-recursive-edit
+  "C-a"    #'move-beginning-of-line
+  "C-r"    #'evil-paste-from-register
+  "C-u"    #'evil-delete-back-to-indentation
+  "C-v"    #'yank
+  "C-w"    #'doom/delete-backward-word
+  "C-z"    (cmd! (ignore-errors (call-interactively #'undo))))
+
+(define-key! :keymaps +default-minibuffer-maps
+  "C-j"    #'next-line
+  "C-k"    #'previous-line
+  "C-S-j"  #'scroll-up-command
+  "C-S-k"  #'scroll-down-command)
+;; For folks with `evil-collection-setup-minibuffer' enabled
+(define-key! :states 'insert :keymaps +default-minibuffer-maps
+  "C-j"    #'next-line
+  "C-k"    #'previous-line)
+
+(map! :map (evil-ex-completion-map evil-ex-search-keymap)
+      "C-a" #'evil-beginning-of-line
+      "C-b" #'evil-backward-char
+      "C-f" #'evil-forward-char
+      :gi "C-j" #'next-complete-history-element
+      :gi "C-k" #'previous-complete-history-element)
+
+(define-key! read-expression-map
+  "C-j" #'next-line-or-history-element
+  "C-k" #'previous-line-or-history-element)

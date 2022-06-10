@@ -74,8 +74,8 @@
   (interactive)
   (let ((search-text (minibuffer-contents-no-properties)))
     (if (equal (substring search-text 0 1) "#")
-        (+search-minibuf-quit-and-run (color-rg-search-input (substring search-text 1) default-directory))
-      (+search-minibuf-quit-and-run (color-rg-search-input search-text default-directory)))))
+        (+search-minibuf-quit-and-run (color-rg-search-input (substring search-text 1) (doom-project-root)))
+      (+search-minibuf-quit-and-run (color-rg-search-input search-text (expand-file-name (buffer-file-name)))))))
 
 ;;;###autoload
 (defun evil-collection-color-rg-setup ()

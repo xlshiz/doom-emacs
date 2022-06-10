@@ -235,18 +235,12 @@ This backend prefers \"just working\" over accuracy."
 (defun +lookup-project-search-backend-fn (identifier)
   "Conducts a simple project text search for IDENTIFIER.
 
-Uses and requires `+ivy-file-search', `+helm-file-search', or `+vertico-file-search'.
-Will return nil if neither is available. These require ripgrep to be installed."
+Uses and requires `+vertico-file-search'. Will return nil if
+neither is available. These require ripgrep to be installed."
   (unless identifier
     (let ((query (rxt-quote-pcre identifier)))
       (ignore-errors
-        (cond ((featurep! :completion ivy)
-               (+ivy-file-search :query query)
-               t)
-              ((featurep! :completion helm)
-               (+helm-file-search :query query)
-               t)
-              ((featurep! :completion vertico)
+        (cond ((featurep! :completion vertico)
                (+vertico-file-search :query query)
                t))))))
 
@@ -264,7 +258,7 @@ current buffer."
 
 (defun +lookup-ffap-backend-fn (identifier)
   "Tries to locate the file at point (or in active selection).
-Uses find-in-project functionality (provided by ivy, helm, or project),
+Uses find-in-project functionality (provided by project),
 otherwise falling back to ffap.el (find-file-at-point)."
   (let ((guess
          (cond (identifier)
@@ -278,9 +272,6 @@ otherwise falling back to ffap.el (find-file-at-point)."
                 (or (file-exists-p guess)
                     (ffap-url-p guess)))
            (find-file-at-point guess))
-          ((and (featurep! :completion ivy)
-                (doom-project-p))
-           (counsel-file-jump guess (doom-project-root)))
           ((and (featurep! :completion vertico)
                 (doom-project-p))
            (+vertico/find-file-in (doom-project-root) guess))

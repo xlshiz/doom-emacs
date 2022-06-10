@@ -1,4 +1,4 @@
-;;; tools/eval/autoload/settings.el -*- lexical-binding: t; -*-
+;;; editor/eval/autoload/settings.el -*- lexical-binding: t; -*-
 
 ;;
 ;; REPLs

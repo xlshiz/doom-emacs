@@ -1,4 +1,4 @@
-;;; tools/eval/autoload/repl.el -*- lexical-binding: t; -*-
+;;; editor/eval/autoload/repl.el -*- lexical-binding: t; -*-
 
 (defvar +eval-repl-buffers (make-hash-table :test 'equal)
   "The buffer of the last open repl.")

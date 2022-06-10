@@ -4,26 +4,7 @@
   :defer t
   :config
   (when (featurep! +lsp)
-    (add-hook 'dart-mode-local-vars-hook #'lsp! 'append))
-  (set-ligatures! '(dart-mode)
-    ;; Functional
-    :def "Function"
-    :lambda "() =>"
-    ;; Types
-    :null "null"
-    :true "true" :false "false"
-    :int "int" :float "double"
-    :str "String"
-    :bool "bool"
-    :list "List"
-    ;; Flow
-    :not "!"
-    :in "in"
-    :and "&&" :or "||"
-    :for "for"
-    :return "return"
-    ;; Other
-    :yield "yield"))
+    (add-hook 'dart-mode-local-vars-hook #'lsp! 'append)))
 
 
 (use-package! flutter

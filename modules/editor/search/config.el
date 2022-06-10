@@ -16,7 +16,12 @@
 (use-package! avy
   :commands (avy-goto-char-timer)
   :init
-  (setq avy-timeout-seconds 0.5))
+  (setq avy-all-windows nil
+        avy-all-windows-alt t
+        avy-background t
+        ;; the unpredictability of this (when enabled) makes it a poor default
+        avy-single-candidate-jump nil
+        avy-timeout-seconds 0.5))
 
 (use-package! avy-thing-edit
   :defer t
@@ -36,9 +41,6 @@
   :commands (color-rg-search-input color-rg-search-symbol
               color-rg-search-symbol-in-current-file color-rg-search-project)
   :init
-  (when (featurep! :completion ivy)
-    (define-key! swiper-map "<M-return>" #'+search/swiper-to-color-rg)
-    (define-key! counsel-ag-map "<M-return>" #'+search/counsel-to-color-rg))
   (when (featurep! :completion vertico)
     (define-key! vertico-map "<M-return>" #'+search/consult-to-color-rg))
   (defconst evil-collection-color-rg-maps '(color-rg-mode-map
@@ -157,7 +159,6 @@
     ("f" +embark-search-file-cwd)
     ("F" +embark-search-file-other-dir)
     ("P" +embark-search-file-other-project)
-    ("a" snails)
     ("A" snail))
   (add-to-list 'embark-become-keymaps '+embark-become-snail-map)
 

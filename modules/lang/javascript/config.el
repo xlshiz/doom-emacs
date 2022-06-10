@@ -19,22 +19,7 @@
         "AngularJS" "Backbone" "BackboneJS" "Bootstrap" "D3JS" "EmberJS" "Express"
         "ExtJS" "JQuery" "JQuery_Mobile" "JQuery_UI" "KnockoutJS" "Lo-Dash"
         "MarionetteJS" "MomentJS" "NodeJS" "PrototypeJS" "React" "RequireJS"
-        "SailsJS" "UnderscoreJS" "VueJS" "ZeptoJS")
-      (set-ligatures! mode
-        ;; Functional
-        :def "function"
-        :lambda "() =>"
-        :composition "compose"
-        ;; Types
-        :null "null"
-        :true "true" :false "false"
-        ;; Flow
-        :not "!"
-        :and "&&" :or "||"
-        :for "for"
-        :return "return"
-        ;; Other
-        :yield "import"))))
+        "SailsJS" "UnderscoreJS" "VueJS" "ZeptoJS"))))
 
 
 (use-package! rjsx-mode

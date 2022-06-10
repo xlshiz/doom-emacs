@@ -187,16 +187,6 @@ instead is more sensible."
         "C-j" #'lsp-ui-peek--select-next-file))
 
 
-(use-package! helm-lsp
-  :when (featurep! :completion helm)
-  :commands helm-lsp-workspace-symbol helm-lsp-global-workspace-symbol)
-
-
-(use-package! lsp-ivy
-  :when (featurep! :completion ivy)
-  :commands lsp-ivy-workspace-symbol lsp-ivy-global-workspace-symbol)
-
-
 (use-package! consult-lsp
   :defer t
   :when (featurep! :completion vertico)
