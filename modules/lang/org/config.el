@@ -121,7 +121,7 @@ Is relative to `org-directory', unless it is absolute. Is used in Doom's default
           (?B . warning)
           (?C . success))
         org-startup-indented t
-        org-tags-column 0
+        org-tags-column -77
         org-use-sub-superscripts '{}
         ;; `showeverything' is org's default, but it doesn't respect
         ;; `org-hide-block-startup' (#+startup: hideblocks), archive trees,
@@ -131,7 +131,10 @@ Is relative to `org-directory', unless it is absolute. Is used in Doom's default
 
   (setq org-refile-targets
         '((nil :maxlevel . 3)
-          (org-agenda-files :maxlevel . 3))
+          (org-agenda-files :maxlevel . 3)
+          (+org-capture-todo-file . (:level . 1))
+          (+org-capture-notes-file . (:level . 1))
+          (org-default-refile-file . (:level . 1)))
         ;; Without this, completers like ivy/helm are only given the first level of
         ;; each outline candidates. i.e. all the candidates under the "Tasks" heading
         ;; are just "Tasks/". This is unhelpful. We want the full path to each refile
@@ -150,37 +153,27 @@ Is relative to `org-directory', unless it is absolute. Is used in Doom's default
     (custom-declare-face '+org-todo-onhold  '((t (:inherit (bold warning org-todo)))) "")
     (custom-declare-face '+org-todo-cancel  '((t (:inherit (bold error org-todo)))) ""))
   (setq org-todo-keywords
-        '((sequence
-           "TODO(t)"  ; A task that needs doing & is ready to do
-           "PROJ(p)"  ; A project, which usually contains other tasks
-           "LOOP(r)"  ; A recurring task
-           "STRT(s)"  ; A task that is in progress
-           "WAIT(w)"  ; Something external is holding up this task
-           "HOLD(h)"  ; This task is paused/on hold because of me
-           "IDEA(i)"  ; An unconfirmed and unapproved task or notion
-           "|"
-           "DONE(d)"  ; Task successfully completed
-           "KILL(k)") ; Task was cancelled, aborted or is no longer applicable
-          (sequence
-           "[ ](T)"   ; A task that needs doing
-           "[-](S)"   ; Task is in progress
-           "[?](W)"   ; Task is being held up or paused
-           "|"
-           "[X](D)")  ; Task was completed
-          (sequence
-           "|"
-           "OKAY(o)"
-           "YES(y)"
-           "NO(n)"))
-        org-todo-keyword-faces
-        '(("[-]"  . +org-todo-active)
-          ("STRT" . +org-todo-active)
-          ("[?]"  . +org-todo-onhold)
-          ("WAIT" . +org-todo-onhold)
-          ("HOLD" . +org-todo-onhold)
-          ("PROJ" . +org-todo-project)
-          ("NO"   . +org-todo-cancel)
-          ("KILL" . +org-todo-cancel)))
+    '((sequence
+        "TODO(t)"
+        "PROJ(p)"
+        "DOING(i)"
+        "LOOP(r)"
+        "|"
+        "DONE(d)"
+        "CANCEL(c)")
+       (sequence
+         "⚐(T)"
+         "⚑(I)"
+         "❓(H)"
+         "|"
+         "✔(D)"
+         "✘(C)"))
+    org-todo-keyword-faces
+    '(("DOING" . +org-todo-onhold)
+       ("⚑" . +org-todo-onhold)
+       ("PROJ" . +org-todo-project)
+       ("LOOP" . +org-todo-onhold)
+       ("❓" . +org-todo-onhold)))
 
   (defadvice! +org-display-link-in-eldoc-a (&rest _)
     "Display full link in minibuffer when cursor/mouse is over it."
@@ -393,51 +386,8 @@ I like:
         +org-capture-journal-file
         (expand-file-name +org-capture-journal-file org-directory)
         org-capture-templates
-        '(("t" "Personal todo" entry
-           (file+headline +org-capture-todo-file "Inbox")
-           "* [ ] %?\n%i\n%a" :prepend t)
-          ("n" "Personal notes" entry
-           (file+headline +org-capture-notes-file "Inbox")
-           "* %u %?\n%i\n%a" :prepend t)
-          ("j" "Journal" entry
-           (file+olp+datetree +org-capture-journal-file)
-           "* %U %?\n%i\n%a" :prepend t)
-
-          ;; Will use {project-root}/{todo,notes,changelog}.org, unless a
-          ;; {todo,notes,changelog}.org file is found in a parent directory.
-          ;; Uses the basename from `+org-capture-todo-file',
-          ;; `+org-capture-changelog-file' and `+org-capture-notes-file'.
-          ("p" "Templates for projects")
-          ("pt" "Project-local todo" entry  ; {project-root}/todo.org
-           (file+headline +org-capture-project-todo-file "Inbox")
-           "* TODO %?\n%i\n%a" :prepend t)
-          ("pn" "Project-local notes" entry  ; {project-root}/notes.org
-           (file+headline +org-capture-project-notes-file "Inbox")
-           "* %U %?\n%i\n%a" :prepend t)
-          ("pc" "Project-local changelog" entry  ; {project-root}/changelog.org
-           (file+headline +org-capture-project-changelog-file "Unreleased")
-           "* %U %?\n%i\n%a" :prepend t)
-
-          ;; Will use {org-directory}/{+org-capture-projects-file} and store
-          ;; these under {ProjectName}/{Tasks,Notes,Changelog} headings. They
-          ;; support `:parents' to specify what headings to put them under, e.g.
-          ;; :parents ("Projects")
-          ("o" "Centralized templates for projects")
-          ("ot" "Project todo" entry
-           (function +org-capture-central-project-todo-file)
-           "* TODO %?\n %i\n %a"
-           :heading "Tasks"
-           :prepend nil)
-          ("on" "Project notes" entry
-           (function +org-capture-central-project-notes-file)
-           "* %U %?\n %i\n %a"
-           :heading "Notes"
-           :prepend t)
-          ("oc" "Project changelog" entry
-           (function +org-capture-central-project-changelog-file)
-           "* %U %?\n %i\n %a"
-           :heading "Changelog"
-           :prepend t)))
+        '(("t" "Todo" entry (file+headline org-default-refile-file "Inbox")
+           "* %?\n")))
 
   ;; Kill capture buffers by default (unless they've been visited)
   (after! org-capture

@@ -107,6 +107,7 @@ info in the `header-line-format' is a more visible indicator."
   :hook (doom-first-file . global-git-commit-mode)
   :config
   (set-yas-minor-mode! 'git-commit-mode)
+  (yas-activate-extra-mode 'git-commit-mode)
 
   ;; Enforce git commit conventions.
   ;; See https://chris.beams.io/posts/git-commit/

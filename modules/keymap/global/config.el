@@ -1,94 +1,34 @@
 ;;; config/default/+bindings.el -*- lexical-binding: t; -*-
 
-(define-key! help-map
-  ;; new keybinds
-  "'"    #'describe-char
-  "u"    #'doom/help-autodefs
-  "E"    #'doom/sandbox
-  "M"    #'doom/describe-active-minor-mode
-  "O"    #'+lookup/online
-  "T"    #'doom/toggle-profiler
-  "V"    #'doom/help-custom-variable
-  "W"    #'+default/man-or-woman
-  "C-k"  #'describe-key-briefly
-  "C-l"  #'describe-language-environment
-  "C-m"  #'info-emacs-manual
-
-  ;; Unbind `help-for-help'. Conflicts with which-key's help command for the
-  ;; <leader> h prefix. It's already on ? and F1 anyway.
-  "C-h"  nil
-
-  ;; replacement keybinds
-  ;; replaces `info-emacs-manual' b/c it's on C-m now
-  "r"    nil
-  "rr"   #'doom/reload
-  "rt"   #'doom/reload-theme
-  "rp"   #'doom/reload-packages
-  "rf"   #'doom/reload-font
-  "re"   #'doom/reload-env
-
-  ;; make `describe-bindings' available under the b prefix which it previously
-  ;; occupied. Add more binding related commands under that prefix as well
-  "b"    nil
-  "bb"   #'describe-bindings
-  "bi"   #'which-key-show-minor-mode-keymap
-  "bm"   #'which-key-show-major-mode
-  "bt"   #'which-key-show-top-level
-  "bf"   #'which-key-show-full-keymap
-  "bk"   #'which-key-show-keymap
-
-  ;; replaces `apropos-documentation' b/c `apropos' covers this
-  "d"    nil
-  "db"   #'doom/report-bug
-  "dc"   #'doom/goto-private-config-file
-  "dC"   #'doom/goto-private-init-file
-  "dd"   #'doom-debug-mode
-  "df"   #'doom/help-faq
-  "dh"   #'doom/help
-  "dl"   #'doom/help-search-load-path
-  "dL"   #'doom/help-search-loaded-files
-  "dm"   #'doom/help-modules
-  "dn"   #'doom/help-news
-  "dN"   #'doom/help-search-news
-  "dpc"  #'doom/help-package-config
-  "dpd"  #'doom/goto-private-packages-file
-  "dph"  #'doom/help-package-homepage
-  "dpp"  #'doom/help-packages
-  "ds"   #'doom/help-search-headings
-  "dS"   #'doom/help-search
-  "dt"   #'doom/toggle-profiler
-  "du"   #'doom/help-autodefs
-  "dv"   #'doom/version
-  "dx"   #'doom/sandbox
-
-  ;; replaces `apropos-command'
-  "a"    #'apropos
-  "A"    #'apropos-documentation
-  ;; replaces `describe-copying' b/c not useful
-  "C-c"  #'describe-coding-system
-  ;; replaces `Info-got-emacs-command-node' b/c redundant w/ `Info-goto-node'
-  "F"    #'describe-face
-  ;; replaces `view-hello-file' b/c annoying
-  "h"    nil
-  ;; replaces `view-emacs-news' b/c it's on C-n too
-  "n"    #'doom/help-news
-  ;; replaces `help-with-tutorial', b/c it's less useful than `load-theme'
-  "t"    #'load-theme
-  ;; replaces `finder-by-keyword' b/c not useful
-  "p"    #'doom/help-packages
-  ;; replaces `describe-package' b/c redundant w/ `doom/help-packages'
-  "P"    #'find-library)
+;;;
+;;; Global keymap
 
 ;; Make M-x harder to miss
 (define-key! 'override
   "M-x" #'execute-extended-command
   "A-x" #'execute-extended-command)
 
-;; Smarter C-a/C-e for both Emacs and Evil. C-a will jump to indentation.
-;; Pressing it again will send you to the true bol. Same goes for C-e, except
-;; it will ignore comments+trailing whitespace before jumping to eol.
-(map! :gi "C-a" #'doom/backward-to-bol-or-indent
-      :gi "C-e" #'doom/forward-to-last-non-comment-or-eol
+;; edit keymap
+(map! :nmvo ","      nil
+      :gni  "M-s"    #'save-buffer
+      :i    "C-f"    #'forward-char
+      :i    "C-b"    #'backward-char
+      :n    "ga"     #'ff-find-other-file
+      :n    "go"     (λ! (message "%S" (text-properties-at (point))))
+      :n    "C-S-f"  #'toggle-frame-fullscreen
+      :n    "C-+"    #'doom/reset-font-size
+      ;; Buffer-local font resizing
+      :n    "C-="    #'text-scale-increase
+      :n    "C--"    #'text-scale-decrease
+      ;; Frame-local font resizing
+      :n    "M-C-="  #'doom/increase-font-size
+      :n    "M-C--"  #'doom/decrease-font-size
+
+      ;; Smarter C-a/C-e for both Emacs and Evil. C-a will jump to indentation.
+      ;; Pressing it again will send you to the true bol. Same goes for C-e, except
+      ;; it will ignore comments+trailing whitespace before jumping to eol.
+      :gi   "C-a"   #'doom/backward-to-bol-or-indent
+      :gi   "C-e"   #'doom/forward-to-last-non-comment-or-eol
       ;; Standardizes the behavior of modified RET to match the behavior of
       ;; other editors, particularly Atom, textedit, textmate, and vscode, in
       ;; which ctrl+RET will add a new "item" below the current one and
@@ -117,178 +57,9 @@
        :gn "s-RET"        #'+default/newline-below
        :gn [s-return]     #'+default/newline-below
        :gn "S-s-RET"      #'+default/newline-above
-       :gn [S-s-return]   #'+default/newline-above))
-;;
-;;; Global keybindings
-;; Smart tab, these will only work in GUI Emacs
-(map! :i [tab] (cmds! (and (featurep! :editor snippets)
-                           (yas-maybe-expand-abbrev-key-filter 'yas-expand))
-                      #'yas-expand
-                      (and (bound-and-true-p company-mode)
-                           (featurep! :completion company +tng))
-                      #'company-indent-or-complete-common)
-      :m [tab] (cmds! (and (featurep! :editor snippets)
-                           (evil-visual-state-p)
-                           (or (eq evil-visual-selection 'line)
-                               (not (memq (char-after) (list ?\( ?\[ ?\{ ?\} ?\] ?\))))))
-                      #'yas-insert-snippet
-                      (and (featurep! :editor fold)
-                           (save-excursion (end-of-line) (invisible-p (point))))
-                      #'+fold/toggle
-                      ;; Fixes #4548: without this, this tab keybind overrides
-                      ;; mode-local ones for modes that don't have an evil
-                      ;; keybinding scheme or users who don't have :editor (evil
-                      ;; +everywhere) enabled.
-                      (or (doom-lookup-key
-                           [tab]
-                           (list (evil-get-auxiliary-keymap (current-local-map) evil-state)
-                                 (current-local-map)))
-                          (doom-lookup-key
-                           (kbd "TAB")
-                           (list (evil-get-auxiliary-keymap (current-local-map) evil-state)))
-                          (doom-lookup-key (kbd "TAB") (list (current-local-map))))
-                      it
-                      (fboundp 'evil-jump-item)
-                      #'evil-jump-item)
+       :gn [S-s-return]   #'+default/newline-above)
 
-      (:after apropos :map apropos-mode-map
-       :n "TAB"     #'forward-button
-       :n [tab]     #'forward-button
-       :n [backtab] #'backward-button)
-      (:after view :map view-mode-map
-       [escape]  #'View-quit-all)
-      (:after man :map Man-mode-map
-       :n "q"    #'kill-current-buffer)
-
-
-      ;; misc
-      :n "C-S-f"  #'toggle-frame-fullscreen
-      :n "C-+"    #'doom/reset-font-size
-      ;; Buffer-local font resizing
-      :n "C-="    #'text-scale-increase
-      :n "C--"    #'text-scale-decrease
-      ;; Frame-local font resizing
-      :n "M-C-="  #'doom/increase-font-size
-      :n "M-C--"  #'doom/decrease-font-size)
-
-(map! :nmvo ","        nil
-      :gni  "M-s"        #'save-buffer
-      :n    "ga"         #'ff-find-other-file
-      :n    "go"         (λ! (message "%S" (text-properties-at (point))))
-      :gni  "C-j"        #'ace-window
-      :i    "C-f"        #'forward-char
-      :i    "C-b"        #'backward-char
-      :n    "C-t"        #'pop-tag-mark
-      ;; vterm
-      :ni   "M-t"       #'+vterm/toggle
-      :ni   [f5]        #'+vterm/toggle)
-
-;;; :editor
-(map! (:when (featurep! :editor popup)
-       "C-`"   #'+popup/toggle
-       "C-~"   #'+popup/raise
-       "C-x p" #'+popup/other)
-
-      (:when (featurep! :editor workspaces)
-       :n "C-S-t" #'+workspace/display
-       :g "M-1"   #'+workspace/switch-to-0
-       :g "M-2"   #'+workspace/switch-to-1
-       :g "M-3"   #'+workspace/switch-to-2
-       :g "M-4"   #'+workspace/switch-to-3
-       :g "M-5"   #'+workspace/switch-to-4
-       :g "M-6"   #'+workspace/switch-to-5
-       :g "M-7"   #'+workspace/switch-to-6
-       :g "M-8"   #'+workspace/switch-to-7
-       :g "M-9"   #'+workspace/switch-to-8
-       :g "M-0"   #'+workspace/switch-to-final
-       (:when IS-MAC
-        :g "s-t"   #'+workspace/new
-        :g "s-T"   #'+workspace/display
-        :n "s-1"   #'+workspace/switch-to-0
-        :n "s-2"   #'+workspace/switch-to-1
-        :n "s-3"   #'+workspace/switch-to-2
-        :n "s-4"   #'+workspace/switch-to-3
-        :n "s-5"   #'+workspace/switch-to-4
-        :n "s-6"   #'+workspace/switch-to-5
-        :n "s-7"   #'+workspace/switch-to-6
-        :n "s-8"   #'+workspace/switch-to-7
-        :n "s-9"   #'+workspace/switch-to-8
-        :n "s-0"   #'+workspace/switch-to-final))
-      (:when (featurep! :editor tabs)
-       :ni "M-j"
-       (cond ((featurep! :editor tabs +sort)    nil)
-             ((featurep! :editor tabs)          #'awesome-tab-ace-jump))
-       :ni "M-h"
-       (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-prev-tab)
-             ((featurep! :editor tabs)          #'awesome-tab-backward-tab))
-       :ni "M-l"
-       (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-next-tab)
-             ((featurep! :editor tabs)          #'awesome-tab-forward-tab))
-       (:after org
-        :map org-mode-map
-        :ni "M-j"
-        (cond ((featurep! :editor tabs +sort)    nil)
-              ((featurep! :editor tabs)          #'awesome-tab-ace-jump))
-        :ni "M-h"
-        (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-prev-tab)
-              ((featurep! :editor tabs)          #'awesome-tab-backward-tab))
-        :ni "M-l"
-        (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-next-tab)
-              ((featurep! :editor tabs)          #'awesome-tab-forward-tab)))
-       (:after evil-org
-        :map evil-org-mode-map
-        :ni "M-j"
-        (cond ((featurep! :editor tabs +sort)    nil)
-              ((featurep! :editor tabs)          #'awesome-tab-ace-jump))
-        :ni "M-h"
-        (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-prev-tab)
-              ((featurep! :editor tabs)          #'awesome-tab-backward-tab))
-        :ni "M-l"
-        (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-next-tab)
-              ((featurep! :editor tabs)          #'awesome-tab-forward-tab)))
-       (:after evil-markdown
-        :map evil-markdown-mode-map
-        :ni "M-j"
-        (cond ((featurep! :editor tabs +sort)    nil)
-              ((featurep! :editor tabs)          #'awesome-tab-ace-jump))
-        :ni "M-h"
-        (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-prev-tab)
-              ((featurep! :editor tabs)          #'awesome-tab-backward-tab))
-        :ni "M-l"
-        (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-next-tab)
-              ((featurep! :editor tabs)          #'awesome-tab-forward-tab)))
-       (:after info
-        :map Info-mode-map
-        :ni "C-j"       #'ace-window)))
-
-;;; :editor
-(map! (:when (featurep! :editor format)
-       :n "gQ" #'+format:region)
-
-      (:when (featurep! :editor rotate-text)
-       :n "]r"  #'rotate-text
-       :n "[r"  #'rotate-text-backward)
-
-      (:when (featurep! :editor multiple-cursors)
-       ;; evil-multiedit
-       :v  "R"     #'evil-multiedit-match-all
-       :n  "M-d"   #'evil-multiedit-match-symbol-and-next
-       :n  "M-D"   #'evil-multiedit-match-symbol-and-prev
-       :v  "M-d"   #'evil-multiedit-match-and-next
-       :v  "M-D"   #'evil-multiedit-match-and-prev
-       :nv "C-M-d" #'evil-multiedit-restore
-       (:after evil-multiedit
-        (:map evil-multiedit-mode-map
-         :nv "M-d" #'evil-multiedit-match-and-next
-         :nv "M-D" #'evil-multiedit-match-and-prev
-         [return]  #'evil-multiedit-toggle-or-restrict-region))))
-
-;;; :tools
-(when (featurep! :tools eval)
-  (map! "M-r" #'+eval/buffer))
-
-;;; :avy-thins-edit
-(map! :nmvo ","         nil
+      ;;; avy-thins-edit
       (:prefix-map ("C-c y" . "avy-copy-and-yank")
        :ni "w"      #'avy-thing-copy-and-yank-word
        :ni "o"      #'avy-thing-copy-and-yank-symbol
@@ -365,6 +136,152 @@
         :ni "i"      #'avy-thing-replace-filename
         :ni "t"      #'avy-thing-replace-list
         :ni "u"      #'avy-thing-replace-url)))
+
+;; Smart tab, these will only work in GUI Emacs
+(map! :i [tab] (cmds! (and (featurep! :editor snippets)
+                           (yas-maybe-expand-abbrev-key-filter 'yas-expand))
+                      #'yas-expand
+                      (and (bound-and-true-p company-mode)
+                           (featurep! :completion company +tng))
+                      #'company-indent-or-complete-common)
+      :m [tab] (cmds! (and (featurep! :editor snippets)
+                           (evil-visual-state-p)
+                           (or (eq evil-visual-selection 'line)
+                               (not (memq (char-after) (list ?\( ?\[ ?\{ ?\} ?\] ?\))))))
+                      #'yas-insert-snippet
+                      (and (featurep! :editor fold)
+                           (save-excursion (end-of-line) (invisible-p (point))))
+                      #'+fold/toggle
+                      ;; Fixes #4548: without this, this tab keybind overrides
+                      ;; mode-local ones for modes that don't have an evil
+                      ;; keybinding scheme or users who don't have :editor (evil
+                      ;; +everywhere) enabled.
+                      (or (doom-lookup-key
+                           [tab]
+                           (list (evil-get-auxiliary-keymap (current-local-map) evil-state)
+                                 (current-local-map)))
+                          (doom-lookup-key
+                           (kbd "TAB")
+                           (list (evil-get-auxiliary-keymap (current-local-map) evil-state)))
+                          (doom-lookup-key (kbd "TAB") (list (current-local-map))))
+                      it
+                      (fboundp 'evil-jump-item)
+                      #'evil-jump-item))
+
+;;; :completion company
+(map! (:when (featurep! :completion company)
+       :i "C-@"    (cmds! (not (minibufferp)) #'company-complete-common)
+       :i "C-SPC"  (cmds! (not (minibufferp)) #'company-complete-common)
+       :i [C-tab]  #'+company/complete))
+
+;;; :editor popup&window&tag
+(map! :gni  "C-j"  #'ace-window
+      :n    "C-t"  #'pop-tag-mark
+      (:when (featurep! :editor popup)
+        "C-`"   #'+popup/toggle
+        "C-~"   #'+popup/raise
+        "C-x p" #'+popup/other)
+      (:after info
+       :map Info-mode-map
+       :ni "C-j"       #'ace-window))
+
+;;; :editor workspaces
+(map! (:when (featurep! :editor workspaces)
+       :n "C-S-t" #'+workspace/display
+       :g "M-1"   #'+workspace/switch-to-0
+       :g "M-2"   #'+workspace/switch-to-1
+       :g "M-3"   #'+workspace/switch-to-2
+       :g "M-4"   #'+workspace/switch-to-3
+       :g "M-5"   #'+workspace/switch-to-4
+       :g "M-6"   #'+workspace/switch-to-5
+       :g "M-7"   #'+workspace/switch-to-6
+       :g "M-8"   #'+workspace/switch-to-7
+       :g "M-9"   #'+workspace/switch-to-8
+       :g "M-0"   #'+workspace/switch-to-final
+       (:when IS-MAC
+        :g "s-t"   #'+workspace/new
+        :g "s-T"   #'+workspace/display
+        :n "s-1"   #'+workspace/switch-to-0
+        :n "s-2"   #'+workspace/switch-to-1
+        :n "s-3"   #'+workspace/switch-to-2
+        :n "s-4"   #'+workspace/switch-to-3
+        :n "s-5"   #'+workspace/switch-to-4
+        :n "s-6"   #'+workspace/switch-to-5
+        :n "s-7"   #'+workspace/switch-to-6
+        :n "s-8"   #'+workspace/switch-to-7
+        :n "s-9"   #'+workspace/switch-to-8
+        :n "s-0"   #'+workspace/switch-to-final)))
+
+;;; :editor tabs
+(map! (:when (featurep! :editor tabs)
+       :ni "M-j"
+       (cond ((featurep! :editor tabs +sort)    nil)
+             ((featurep! :editor tabs)          #'awesome-tab-ace-jump))
+       :ni "M-h"
+       (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-prev-tab)
+             ((featurep! :editor tabs)          #'awesome-tab-backward-tab))
+       :ni "M-l"
+       (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-next-tab)
+             ((featurep! :editor tabs)          #'awesome-tab-forward-tab))
+       (:after org
+        :map org-mode-map
+        :ni "M-j"
+        (cond ((featurep! :editor tabs +sort)    nil)
+              ((featurep! :editor tabs)          #'awesome-tab-ace-jump))
+        :ni "M-h"
+        (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-prev-tab)
+              ((featurep! :editor tabs)          #'awesome-tab-backward-tab))
+        :ni "M-l"
+        (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-next-tab)
+              ((featurep! :editor tabs)          #'awesome-tab-forward-tab)))
+       (:after evil-org
+        :map evil-org-mode-map
+        :ni "M-j"
+        (cond ((featurep! :editor tabs +sort)    nil)
+              ((featurep! :editor tabs)          #'awesome-tab-ace-jump))
+        :ni "M-h"
+        (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-prev-tab)
+              ((featurep! :editor tabs)          #'awesome-tab-backward-tab))
+        :ni "M-l"
+        (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-next-tab)
+              ((featurep! :editor tabs)          #'awesome-tab-forward-tab)))
+       (:after evil-markdown
+        :map evil-markdown-mode-map
+        :ni "M-j"
+        (cond ((featurep! :editor tabs +sort)    nil)
+              ((featurep! :editor tabs)          #'awesome-tab-ace-jump))
+        :ni "M-h"
+        (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-prev-tab)
+              ((featurep! :editor tabs)          #'awesome-tab-backward-tab))
+        :ni "M-l"
+        (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-next-tab)
+              ((featurep! :editor tabs)          #'awesome-tab-forward-tab)))))
+
+;;; :editor multiple-cursors
+(map! (:when (featurep! :editor multiple-cursors)
+       ;; evil-multiedit
+       :v  "R"     #'evil-multiedit-match-all
+       :n  "M-d"   #'evil-multiedit-match-symbol-and-next
+       :n  "M-D"   #'evil-multiedit-match-symbol-and-prev
+       :v  "M-d"   #'evil-multiedit-match-and-next
+       :v  "M-D"   #'evil-multiedit-match-and-prev
+       :nv "C-M-d" #'evil-multiedit-restore
+       (:after evil-multiedit
+        (:map evil-multiedit-mode-map
+         :nv "M-d" #'evil-multiedit-match-and-next
+         :nv "M-D" #'evil-multiedit-match-and-prev
+         [return]  #'evil-multiedit-toggle-or-restrict-region))))
+
+;;; :tools
+(map! (:when (featurep! :tools eval)
+        :ni  "M-r" #'+eval/buffer)
+      (:when (featurep! :tools format)
+       :n "gQ" #'+format:region))
+
+;;; term
+(map! (:when (featurep! :term vterm)
+        :ni   "M-t"       #'+vterm/toggle
+        :ni   [f5]        #'+vterm/toggle))
 
 ;;
 ;;; <leader>
@@ -822,8 +739,3 @@
        :desc "Kill window"                "D"   #'ace-delete-window
        :desc "Kill current window"        "d"   #'delete-window))
 
-(after! which-key
-  (let ((prefix-re (regexp-opt (list doom-leader-key doom-leader-alt-key))))
-    (cl-pushnew `((,(format "\\`\\(?:C-w\\|%s w\\) m\\'" prefix-re))
-                  nil . "maximize")
-                which-key-replacement-alist)))

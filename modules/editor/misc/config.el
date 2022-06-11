@@ -402,6 +402,9 @@ is deferred until the file is saved. Respects `git-gutter:disabled-modes'."
     (cl-pushnew `((,(format "\\`\\(?:<\\(?:\\(?:f1\\|help\\)>\\)\\|C-h\\|%s h\\) r\\'" prefix-re))
                   nil . "reload")
                 which-key-replacement-alist)
+    (cl-pushnew `((,(format "\\`\\(?:C-w\\|%s w\\) m\\'" prefix-re))
+                  nil . "maximize")
+                which-key-replacement-alist)
     (cl-pushnew `((,(format "\\`\\(?:<\\(?:\\(?:f1\\|help\\)>\\)\\|C-h\\|%s h\\) b\\'" prefix-re))
                   nil . "bindings")
                 which-key-replacement-alist)))
@@ -452,6 +455,95 @@ Continues comments if executed from a commented line. Consults
 
 ;;;}}}
 
-(load! "+bindings")
+;;;{{{1 map
+(define-key! help-map
+  ;; new keybinds
+  "'"    #'describe-char
+  "u"    #'doom/help-autodefs
+  "E"    #'doom/sandbox
+  "M"    #'doom/describe-active-minor-mode
+  "O"    #'+lookup/online
+  "T"    #'doom/toggle-profiler
+  "V"    #'doom/help-custom-variable
+  "W"    #'+default/man-or-woman
+  "C-k"  #'describe-key-briefly
+  "C-l"  #'describe-language-environment
+  "C-m"  #'info-emacs-manual
+
+  ;; Unbind `help-for-help'. Conflicts with which-key's help command for the
+  ;; <leader> h prefix. It's already on ? and F1 anyway.
+  "C-h"  nil
+
+  ;; replacement keybinds
+  ;; replaces `info-emacs-manual' b/c it's on C-m now
+  "r"    nil
+  "rr"   #'doom/reload
+  "rt"   #'doom/reload-theme
+  "rp"   #'doom/reload-packages
+  "rf"   #'doom/reload-font
+  "re"   #'doom/reload-env
+
+  ;; make `describe-bindings' available under the b prefix which it previously
+  ;; occupied. Add more binding related commands under that prefix as well
+  "b"    nil
+  "bb"   #'describe-bindings
+  "bi"   #'which-key-show-minor-mode-keymap
+  "bm"   #'which-key-show-major-mode
+  "bt"   #'which-key-show-top-level
+  "bf"   #'which-key-show-full-keymap
+  "bk"   #'which-key-show-keymap
+
+  ;; replaces `apropos-documentation' b/c `apropos' covers this
+  "d"    nil
+  "db"   #'doom/report-bug
+  "dc"   #'doom/goto-private-config-file
+  "dC"   #'doom/goto-private-init-file
+  "dd"   #'doom-debug-mode
+  "df"   #'doom/help-faq
+  "dh"   #'doom/help
+  "dl"   #'doom/help-search-load-path
+  "dL"   #'doom/help-search-loaded-files
+  "dm"   #'doom/help-modules
+  "dn"   #'doom/help-news
+  "dN"   #'doom/help-search-news
+  "dpc"  #'doom/help-package-config
+  "dpd"  #'doom/goto-private-packages-file
+  "dph"  #'doom/help-package-homepage
+  "dpp"  #'doom/help-packages
+  "ds"   #'doom/help-search-headings
+  "dS"   #'doom/help-search
+  "dt"   #'doom/toggle-profiler
+  "du"   #'doom/help-autodefs
+  "dv"   #'doom/version
+  "dx"   #'doom/sandbox
+
+  ;; replaces `apropos-command'
+  "a"    #'apropos
+  "A"    #'apropos-documentation
+  ;; replaces `describe-copying' b/c not useful
+  "C-c"  #'describe-coding-system
+  ;; replaces `Info-got-emacs-command-node' b/c redundant w/ `Info-goto-node'
+  "F"    #'describe-face
+  ;; replaces `view-hello-file' b/c annoying
+  "h"    nil
+  ;; replaces `view-emacs-news' b/c it's on C-n too
+  "n"    #'doom/help-news
+  ;; replaces `help-with-tutorial', b/c it's less useful than `load-theme'
+  "t"    #'load-theme
+  ;; replaces `finder-by-keyword' b/c not useful
+  "p"    #'doom/help-packages
+  ;; replaces `describe-package' b/c redundant w/ `doom/help-packages'
+  "P"    #'find-library)
+
+(map! (:after apropos :map apropos-mode-map
+        :n "TAB"     #'forward-button
+        :n [tab]     #'forward-button
+        :n [backtab] #'backward-button)
+      (:after view :map view-mode-map
+        [escape]  #'View-quit-all)
+      (:after man :map Man-mode-map
+        :n "q"    #'kill-current-buffer))
+
+;;;}}}
 
 ;;; vim:filetype=lisp foldmethod=marker

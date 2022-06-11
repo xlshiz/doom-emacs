@@ -40,8 +40,14 @@ overrides `completion-styles' during company completion sessions.")
   (add-hook 'minibuffer-setup-hook #'vertico-repeat-save)
   (map! :map vertico-map "DEL" #'vertico-directory-delete-char)
   (map! :map vertico-map
-        "M-j" #'vertico-next-group
-        "M-k" #'vertico-previous-group)
+        "M-j"   #'vertico-next-group
+        "M-k"   #'vertico-previous-group
+        "M-RET" #'vertico-exit-input
+        "C-SPC" #'+vertico/embark-preview
+        "C-j"   #'vertico-next
+        "C-M-j" #'vertico-next-group
+        "C-k"   #'vertico-previous
+        "C-M-k" #'vertico-previous-group)
 
   ;; These commands are problematic and automatically show the *Completions* buffer
   (advice-add #'tmm-add-prompt :after #'minibuffer-hide-completions)
