@@ -287,37 +287,32 @@
 ;;; <leader>
 
 (map! :leader
-      :desc "Eval expression"       ";"    #'pp-eval-expression
-      :desc "M-x"                   ":"    #'execute-extended-command
-      :desc "Pop up scratch buffer" "X"    #'doom/open-scratch-buffer
-      :desc "Org Capture"           "x"    #'org-capture
-      ;; C-u is used by evil
-      :desc "Universal argument"    "u"    #'universal-argument
-      :desc "window"                "w"    evil-window-map
-      :desc "help"                  "h"    help-map
-
       (:when (featurep! :editor popup)
-       :desc "Toggle last popup"     "~"    #'+popup/toggle)
+       :desc "Toggle last popup"    "~"    #'+popup/toggle)
       :desc "Find file"             "."    #'find-file
       :desc "Switch buffer"         ","    #'switch-to-buffer
       (:when (featurep! :editor workspaces)
        :desc "Switch workspace buffer" "," #'persp-switch-to-buffer
        :desc "Switch buffer"           "<" #'switch-to-buffer)
       :desc "Switch to last buffer" "`"    #'evil-switch-to-windows-last-buffer
-      :desc "Resume last search"    "r"
-      (cond ((featurep! :completion vertico)    #'vertico-repeat)
-            (t nil))
       :desc "Run terminal"          "'"    #'vterm
-
       :desc "Search for symbol in project" "*" #'+default/search-project-for-symbol-at-point
       :desc "Search project"               "/" #'+embark/grep-project
 
       :desc "M-x"                   "SPC"  #'execute-extended-command
       :desc "Jump to bookmark"      "RET"  #'bookmark-jump
       :desc "Alternate buffer"      "TAB"  #'+default/alternate-buffer-in-persp
-      :desc "Find everything"       "a"    #'snail
+
+      :desc "Dired"                 "d"  #'dired-jump
+      (:when (featurep! :completion vertico)
+       :desc "Resume last search"   "r"   #'vertico-repeat
+       :desc "Consult Find"         "a"    #'snail)
+      :desc "help"                  "h"    help-map
+      :desc "Universal argument"    "u"    #'universal-argument
+      :desc "Org Capture"           "x"    #'org-capture
       (:when (featurep! :editor search +snails)
-       :desc "Find everything"      "A"    #'snails)
+       :desc "Snails Find"          "z"    #'snails)
+
 
       ;;; <leader> b --- buffer
       (:prefix-map ("b" . "buffer")
@@ -327,15 +322,17 @@
        :desc "Next buffer"                 "]"   #'next-buffer
        :desc "Switch buffer"               "b"   #'switch-to-buffer
        (:when (featurep! :editor workspaces)
-        :desc "Switch buffer"              "B"   #'switch-to-buffer)
+        :desc "Switch buffer"              "B" #'persp-switch-to-buffer)
        :desc "Clone buffer"                "c"   #'clone-indirect-buffer
        :desc "Clone buffer other window"   "C"   #'clone-indirect-buffer-other-window
        :desc "Kill buffer"                 "d"   #'kill-current-buffer
+       :desc "Kill all buffers"            "D"   #'doom/kill-all-buffers
        (:when (featurep! :editor tabs +sort)
-         :desc "Kill buffer"               "d"   #'sort-tab-close-current-tab)
+         :desc "Kill tab buffer"           "d"   #'sort-tab-close-current-tab
+         :desc "Kill all buffers"          "D"   #'sort-tab-close-all-tabs
+         :desc "Kill mode buffers"         "k"   #'sort-tab-close-mode-tabs
+         )
        :desc "ibuffer"                     "i"   #'ibuffer
-       :desc "Kill buffer"                 "k"   #'kill-current-buffer
-       :desc "Kill all buffers"            "K"   #'doom/kill-all-buffers
        :desc "Switch to last buffer"       "l"   #'evil-switch-to-windows-last-buffer
        :desc "Set bookmark"                "m"   #'bookmark-set
        :desc "Delete bookmark"             "M"   #'bookmark-delete

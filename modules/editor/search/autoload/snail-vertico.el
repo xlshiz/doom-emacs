@@ -2,81 +2,6 @@
 ;;;###if (featurep! :completion vertico)
 
 ;;;###autoload
-(defun +embark-find-file (&rest _)
-  (+search-minibuf-quit-and-run (call-interactively 'find-file)))
-
-;;;###autoload
-(defun +embark-search-file-cwd (&rest _)
-  "Perform a recursive file search from the current directory."
-  (+search-minibuf-quit-and-run (doom-project-find-file default-directory)))
-
-;;;###autoload
-(defun +embark-search-file-other-dir (&optional input)
-  "Perform a recursive file search from the current directory."
-  (let* ((projectile-project-root nil)
-         (disabled-command-function nil)
-         (default-directory (expand-file-name (read-directory-name "Search directory: "))))
-    (embark--quit-and-run
-     (lambda ()
-       (minibuffer-with-setup-hook
-           (lambda ()
-             (delete-minibuffer-contents)
-             (insert input))
-         (doom-project-find-file default-directory))))))
-
-;;;###autoload
-(defun +embark-search-file-other-project (&optional input)
-  "Perform a recursive file search from the current directory."
-  (let* ((projectile-project-root nil)
-         (disabled-command-function nil)
-         (default-directory
-           (if-let (projects (projectile-relevant-known-projects))
-               (completing-read "Search project: " projects nil t)
-             (user-error "There are no known projects"))))
-    (embark--quit-and-run
-     (lambda ()
-       (minibuffer-with-setup-hook
-           (lambda ()
-             (delete-minibuffer-contents)
-             (insert input))
-         (doom-project-find-file default-directory))))))
-
-;;;###autoload
-(defun +embark-clean-input(input)
-  (if (string= (substring input 0 1) "#")
-      (substring input 1)
-    input))
-
-;;;###autoload
-(defun +embark/grep-project ()
-  (interactive)
-  (+default/search-project))
-
-;;;###autoload
-(defun +embark-grep-buffer (&optional input)
-  (interactive)
-  (embark--quit-and-run #'consult-line (+embark-clean-input input)))
-
-;;;###autoload
-(defun +embark-grep-other-cwd (&optional input)
-  (let* ((projectile-project-root nil)
-         (disabled-command-function nil)
-         (default-directory (expand-file-name (read-directory-name "Search directory: "))))
-    (setq this-command #'+embark-grep-other-cwd)
-    (embark--quit-and-run #'+vertico/project-search nil (+embark-clean-input input) default-directory)))
-
-;;;###autoload
-(defun +embark-grep-other-project (&optional input)
-  (let* ((projectile-project-root nil)
-         (disabled-command-function nil)
-         (default-directory
-           (if-let (projects (projectile-relevant-known-projects))
-               (completing-read "Search project: " projects nil t)
-             (user-error "There are no known projects"))))
-    (setq this-command #'+embark-grep-other-project)
-    (embark--quit-and-run #'+vertico/project-search nil (+embark-clean-input input) default-directory)))
-
-;;;###autoload
 (defun snail--project-files (&rest _)
   (require 'projectile)
   (let ((ht (consult--buffer-file-hash)))
@@ -87,47 +12,22 @@
                                                         (projectile-current-project-files)))))))
 
 ;;;###autoload
-(defun snail--project-grep (&rest _)
-  (declare (indent defun))
-  (unless (executable-find "rg")
-    (user-error "Couldn't find ripgrep in your PATH"))
-  (setq deactivate-mark t)
-  (let* ((project-root (or (doom-project-root) default-directory))
-         (directory project-root)
-         (consult-ripgrep-args
-          (concat "rg "
-                  "--null --line-buffered --color=never --max-columns=1000 "
-                  "--path-separator /   --smart-case --no-heading --line-number "
-                  "--hidden -g !.git -g !.svn -g !.hg "
-                  " ."))
-         (prompt "Search")
-         (query (when (doom-region-active-p)
-                      (regexp-quote (doom-thing-at-point-or-region))))
-         (consult-async-split-style consult-async-split-style)
-         (consult-async-split-styles-alist consult-async-split-styles-alist)
-         (read-process-output-max (max read-process-output-max (* 1024 1024))))
-    ;; Change the split style if the initial query contains the separator.
-    (when query
-      (cl-destructuring-bind (&key type separator initial)
-          (consult--async-split-style)
-        (pcase type
-          (`separator
-           (replace-regexp-in-string (regexp-quote (char-to-string separator))
-                                     (concat "\\" (char-to-string separator))
-                                     query t t))
-          (`perl
-           (when (string-match-p initial query)
-             (setf (alist-get 'perlalt consult-async-split-styles-alist)
-                   `(:initial ,(or (cl-loop for char in (list "%" "@" "!" "&" "/" ";")
-                                            unless (string-match-p char query)
-                                            return char)
-                                   "%")
-                     :type perl)
-                   consult-async-split-style 'perlalt))))))
-    ;; (consult--async-command #'consult--ripgrep-builder
-    ;;   (consult--grep-format #'consult--ripgrep-builder)
-    ;;   :file-handler t)
-    ))
+(defun snail--buffer-exclude (buf)
+  (catch 'failed
+    (dolist (backlist-buf '("*scratch*" "*Messages*"))
+      (when (string-prefix-p backlist-buf buf)
+        (throw 'failed nil)))
+    (dolist (backlist-buf '(" *" "*"))
+      (when (string-prefix-p backlist-buf buf)
+        (throw 'failed t)))
+    nil))
+
+;;;###autoload
+(defun snail--buffers (&rest _)
+  (let ((buffers (buffer-list)))
+    (setq buffers (funcall (intern "consult--buffer-sort-visibility") buffers))
+    (setq buffers (cl-map 'list #'buffer-name buffers))
+    (seq-remove #'snail--buffer-exclude buffers)))
 
 ;;;###autoload
 (defvar snail--source-buffer
@@ -138,10 +38,7 @@
     :history  buffer-name-history
     :state    ,#'consult--buffer-state
     :default  t
-    :items
-    ,(lambda () (consult--buffer-query :sort 'visibility
-                                       :exclude '(" .*" "\\*sort-tab\\*")
-                                       :as #'buffer-name)))
+    :items    snail--buffers)
   "Buffer candidate source for `snail'.")
 
 ;;;###autoload
@@ -170,9 +67,9 @@
     :narrow   (?p . "Project")
     :category file
     :hidden   nil
-    :action nil
+    :action   nil
     :require-match nil
-    :items snail--project-files)
+    :items    snail--project-files)
   "Project buffer candidate source for `snail'.")
 
 ;;;###autoload
