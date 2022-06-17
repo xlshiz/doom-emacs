@@ -790,7 +790,6 @@ between the two."
         ;; Org-aware C-a/C-e
         [remap doom/backward-to-bol-or-indent]          #'org-beginning-of-line
         [remap doom/forward-to-last-non-comment-or-eol] #'org-end-of-line
-        "C-j"        #'ace-window
 
         :localleader
         "#" #'org-update-statistics-cookies
@@ -1134,6 +1133,15 @@ compelling reason, so..."
             :ni [C-return]   #'+org/insert-item-below
             :ni [C-S-return] #'+org/insert-item-above
             :ni "C-j"        #'ace-window
+            :ni "M-j"
+            (cond ((featurep! :editor tabs +sort)    nil)
+                  ((featurep! :editor tabs)          #'awesome-tab-ace-jump))
+            :ni "M-h"
+            (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-prev-tab)
+                  ((featurep! :editor tabs)          #'awesome-tab-backward-tab))
+            :ni "M-l"
+            (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-next-tab)
+                  ((featurep! :editor tabs)          #'awesome-tab-forward-tab))
             ;; navigate table cells (from insert-mode)
             :i Cright (cmds! (org-at-table-p) #'org-table-next-field
                              #'org-end-of-line)

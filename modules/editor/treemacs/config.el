@@ -52,6 +52,7 @@ This must be set before `treemacs' has loaded.")
     [return] #'treemacs-RET-action
     [tab]    #'treemacs-TAB-action
     "TAB"    #'treemacs-TAB-action
+    "C-j"    #'ace-window
     ;; REVIEW Fix #1875 to be consistent with C-w {v,s}, but this should really
     ;;        be considered upstream.
     "o v"    #'treemacs-visit-node-horizontal-split

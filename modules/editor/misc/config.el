@@ -465,7 +465,7 @@ Continues comments if executed from a commented line. Consults
   "O"    #'+lookup/online
   "T"    #'doom/toggle-profiler
   "V"    #'doom/help-custom-variable
-  "W"    #'+default/man-or-woman
+  "w"    #'+default/man-or-woman
   "C-k"  #'describe-key-briefly
   "C-l"  #'describe-language-environment
   "C-m"  #'info-emacs-manual

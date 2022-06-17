@@ -2,7 +2,7 @@
 
 (use-package! awesome-tab
   :unless (featurep! +sort)
-  :hook (doom-first-file . awesome-tab-mode)
+  :hook (doom-init-ui . awesome-tab-mode)
   :init
   (setq awesome-tab-display-icon t)
   (setq awesome-tab-height 140)
@@ -16,11 +16,11 @@
         awesome-tab-light-selected-foreground-color "#44AD8E"
         awesome-tab-light-unselected-foreground-color "#555555")
   :config
+  (setq uniquify-buffer-name-style 'forward)
+
   (defun +tabs-buffer-groups-fn ()
     (list
      (cond
-      ((derived-mode-p 'eshell-mode)
-       "EShell")
       ((derived-mode-p 'dired-mode)
        "Dired")
       ((derived-mode-p 'pdf-view-mode)
@@ -32,62 +32,9 @@
       ((string-equal "*" (substring (buffer-name) 0 1))
        "Emacs")
       (t "Files"))))
-
-  (defun +tabs-hide-tab (x)
-    (let ((name (format "%s" x)))
-      (or
-       ;; Current window is not dedicated window.
-       (window-dedicated-p (selected-window))
-
-       ;; Buffer name not match below blacklist.
-       (string-prefix-p "*nox doc*" name)
-       (string-prefix-p "*NOX (" name)
-       (string-prefix-p "*lsp" name)
-       (string-prefix-p "*dap-" name)
-       (string-prefix-p "*Launch File" name)
-       (string-prefix-p "*GDB::" name)
-       (string-prefix-p "*Firefox::" name)
-       (string-prefix-p "*Node::" name)
-       (string-prefix-p "*ts-ls" name)
-       (string-prefix-p "*ccls" name)
-       (string-prefix-p "*clangd" name)
-       (string-prefix-p "*gopls" name)
-       (string-prefix-p "*godef" name)
-       (string-prefix-p "*go-guru" name)
-       (string-prefix-p "*anaconda-mode*" name)
-       (string-prefix-p "*xref*" name)
-       (string-prefix-p "*Semantic SymRef*" name)
-
-       (string-prefix-p "*epc" name)
-       (string-prefix-p "*Compile-Log*" name)
-       (string-prefix-p " *snails" name)
-       (string-prefix-p "*Flycheck" name)
-       (string-prefix-p "*flycheck" name)
-       (string-prefix-p "*Org Agenda*" name)
-       (string-prefix-p " *Org todo*" name)
-       (string-prefix-p " *Org tags*" name)
-       (string-prefix-p "*edit-indirect" name)
-       (string-prefix-p "*shell-pop" name)
-       (string-prefix-p "*MULTI-TERM-DEDICATED*" name)
-       (string-prefix-p "*doom:vterm-popup:" name)
-       (string-prefix-p "*Ilist*" name)
-       (string-prefix-p " *transient*" name)
-       (string-prefix-p "*helpful " name)
-       (string-prefix-p "*Outline " name)
-       (string-prefix-p "*color-rg*" name)
-       (string-prefix-p "*xwidget" name)
-       (string-prefix-p "*PLANTUML" name)
-       (string-prefix-p "*Buttercup*" name)
-       (string-prefix-p "*taskrunner" name)
-       (string-prefix-p "*Ediff " name)
-       (string-prefix-p "*company-" name)
-
-       (string-prefix-p "CAPTURE-refile.org" name)
-       (string-prefix-p " tq-temp-epdfinfo" name)
-       )))
-
   (setq awesome-tab-buffer-groups-function #'+tabs-buffer-groups-fn
-        awesome-tab-hide-tab-function #'+tabs-hide-tab)
+        awesome-tab-buffer-list-function #'+tabs-buffer-list)
+
 
   (defhydra tabs-fast-switch (:hint nil)
     "
@@ -137,6 +84,7 @@
     ("C-j" awesome-tab-ace-jump)
     ("q" nil "quit"))
   (setq sort-tab-height 20)
+  (sort-tab-mode t)
   (defadvice! +sort-tab-buffer-need-hide (fn &rest args)
     :around #'sort-tab-buffer-need-hide-p
     (let ((ret (apply fn args)))
@@ -145,4 +93,9 @@
         (with-current-buffer (car args)
           (or (derived-mode-p 'dired-mode)
               (derived-mode-p 'pdf-view-mode))))))
-  (sort-tab-mode t))
+  (defadvice! +sort-tab-get-buffer-list (fn &rest args)
+    :around #'sort-tab-get-buffer-list
+    (let ((bufs (+tabs-buffer-list)))
+      (setq bufs (cl-remove-if #'sort-tab-buffer-need-hide-p bufs))
+      (setq bufs (sort bufs #'sort-tab-buffer-freq-higher-p))
+      bufs)))

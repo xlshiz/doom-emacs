@@ -10,3 +10,5 @@
 (when (featurep! +icons)
   (package! all-the-icons-dired :pin "5e9b097f9950cc9f86de922b07903a4e5fefc733"))
 (package! fd-dired :pin "458464771bb220b6eb87ccfd4c985c436e57dc7e")
+(when (featurep! +dirvish)
+  (package! dirvish))

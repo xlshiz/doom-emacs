@@ -125,6 +125,15 @@ capture, the end position, and the output buffer.")
   :config
   (add-hook 'evil-markdown-mode-hook #'evil-normalize-keymaps)
   (map! :map evil-markdown-mode-map
+        :ni "M-j"
+        (cond ((featurep! :editor tabs +sort)    nil)
+              ((featurep! :editor tabs)          #'awesome-tab-ace-jump))
+        :ni "M-h"
+        (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-prev-tab)
+              ((featurep! :editor tabs)          #'awesome-tab-backward-tab))
+        :ni "M-l"
+        (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-next-tab)
+              ((featurep! :editor tabs)          #'awesome-tab-forward-tab))
         :ni "C-j" #'ace-window
         :n "gj"  #'evil-next-visual-line
         :n "gk"  #'evil-previous-visual-line

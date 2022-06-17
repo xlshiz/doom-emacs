@@ -81,6 +81,61 @@ Fixes #3939: unsortable dired entries on Windows."
   (diff-hl-margin-mode))
 
 
+(use-package! dirvish
+  :when (featurep! +dirvish)
+  :custom
+  ;; Go back home? Just press `bh'
+  (dirvish-bookmark-entries
+   '(("h" "~/"                          "Home")
+     ("d" "~/Downloads/"                "Downloads")))
+  ;; (dirvish-header-line-format '(:left (path) :right (free-space)))
+  (dirvish-mode-line-format ; it's ok to place string inside
+   '(:left (sort file-time " " file-size symlink) :right (omit yank index)))
+  (dirvish-attributes '(subtree-state all-the-icons))
+  ;; (dirvish-attributes '(file-size vscode-icon)) ; Feel free to try different combination
+  ;; Maybe the icons are too big to your eyes
+  ;; (dirvish-all-the-icons-height 0.8)
+  ;; In case you want the details at startup like `dired'
+  ;; (dirvish-hide-details nil)
+  :config
+  ;; Place this line under :init to ensure the overriding at startup, see #22
+  (dirvish-override-dired-mode)
+  ;; (dirvish-peek-mode)
+  ;; Dired options are respected except a few exceptions, see FAQ.org
+  (setq dired-recursive-deletes 'always)
+  (setq delete-by-moving-to-trash t)
+  (setq dired-dwim-target t)
+  ;; Make sure to use the long name of flags when exists
+  ;; eg. use "--almost-all" instead of "-A"
+  ;; Otherwise some commands won't work properly
+  (setq dired-listing-switches
+        "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
+  (map! (:map dired-mode-map
+        :ng "h"   #'dired-up-directory
+        :ng "j"   #'dired-next-line
+        :ng "k"   #'dired-previous-line
+        :ng "l"   #'dired-find-file
+        :ng "i"   #'wdired-change-to-wdired-mode
+        :ng "."   #'dired-omit-mode
+        :ng "TAB" #'dirvish-subtree-toggle
+        :ng "SPC" #'dirvish-history-jump
+        :ng "M-n" #'dirvish-history-go-forward
+        :ng "M-p" #'dirvish-history-go-backward
+        :ng "M-s" #'dirvish-setup-menu
+        :ng "M-f" #'dirvish-toggle-fullscreen
+        :ng "*"   #'dirvish-mark-menu
+        :ng "r"   #'dirvish-fd-roam
+        :ng "b"   #'dirvish-bookmark-goto
+        :ng "f"   #'dirvish-file-info-menu
+        :ng [remap dired-sort-toggle-or-edit] #'dirvish-quicksort
+        :ng [remap dired-do-redisplay] #'dirvish-ls-switches-menu
+        :ng [remap dired-summary] #'dirvish-dispatch
+        :ng [remap dired-do-copy] #'dirvish-yank-menu
+        :ng [remap mode-line-other-buffer] #'dirvish-history-last)
+        (:map dired-mode-map
+        :ng "q"  #'quit-window)))
+
+
 (use-package! ranger
   :when (featurep! +ranger)
   :after dired
