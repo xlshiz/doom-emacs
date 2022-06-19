@@ -3,6 +3,7 @@
 ;;; Code:
 
 (load! "packages")
+(load! "compile")
 
 
 ;;
@@ -20,6 +21,7 @@
 
 (defcli! ((upgrade up))
     ((packages?  ("-p" "--packages") "Only upgrade packages, not Doom")
+     (jobs       ("-j" "--jobs" num) "How many CPUs to use for native compilation")
      &context context)
   "Updates Doom and packages.
 
@@ -31,20 +33,22 @@ following shell commands:
     doom clean
     doom sync -u"
   (let* ((force? (doom-cli-context-suppress-prompts-p context))
-         (sync-cmd `("doom" "sync" "-u")))
+         (sync-cmd (append '("sync" "-u") (if jobs `("-j" ,num)))))
     (cond
      (packages?
-      (doom-cli-call sync-cmd)
+      (call! sync-cmd)
       (print! (success "Finished upgrading Doom Emacs")))
 
      ((doom-cli-upgrade force? force?)
       ;; Reload Doom's CLI & libraries, in case there were any upstream changes.
       ;; Major changes will still break, however
       (print! (item "Reloading Doom Emacs"))
-      (exit! "doom" "upgrade" "-p" (if force? "--force")))
+      (exit! "doom" "upgrade" "-p"
+             (if force? "--force")
+             (if jobs (format "--jobs=%d" jobs))))
 
      ((print! "Doom is up-to-date!")
-      (doom-cli-call sync-cmd)))))
+      (call! sync-cmd)))))
 
 
 ;;
@@ -121,7 +125,7 @@ following shell commands:
                     (ignore (print! (error "Aborted")))
                   (print! (start "Upgrading Doom Emacs..."))
                   (print-group!
-                   (doom-clean-byte-compiled-files)
+                   (doom-compile-clean)
                    (let ((straight-recipe (doom-upgrade--get-straight-recipe)))
                      (or (and (zerop (car (doom-call-process "git" "reset" "--hard" target-remote)))
                               (equal (cdr (doom-call-process "git" "rev-parse" "HEAD")) new-rev))

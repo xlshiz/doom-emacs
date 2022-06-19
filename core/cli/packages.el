@@ -17,12 +17,16 @@
 
 ;; DEPRECATED Replace with "doom sync --rebuild"
 (defcli! ((build b))
-    ((rebuild-p ("-r") "Only rebuild packages that need rebuilding"))
+    ((rebuild-p ("-r") "Only rebuild packages that need rebuilding")
+     (jobs      ("-j" "--jobs" num) "How many CPUs to use for native compilation"))
   "Byte-compiles & symlinks installed packages.
 
 This ensures that all needed files are symlinked from their package repo and
 their elisp files are byte-compiled. This is especially necessary if you upgrade
 Emacs (as byte-code is generally not forward-compatible)."
+  :benchmark t
+  (when jobs
+    (setq native-comp-async-jobs-number (truncate jobs)))
   (when (doom-packages-build (not rebuild-p))
     (doom-autoloads-reload))
   t)
@@ -43,6 +47,7 @@ possible.
 
 It is a good idea to occasionally run this doom purge -g to ensure your package
 list remains lean."
+  :benchmark t
   (straight-check-all)
   (when (doom-packages-purge
          (not noelpa-p)
@@ -220,14 +225,25 @@ list remains lean."
 
 (defun doom-packages--wait-for-native-compile-jobs ()
   "Wait for all pending async native compilation jobs."
-  (cl-loop for pending = (doom-packages--native-compile-jobs)
-           with previous = 0
+  (cl-loop with previous = 0
+           with timeout = 30
+           with timer = 0
+           for pending = (doom-packages--native-compile-jobs)
            while (not (zerop pending))
            if (/= previous pending) do
            (print! (start "\033[KNatively compiling %d files...\033[1A" pending))
-           (setq previous pending)
+           (setq previous pending
+                 timer 0)
            else do
            (let ((inhibit-message t))
+             (if (> timer timeout)
+                 (cl-loop for file-name being each hash-key of comp-async-compilations
+                          for prc = (gethash file-name comp-async-compilations)
+                          unless (process-live-p prc)
+                          do (setq timer 0)
+                          and do (print! (warn "Native compilation of %S timed out" (path file-name)))
+                          and return (kill-process prc))
+               (cl-incf timer 0.1))
              (sleep-for 0.1))))
 
 (defun doom-packages--write-missing-eln-errors ()

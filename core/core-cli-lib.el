@@ -270,18 +270,18 @@ COMMAND can be a command path (list of strings), a `doom-cli' struct, or a
 
 Returned in the order they will execute. Includes pseudo CLIs."
   (let* ((command (doom-cli--command command))
-         (pseudo? (keywordp (car-safe command)))
-         (paths (doom-cli--command-expand command t))
-         results)
-    (unless pseudo?
-      (dolist (path paths)
-        (push (cons :before path) results)))
+         (paths (nreverse (doom-cli--command-expand command t)))
+         results clis)
+    (push '(:after) results)
+    (dolist (path paths)
+      (push (cons :after path) results))
     (push command results)
-    (unless pseudo?
-      (dolist (path (reverse paths))
-        (push (cons :after path) results)))
-    (setq results (delq nil (mapcar #'doom-cli-get results))
-          results (nreverse (delete-dups results)))))
+    (dolist (path (nreverse paths))
+      (push (cons :before path) results))
+    (push '(:before) results)
+    (dolist (result (nreverse results) clis)
+      (when-let (cli (doom-cli-get result))
+        (cl-pushnew cli clis :test #'equal :key #'doom-cli-key)))))
 
 (defun doom-cli-prop (cli prop &optional null-value)
   "Returns a PROPerty of CLI's plist, or NULL-VALUE if it doesn't exist."
@@ -375,7 +375,7 @@ Return nil if CLI (a `doom-cli') has no explicit documentation."
       (when (or (< argc min)
                 (> argc max))
         (signal 'doom-cli-wrong-number-of-arguments-error
-                (list (doom-cli--command context) nil args min max)))
+                (list (doom-cli-key cli) nil args min max)))
       (dolist (sym spec)
         (setf (alist-get sym alist) (if args (pop args))))
       (dolist (type `((&args    . ,args)
@@ -576,10 +576,11 @@ Throws `doom-cli-invalid-option-error' for illegal values."
             (string-to-number step)
           -1))
   ;; The geometry of the terminal window.
-  (geometry (when-let* ((geom (getenv "__DOOMGEOM"))
-                        (geom (split-string geom "\n")))
-              (cons (string-to-number (car geom))
-                    (string-to-number (cadr geom)))))
+  (geometry (save-match-data
+              (when-let* ((geom (getenv "__DOOMGEOM"))
+                          ((string-match "^\\([0-9]+\\)x\\([0-9]+\\)$" geom)))
+                (cons (string-to-number (match-string 1 geom))
+                      (string-to-number (match-string 2 geom))))))
   ;; Whether the script is being piped into or out of
   (pipes (cl-loop for (env . scope) in `((,(getenv "__DOOMGPIPE") . global)
                                          (,(getenv "__DOOMPIPE")  . local))
@@ -632,9 +633,12 @@ executable context."
            (signal 'doom-cli-command-not-found-error
                    (append command (alist-get t (doom-cli-context-arguments context)))))
 
-          ((let ((seen '(t)))
+          ((let ((seen '(t))
+                 runners)
              (dolist (cli (doom-cli-find command (doom-cli-type cli)))
-               (doom-cli-execute cli (doom-cli--bindings cli context seen)))
+               (push (cons cli (doom-cli--bindings cli context seen)) runners))
+             (pcase-dolist (`(,cli . ,bindings) (nreverse runners))
+               (doom-cli-execute cli bindings))
              context)))))
 
 (defun doom-cli-context-restore (file context)
@@ -1484,7 +1488,7 @@ ignored.
                            :command alias
                            :type type
                            :docs docs
-                           :alias target
+                           :alias (delq nil (cons type target))
                            :plist (append plist '(:hide t)))
                           doom-cli--table))
                (dolist (partial commands)
@@ -1567,12 +1571,19 @@ example:
     This reruns the current command with two new switches.
   (exit! \"emacs -nw FILE\")
     Opens Emacs on FILE
+  (exit! \"emacs\" \"-nw\" \"FILE\")
+    Opens Emacs on FILE, but each argument is escaped (and nils are ignored).
   (exit! t) or (exit! nil)
     A safe way to simply abort back to the shell with exit code 0
   (exit! 42)
     Abort to shell with an explicit exit code.
   (exit! context)
     Restarts the current session, but with context (a `doom-cli-context' struct).
+  (exit! :pager [FILES...])
+    Invoke $DOOMPAGER (or less) on the output of this session. If ARGS are given, launch the pager on those
+  (exit! :pager? [FILES...])
+    Same as :pager, but does so only if output is longer than the terminal is
+    tall.
 
 See `doom-cli--restart' for implementation details."
   (doom-cli--exit (flatten-list args) doom-cli--context))
@@ -1656,14 +1667,17 @@ errors to `doom-cli-error-file')."
            (doom-cli-wrong-number-of-arguments-error
             (pcase-let ((`(,command ,flag ,args ,min ,max) (cdr e)))
               (print! (red "Error: %S expected %s argument%s, but got %d")
-                      (or flag (doom-cli-command-string (cdr command)))
+                      (or flag (doom-cli-command-string
+                                (if (keywordp (car command))
+                                    command
+                                  (cdr command))))
                       (if (or (= min max)
                               (= max most-positive-fixnum))
                           min
                         (format "%d-%d" min max))
                       (if (or (= min 0) (> min 1)) "s" "")
                       (length args))
-              (doom-cli-call `(:help "--synopsis" "--postamble" ,@(cdr command)) context e))
+              (doom-cli-call `(:help "--synopsis" "--postamble" ,@(cdr (doom-cli--command context))) context e))
             5)
            (doom-cli-unrecognized-option-error
             (print! (red "Error: unknown option %s") (cadr e))

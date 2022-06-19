@@ -49,7 +49,7 @@ OPTIONS:
          (cli (doom-cli-get command t))
          (rcli (doom-cli-get cli))
          (fallbackcli (cl-loop with targets = (doom-cli--command-expand (butlast command) t)
-                               for cmd in (cons command (nreverse targets))
+                               for cmd in (cons command targets)
                                if (doom-cli-get cmd t)
                                return it)))
     (cond (commands?
@@ -86,12 +86,14 @@ OPTIONS:
                ("--similar"
                 (unless command
                   (user-error "No command specified"))
-                (when-let (similar (doom-cli-help-similar-commands command 0.4))
+                (let ((similar (doom-cli-help-similar-commands command 0.4)))
                   (print! "Similar commands:")
-                  (dolist (command (seq-take similar 10))
-                    (print! (indent (item "(%d%%) %s"))
-                            (* (car command) 100)
-                            (doom-cli-command-string (cdr command))))))
+                  (if (not similar)
+                      (print! (indent (warn "Can't find any!")))
+                    (dolist (command (seq-take similar 10))
+                      (print! (indent (item "(%d%%) %s"))
+                              (* (car command) 100)
+                              (doom-cli-command-string (cdr command)))))))
                ("--envvars"
                 (let* ((key "ENVIRONMENT VARIABLES")
                        (clis (if command (doom-cli-find command) (hash-table-values doom-cli--table)))
@@ -112,7 +114,7 @@ OPTIONS:
                 (print! "See %s for documentation."
                         (join (cl-loop with spec =
                                        `((?p . ,(doom-cli-context-prefix context))
-                                         (?c . ,(doom-cli-command-string (cdr (doom-cli-command cli)))))
+                                         (?c . ,(doom-cli-command-string (cdr (doom-cli-command (or cli fallbackcli))))))
                                        for cmd in doom-help-commands
                                        for formatted = (trim (format-spec cmd spec))
                                        collect (replace-regexp-in-string
@@ -138,13 +140,14 @@ OPTIONS:
 
 (defun doom-cli-help (cli)
   "Return an alist of documentation summarizing CLI (a `doom-cli')."
-  (let ((docs (doom-cli-docs cli)))
+  (let* ((rcli (doom-cli-get cli))
+         (docs (doom-cli-docs rcli)))
     `((command     . ,(doom-cli-command-string cli))
       (summary     . ,(or (cdr (assoc "SUMMARY" docs)) "TODO"))
       (description . ,(or (cdr (assoc "MAIN" docs)) "TODO"))
       (synopsis    . ,(doom-cli-help--synopsis cli))
-      (arguments   . ,(doom-cli-help--arguments cli))
-      (options     . ,(doom-cli-help--options cli))
+      (arguments   . ,(doom-cli-help--arguments rcli))
+      (options     . ,(doom-cli-help--options rcli))
       (commands    . ,(doom-cli-subcommands cli 1))
       (sections    . ,(seq-filter #'cdr (cddr docs))))))
 
@@ -169,10 +172,10 @@ OPTIONS:
          (s2 (downcase s2))
          (s1len (length s1))
          (s2len (length s2)))
-    (/ (if (or (zerop s1len)
-               (zerop s2len))
-           0.0
-         (let ((i 0) (j 0) (score 0) jlast)
+    (if (or (zerop s1len)
+            (zerop s2len))
+        0.0
+      (/ (let ((i 0) (j 0) (score 0) jlast)
            (while (< i s1len)
              (unless jlast (setq jlast j))
              (if (and (< j s2len)
@@ -186,9 +189,9 @@ OPTIONS:
                  (setq j (or jlast j)
                        jlast nil)
                  (cl-incf i))))
-           (* 2.0 score)))
-       (+ (length s1)
-          (length s2)))))
+           (* 2.0 score))
+         (+ (length s1)
+            (length s2))))))
 
 ;;; Help: printers
 ;; TODO Parameterize optional args with `cl-defun'
@@ -216,7 +219,7 @@ OPTIONS:
                    .commands :prefix (doom-cli-command cli) :grouped? t :docs? t))
               ("OPTIONS"
                . ,(doom-cli-help--render-options
-                   (if (or (not (doom-cli-fn cli)) localonly?)
+                   (if (or (not (doom-cli-fn cli)) noglobal?)
                        `(,(assq 'local .options))
                      .options)
                    cli)))))
@@ -234,7 +237,8 @@ OPTIONS:
 
 ;;; Help: synopsis
 (defun doom-cli-help--synopsis (cli &optional all-options?)
-  (let* ((opts (doom-cli-help--options cli))
+  (let* ((rcli (doom-cli-get cli))
+         (opts (doom-cli-help--options rcli))
          (opts (mapcar #'car (if all-options? (mapcan #'cdr opts) (alist-get 'local opts))))
          (opts (cl-loop for opt in opts
                         for args = (cdar opt)
@@ -245,9 +249,8 @@ OPTIONS:
                                         (string-join switches "|")
                                         (string-join (remove "..." args) "|"))
                         else collect (format "[%s]" (string-join switches "|"))))
-         (args (doom-cli-arguments cli))
-         ;; (partial? (null (doom-cli-fn cli)))
-         (subcommands? (doom-cli-subcommands cli 1 :predicate? t)))
+         (args (doom-cli-arguments rcli))
+         (subcommands? (doom-cli-subcommands rcli 1 :predicate? t)))
     `((command  . ,(doom-cli-command cli))
       (options  ,@opts)
       (required ,@(mapcar (fn!! (upcase (format "`%s'" %))) (if subcommands? '(command) (alist-get '&required args))))
@@ -305,9 +308,12 @@ OPTIONS:
            (toplevel (assq nil commands))
            (rest (nreverse (remove toplevel commands)))
            (drop (if prefix (length prefix) 0))
-           (minwidth (apply #'max (cl-loop for cmd in (apply #'append (mapcar #'cdr commands))
-                                           for cmd = (seq-drop cmd drop)
-                                           collect (length (doom-cli-command-string cmd)))))
+           (minwidth
+            (apply
+             #'max (or (cl-loop for cmd in (apply #'append (mapcar #'cdr commands))
+                                for cmd = (seq-drop cmd drop)
+                                collect (length (doom-cli-command-string cmd)))
+                       (list 15))))
            (ellipsis (doom-print--style 'dark " […]"))
            (ellipsislen (- (length ellipsis) (if (eq doom-print-backend 'ansi) 2 4))))
       (dolist (group (cons toplevel rest))
@@ -351,7 +357,7 @@ The alist's CAR are lists of formatted switches plus their arguments, e.g.
          local-options
          global-options
          seen)
-    (dolist (neighbor (nreverse (doom-cli-find (doom-cli-command cli))))
+    (dolist (neighbor (nreverse (doom-cli-find cli)))
       (dolist (option (doom-cli-options neighbor))
         (when-let* ((switches (cl-loop for sw in (doom-cli-option-switches option)
                                        if (and (doom-cli-option-flag-p option)

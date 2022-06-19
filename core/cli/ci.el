@@ -247,15 +247,18 @@ Note: warnings are not considered failures.")
 ;;; Commands
 
 ;;; doom ci
-(defcli! (:before ci) (&rest _)
+(defcli! (:before ci) (&args _)
   (when-let*
-      ((repo-root (or (cdr (doom-call-process "git" "rev-parse" "--show-toplevel"))
-                      default-directory))
+      ((repo-root
+        (if-let* ((result (sh! "git" "rev-parse" "--show-toplevel"))
+                  ((zerop (car result))))
+            (cdr result)
+          default-directory))
        (local-config
         (car (or (doom-glob repo-root "ci.el")
                  (doom-glob doom-private-dir "ci.el")))))
-    (print! (item "Loading %s") (path local-config))
-    (load local-config nil t t)))
+    (load local-config nil t t)
+    (print! (item "Loaded %S") local-config)))
 
 (defcli! ci ()
   "Commands that automate development processes."
@@ -263,11 +266,14 @@ Note: warnings are not considered failures.")
 
 (defcli! (ci deploy-hooks) ((force ("--force")))
   "TODO"
-  (let* ((default-directory doom-emacs-dir)
-         (repo-path (cdr (doom-call-process "git" "rev-parse" "--show-toplevel")))
-         (submodule-p (string-empty-p (cdr (doom-call-process "git" "rev-parse" "show-superproject-working-tree"))))
-         (config-hooks-path (cdr (doom-call-process "git" "config" "core.hooksPath")))
-         (hooks-path (cdr (doom-call-process "git" "rev-parse" "--git-path" "hooks"))))
+  (let* ((repo-path (sh! "git" "rev-parse" "--show-toplevel"))
+         (repo-path (if (zerop (car repo-path))
+                        (cdr repo-path)
+                      (user-error "Cannot locate a git repo in %s"
+                                  (file-relative-name default-directory))))
+         (submodule-p (string-empty-p (cdr (sh! "git" "rev-parse" "show-superproject-working-tree"))))
+         (config-hooks-path (cdr (sh! "git" "config" "core.hooksPath")))
+         (hooks-path (cdr (sh! "git" "rev-parse" "--git-path" "hooks"))))
     (unless (string-empty-p config-hooks-path)
       (or force
           (y-or-n-p
