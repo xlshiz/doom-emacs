@@ -87,6 +87,7 @@ directives. By default, this only recognizes C directives.")
       (put 'cursor 'evil-emacs-color  (face-foreground 'warning))
       (put 'cursor 'evil-normal-color (face-background 'cursor))))
 
+  ;; default config
   (add-hook 'evil-insert-state-entry-hook #'delete-selection-mode)
   (add-hook! 'evil-insert-state-exit-hook
     (defun +default-disable-delete-selection-mode-h ()
@@ -371,9 +372,7 @@ directives. By default, this only recognizes C directives.")
   (setq evil-snipe-smart-case t
         evil-snipe-scope 'line
         evil-snipe-repeat-scope 'visible
-        evil-snipe-char-fold t)
-  :config
-  (pushnew! evil-snipe-disabled-modes 'Info-mode 'calc-mode 'treemacs-mode 'dired-mode))
+        evil-snipe-char-fold t))
 
 
 (use-package! evil-surround
@@ -429,6 +428,14 @@ directives. By default, this only recognizes C directives.")
 
 (map! :v  "@"     #'+evil:apply-macro
       :m  [C-i]   #'evil-jump-forward
+
+      ;; implement dictionary keybinds
+      ;; evil already defines 'z=' to `ispell-word' = correct word at point
+      (:when (featurep! :checkers spell)
+       :n  "zg"   #'+spell/add-word
+       :n  "zw"   #'+spell/remove-word
+       :m  "[s"   #'+spell/previous-error
+       :m  "]s"   #'+spell/next-error)
 
       ;; ported from vim-unimpaired
       :n  "] SPC" #'+evil/insert-newline-below

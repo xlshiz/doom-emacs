@@ -118,7 +118,7 @@ uses a straight or package.el command directly).")
     (let ((repo-dir (doom-path straight-base-dir "straight/repos/straight.el"))
           (repo-url (concat "http" (if gnutls-verify-error "s")
                             "://github.com/"
-                            (or (plist-get recipe :repo) "raxod502/straight.el")))
+                            (or (plist-get recipe :repo) "radian-software/straight.el")))
           (branch (or (plist-get recipe :branch) straight-repository-branch))
           (call (if doom-debug-p
                     (lambda (&rest args)
@@ -480,8 +480,8 @@ Accepts the following properties:
        be installed or uninstalled. Use this to pin 2nd order dependencies.
  :recipe RECIPE
    Specifies a straight.el recipe to allow you to acquire packages from external
-   sources. See https://github.com/raxod502/straight.el#the-recipe-format for
-   details on this recipe.
+   sources. See https://github.com/radian-software/straight.el#the-recipe-format
+   for details on this recipe.
  :disable BOOL
    Do not install or update this package AND disable all of its `use-package!'
    and `after!' blocks.
@@ -500,30 +500,30 @@ Returns t if package is successfully registered, and nil if it was disabled
 elsewhere."
   (declare (indent defun))
   (when (and recipe (keywordp (car-safe recipe)))
-    (plist-put! plist :recipe `(quote ,recipe)))
+    (cl-callf plist-put plist :recipe `(quote ,recipe)))
   ;; :built-in t is basically an alias for :ignore (locate-library NAME)
   (when built-in
     (when (and (not ignore)
                (equal built-in '(quote prefer)))
       (setq built-in `(locate-library ,(symbol-name name) nil (get 'load-path 'initial-value))))
-    (plist-delete! plist :built-in)
-    (plist-put! plist :ignore built-in))
+    (cl-callf map-delete plist :built-in)
+    (cl-callf plist-put plist :ignore built-in))
   `(let* ((name ',name)
           (plist (cdr (assq name doom-packages))))
      ;; Record what module this declaration was found in
      (let ((module-list (plist-get plist :modules))
            (module ',(doom-module-from-path)))
        (unless (member module module-list)
-         (plist-put! plist :modules
-                     (append module-list
-                             (list module)
-                             (when (file-in-directory-p ,(dir!) doom-private-dir)
-                               '((:private . modules)))
-                             nil))))
+         (cl-callf plist-put plist :modules
+                   (append module-list
+                           (list module)
+                           (when (file-in-directory-p ,(dir!) doom-private-dir)
+                             '((:private . modules)))
+                           nil))))
      ;; Merge given plist with pre-existing one
-     (doplist! ((prop val) (list ,@plist) plist)
-       (unless (null val)
-         (plist-put! plist prop val)))
+     (cl-loop for (key value) on (list ,@plist) by 'cddr
+              when value
+              do (cl-callf plist-put plist key value))
      ;; Some basic key validation; throws an error on invalid properties
      (condition-case e
          (when-let (recipe (plist-get plist :recipe))
@@ -535,13 +535,12 @@ elsewhere."
                recipe
              ;; Expand :local-repo from current directory
              (when local-repo
-               (plist-put!
-                plist :recipe
-                (plist-put recipe :local-repo
-                           (let ((local-path (expand-file-name local-repo ,(dir!))))
-                             (if (file-directory-p local-path)
-                                 local-path
-                               local-repo)))))))
+               (cl-callf plist-put plist :recipe
+                         (plist-put recipe :local-repo
+                                    (let ((local-path (expand-file-name local-repo ,(dir!))))
+                                      (if (file-directory-p local-path)
+                                          local-path
+                                        local-repo)))))))
        (error
         (signal 'doom-package-error
                 (cons ,(symbol-name name)

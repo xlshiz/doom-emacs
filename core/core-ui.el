@@ -333,8 +333,8 @@ windows, switch to `doom-fallback-buffer'. Otherwise, delegate to original
   (setq compilation-always-kill t       ; kill compilation process before starting another
         compilation-ask-about-save nil  ; save all buffers on `compile'
         compilation-scroll-output 'first-error)
-  ;; Handle ansi codes in compilation buffer
-  (add-hook 'compilation-filter-hook #'doom-apply-ansi-color-to-compilation-buffer-h)
+  ;; Handle ansi codes in compilation buffers
+  (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter)
   ;; Automatically truncate compilation buffers so they don't accumulate too
   ;; much data and bog down the rest of Emacs.
   (autoload 'comint-truncate-buffer "comint" nil t)
@@ -522,7 +522,8 @@ windows, switch to `doom-fallback-buffer'. Otherwise, delegate to original
 ;; User themes should live in $DOOMDIR/themes, not ~/.emacs.d
 (setq custom-theme-directory (concat doom-private-dir "themes/"))
 
-;; Always prioritize the user's themes above the built-in/packaged ones.
+;; Third party themes add themselves to `custom-theme-load-path', but the themes
+;; living in $DOOMDIR/themes should always have priority.
 (setq custom-theme-load-path
       (cons 'custom-theme-directory
             (delq 'custom-theme-directory custom-theme-load-path)))
@@ -593,6 +594,7 @@ windows, switch to `doom-fallback-buffer'. Otherwise, delegate to original
         (when (and (not no-enable) (custom-theme-enabled-p theme))
           (setq doom-theme theme)
           (put 'doom-theme 'previous-themes (or last-themes 'none))
+          ;; DEPRECATED Hook into `enable-theme-functions' when we target 29
           (doom-run-hooks 'doom-load-theme-hook))))))
 
 

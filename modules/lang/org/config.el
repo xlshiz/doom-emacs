@@ -344,10 +344,10 @@ Also adds support for a `:sync' parameter to override `:async'."
                  (require lang nil t))
         (add-to-list 'org-babel-load-languages (cons lang t)))))
 
-  (defadvice! +org--export-lazy-load-library-h ()
+  (defadvice! +org--export-lazy-load-library-h (&optional element)
     "Lazy load a babel package when a block is executed during exporting."
     :before #'org-babel-exp-src-block
-    (+org--babel-lazy-load-library-a (org-babel-get-src-block-info)))
+    (+org--babel-lazy-load-library-a (org-babel-get-src-block-info nil element)))
 
   (defadvice! +org--src-lazy-load-library-a (lang)
     "Lazy load a babel package to ensure syntax highlighting."
@@ -487,7 +487,7 @@ relative to `org-directory', unless it is an absolute path."
   (+org-define-basic-link "doom-modules" 'doom-modules-dir)
 
   ;; TODO PR this upstream
-  (defadvice! +org--follow-search-string-a (fn link arg)
+  (defadvice! +org--follow-search-string-a (fn link &optional arg)
     "Support ::SEARCH syntax for id: links."
     :around #'org-id-open
     :around #'org-roam-id-open
@@ -808,6 +808,8 @@ between the two."
         "h" #'org-toggle-heading
         "i" #'org-toggle-item
         "I" #'org-id-get-create
+        "k" #'org-babel-remove-result
+        "K" #'+org/remove-result-blocks
         "n" #'org-add-note
         "N" #'org-store-link
         "o" #'org-set-property
@@ -1277,10 +1279,6 @@ compelling reason, so..."
              #'+org-init-protocol-h
              #'+org-init-protocol-lazy-loader-h
              #'+org-init-smartparens-h)
-
-  ;; (Re)activate eldoc-mode in org-mode a little later, because it disables
-  ;; itself if started too soon (which is the case with `global-eldoc-mode').
-  (add-hook 'org-mode-local-vars-hook #'eldoc-mode)
 
   ;; In case the user has eagerly loaded org from their configs
   (when (and (featurep 'org)

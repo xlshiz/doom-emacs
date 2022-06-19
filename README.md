@@ -99,7 +99,7 @@ Check out [the FAQ][FAQ] for answers to common questions about the project.
 
 # Prerequisites
 + Git 2.23+
-+ Emacs 27.1+ (*27.2 is recommended*, or [native-comp](https://www.emacswiki.org/emacs/GccEmacs). **29+ is not supported**).
++ Emacs 27.1+ (*28.1 is recommended*, or [native-comp](https://www.emacswiki.org/emacs/GccEmacs). **29+ is not supported**).
 + [ripgrep] 11.0+
 + GNU `find`
 + *OPTIONAL:* [fd] 7.3.0+ (improves file indexing performance for some commands)
@@ -139,7 +139,7 @@ Doom is an active and ongoing project. To make that development more
 transparent, its roadmap (and other concerns) are published across three github
 project boards and a newsletter:
 
-+ [Development Roadmap](https://github.com/orgs/doomemacs/projects/6):
++ [Development Roadmap](https://discourse.doomemacs.org/t/development-roadmap/42):
   roughly outlines our goals between release milestones and their progress.
 + [Plugins under review](https://github.com/orgs/doomemacs/projects/5):
   lists plugins we are watching and considering for inclusion, and what their
@@ -176,7 +176,8 @@ mysterious errors. When you do, here are some places you can look for help:
   + To search available keybinds: <kbd>SPC h b b</kbd> or <kbd>C-h b b</kbd>
 + Run `bin/doom doctor` to detect common issues with your development
   environment and private config.
-+ Check out the [FAQ], in case your question has already been answered.
++ Check out the [FAQ] or [Discourse FAQs][discourse-faq], in case your question
+  has already been answered.
 + Search [Doom's issue tracker](https://github.com/doomemacs/doomemacs/issues) in case your issue was already
   reported.
 + Hop on [our Discord server][discord]; it's active and friendly! Keep an eye on
@@ -210,8 +211,9 @@ kind!
 [contribute]: docs/contributing.org
 [discord]: https://discord.gg/qvGgnVx
 [discourse]: https://discourse.doomemacs.org
+[discourse-faq]: https://discourse.doomemacs.org/tag/faq
 [documentation]: docs/index.org
-[faq]: https://discourse.doomemacs.org/t/doom-emacs-faq/45
+[faq]: https://github.com/hlissner/doom-emacs/blob/master/docs/faq.org
 [getting-started]: docs/getting_started.org
 [install]: docs/getting_started.org#install
 [backtrace]: docs/getting_started.org#how-to-extract-a-backtrace-from-an-error
@@ -237,7 +239,7 @@ kind!
 [nix]: https://nixos.org
 [ported-vim-plugins]: modules/editor/evil/README.org#ported-vim-plugins
 [ripgrep]: https://github.com/BurntSushi/ripgrep
-[straight.el]: https://github.com/raxod502/straight.el
+[straight.el]: https://github.com/radian-software/straight.el
 [vim-easymotion]: https://github.com/easymotion/vim-easymotion
 [vim-lion]: https://github.com/tommcdo/vim-lion
 [vim-sneak]: https://github.com/justinmk/vim-sneak

@@ -171,3 +171,8 @@ This is ignored by ccls.")
                                                         (?p "prototype"  font-lock-constant-face)
                                                         (?v "variable" font-lock-variable-name-face)
                                                         (?t "typedef"      font-lock-type-face))))))
+;; Tree sitter
+(eval-when! (featurep! +tree-sitter)
+  (add-hook! '(c-mode-local-vars-hook
+               c++-mode-local-vars-hook)
+             #'tree-sitter!))

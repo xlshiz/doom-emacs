@@ -44,6 +44,8 @@ list is returned as-is."
 ;;
 ;;; Public library
 
+(define-obsolete-function-alias 'doom-enlist 'ensure-list "v3.0.0")
+
 (defun doom-unquote (exp)
   "Return EXP unquoted."
   (declare (pure t) (side-effect-free t))
@@ -67,23 +69,6 @@ list is returned as-is."
   (declare (pure t) (side-effect-free t))
   (cl-check-type keyword keyword)
   (substring (symbol-name keyword) 1))
-
-(defmacro doom-log (format-string &rest args)
-  "Log to *Messages* if `doom-debug-p' is on.
-Does not display text in echo area, but still logs to *Messages*. Accepts the
-same arguments as `message'."
-  `(when doom-debug-p
-     (let ((inhibit-message t))
-       (message
-        ,(concat (propertize "DOOM " 'face 'font-lock-comment-face)
-                 (when (bound-and-true-p doom--current-module)
-                   (propertize
-                    (format "[%s/%s] "
-                            (doom-keyword-name (car doom--current-module))
-                            (cdr doom--current-module))
-                    'face 'warning))
-                 format-string)
-        ,@args))))
 
 (defalias 'doom-partial #'apply-partially)
 
@@ -211,8 +196,8 @@ TRIGGER-HOOK is a list of quoted hooks and/or sharp-quoted functions."
 
 (defun file! ()
   "Return the emacs lisp file this function is called from."
-  (cond ((bound-and-true-p byte-compile-current-file))
-        (load-file-name)
+  (cond (load-in-progress load-file-name)
+        ((bound-and-true-p byte-compile-current-file))
         ((stringp (car-safe current-load-list))
          (car current-load-list))
         (buffer-file-name)
@@ -556,6 +541,8 @@ This is a wrapper around `eval-after-load' that:
                      (cons 'doom-error doom-core-dir))
                     ((file-in-directory-p source doom-private-dir)
                      (cons 'doom-private-error doom-private-dir))
+                    ((file-in-directory-p source (expand-file-name "cli" doom-core-dir))
+                     (cons 'doom-cli-error (expand-file-name "cli" doom-core-dir)))
                     ((cons 'doom-module-error doom-emacs-dir)))))
     (signal (car err)
             (list (file-relative-name
@@ -577,8 +564,8 @@ If NOERROR is non-nil, don't throw an error if the file doesn't exist."
                    (error "Could not detect path to look for '%s' in"
                           filename)))
          (file (if path
-                  `(expand-file-name ,filename ,path)
-                filename)))
+                   `(expand-file-name ,filename ,path)
+                 filename)))
     `(condition-case-unless-debug e
          (let (file-name-handler-alist)
            (load ,file ,noerror 'nomessage))
@@ -793,7 +780,15 @@ testing advice (when combined with `rotate-text').
 ;;
 ;;; Backports
 
-;; None at the moment!
+(unless EMACS28+
+  (defun ensure-list (object)
+    "Return OBJECT as a list.
+If OBJECT is already a list, return OBJECT itself.  If it's
+not a list, return a one-element list containing OBJECT."
+    (declare (pure t) (side-effect-free t))
+    (if (listp object)
+        object
+      (list object))))
 
 (provide 'core-lib)
 ;;; core-lib.el ends here
