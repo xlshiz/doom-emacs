@@ -83,6 +83,9 @@ Fixes #3939: unsortable dired entries on Windows."
 
 (use-package! dirvish
   :when (featurep! +dirvish)
+  :defer t
+  :init (after! dired (dirvish-override-dired-mode))
+  :hook (dired-mode . dired-omit-mode)
   :custom
   ;; Go back home? Just press `bh'
   (dirvish-bookmark-entries
@@ -96,20 +99,27 @@ Fixes #3939: unsortable dired entries on Windows."
   ;; Maybe the icons are too big to your eyes
   ;; (dirvish-all-the-icons-height 0.8)
   ;; In case you want the details at startup like `dired'
-  ;; (dirvish-hide-details nil)
+  (dirvish-hide-details nil)
+  (dirvish-side-follow-buffer-file t)
   :config
-  ;; Place this line under :init to ensure the overriding at startup, see #22
-  (dirvish-override-dired-mode)
   ;; (dirvish-peek-mode)
   ;; Dired options are respected except a few exceptions, see FAQ.org
-  (setq dired-recursive-deletes 'always)
-  (setq delete-by-moving-to-trash t)
-  (setq dired-dwim-target t)
-  ;; Make sure to use the long name of flags when exists
-  ;; eg. use "--almost-all" instead of "-A"
-  ;; Otherwise some commands won't work properly
-  (setq dired-listing-switches
-        "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
+  (setq dirvish-cache-dir (concat doom-cache-dir "dirvish/")
+        dired-recursive-deletes 'always
+        delete-by-moving-to-trash t
+        dired-dwim-target t
+        dired-omit-files (concat dired-omit-files
+                                 "\\|^\\.DS_Store\\'"
+                                 "\\|^\\.project\\(?:ile\\)?\\'"
+                                 "\\|^\\.\\(?:svn\\|git\\)\\'"
+                                 "\\|^\\.ccls-cache\\'"
+                                 "\\|\\(?:\\.js\\)?\\.meta\\'"
+                                 "\\|\\.\\(?:elc\\|o\\|pyo\\|swp\\|class\\)\\'")
+        ;; Make sure to use the long name of flags when exists
+        ;; eg. use "--almost-all" instead of "-A"
+        ;; Otherwise some commands won't work properly
+        dired-listing-switches "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
+  (remove-hook 'dired-mode-hook #'doom--recentf-add-dired-directory-h)
   (map! (:map dired-mode-map
         :ng "h"   #'dired-up-directory
         :ng "j"   #'dired-next-line
@@ -218,6 +228,7 @@ we have to clean it up ourselves."
 
 (use-package! dired-x
   :unless (featurep! +ranger)
+  :unless (featurep! +dirvish)
   :hook (dired-mode . dired-omit-mode)
   :config
   (setq dired-omit-verbose nil

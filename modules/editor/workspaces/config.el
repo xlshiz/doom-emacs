@@ -95,7 +95,7 @@ stored in `persp-save-dir'.")
              ;; name when restored).
              (when uniquify-buffer-name-style
                (setq +workspace--old-uniquify-style uniquify-buffer-name-style))
-             (setq uniquify-buffer-name-style nil)
+             ;; (setq uniquify-buffer-name-style nil)
              ;; Ensure `persp-kill-buffer-query-function' is last
              (remove-hook 'kill-buffer-query-functions #'persp-kill-buffer-query-function)
              (add-hook 'kill-buffer-query-functions #'persp-kill-buffer-query-function t)
