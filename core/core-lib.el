@@ -251,7 +251,7 @@ NAME, ARGLIST, and BODY are the same as `defun', `defun*', `defmacro', and
                   ,(if (eq type 'defun*)
                        `(cl-labels ((,@rest)) ,body)
                      `(cl-letf (((symbol-function #',(car rest))
-                                 (fn! ,(cadr rest) ,@(cddr rest))))
+                                 (lambda! ,(cadr rest) ,@(cddr rest))))
                         ,body))))
               (_
                (when (eq (car-safe type) 'function)
@@ -262,8 +262,8 @@ NAME, ARGLIST, and BODY are the same as `defun', `defun*', `defmacro', and
   "Run FORMS without generating any output.
 
 This silences calls to `message', `load', `write-region' and anything that
-writes to `standard-output'. In interactive sessions this won't suppress writing
-to *Messages*, only inhibit output in the echo area."
+writes to `standard-output'. In interactive sessions this inhibits output to the
+echo-area, but not to *Messages*."
   `(if doom-debug-p
        (progn ,@forms)
      ,(if doom-interactive-p
@@ -298,7 +298,7 @@ See `eval-if!' for details on this macro's purpose."
 
 
 ;;; Closure factories
-(defmacro fn! (arglist &rest body)
+(defmacro lambda! (arglist &rest body)
   "Returns (cl-function (lambda ARGLIST BODY...))
 The closure is wrapped in `cl-function', meaning ARGLIST will accept anything
 `cl-defun' will. Implicitly adds `&allow-other-keys' if `&key' is present in
@@ -327,13 +327,15 @@ ARGLIST."
          (allow-other-keys arglist))
       ,@body)))
 
+(put 'doom--fn-crawl 'lookup-table
+     '((_  . 0) (_  . 1) (%2 . 2) (%3 . 3) (%4 . 4)
+       (%5 . 5) (%6 . 6) (%7 . 7) (%8 . 8) (%9 . 9)))
 (defun doom--fn-crawl (data args)
   (cond ((symbolp data)
-         (when-let*
-             ((lookup '(_ _ %2 %3 %4 %5 %6 %7 %8 %9))
-              (pos (cond ((eq data '%*) 0)
-                         ((memq data '(% %1)) 1)
-                         ((cdr (assq data (seq-map-indexed #'cons lookup)))))))
+         (when-let
+             (pos (cond ((eq data '%*) 0)
+                        ((memq data '(% %1)) 1)
+                        ((cdr (assq data (get 'doom--fn-crawl 'lookup-table))))))
            (when (and (= pos 1)
                       (aref args 1)
                       (not (eq data (aref args 1))))
@@ -342,10 +344,13 @@ ARGLIST."
         ((and (not (eq (car-safe data) '!))
               (or (listp data)
                   (vectorp data)))
-         (seq-doseq (elt data)
-           (doom--fn-crawl elt args)))))
+         (let ((len (length data))
+               (i 0))
+           (while (< i len)
+             (doom--fn-crawl (elt data i) args)
+             (cl-incf i))))))
 
-(defmacro fn!! (&rest args)
+(defmacro fn! (&rest args)
   "Return an lambda with implicit, positional arguments.
 
 The function's arguments are determined recursively from ARGS.  Each symbol from
@@ -361,7 +366,7 @@ Instead of:
 
 you can use this macro and write:
 
-  (fn!! (if %1 %3 (cadr %*)))
+  (fn! (if %1 %3 (cadr %*)))
 
 which expands to:
 
@@ -372,12 +377,17 @@ This macro was adapted from llama.el (see https://git.sr.ht/~tarsius/llama),
 minus font-locking, the outer function call, and minor optimizations."
   `(lambda ,(let ((argv (make-vector 10 nil)))
               (doom--fn-crawl args argv)
-              `(,@(let ((n 0))
-                    (mapcar (lambda (sym)
-                              (cl-incf n)
-                              (or sym (intern (format "_%%%s" n))))
-                            (reverse (seq-drop-while
-                                      #'null (reverse (seq-subseq argv 1))))))
+              `(,@(let ((i (1- (length argv)))
+                        (n -1)
+                        sym arglist)
+                    (while (> i 0)
+                      (setq sym (aref argv i))
+                      (unless (and (= n -1) (null sym))
+                        (cl-incf n)
+                        (push (or sym (intern (format "_%%%d" (1+ n))))
+                              arglist))
+                      (cl-decf i))
+                    arglist)
                 ,@(and (aref argv 0) '(&rest %*))))
      ,@args))
 
@@ -780,7 +790,12 @@ testing advice (when combined with `rotate-text').
 ;;
 ;;; Backports
 
-(unless EMACS28+
+;; `format-spec' wasn't autoloaded until 28.1
+(unless (fboundp 'format-spec)
+  (autoload #'format-spec "format-spec"))
+
+;; Introduced in Emacs 28.1
+(unless (fboundp 'ensure-list)
   (defun ensure-list (object)
     "Return OBJECT as a list.
 If OBJECT is already a list, return OBJECT itself.  If it's

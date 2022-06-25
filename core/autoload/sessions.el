@@ -113,7 +113,13 @@
   (doom-save-session file))
 
 ;;;###autoload
-(defalias 'doom/restart #'restart-emacs)
+(defun doom/restart ()
+  "Restart Emacs (and the daemon, if active).
+
+Unlike `doom/restart-and-restore', does not restart the current session."
+  (interactive)
+  (require 'restart-emacs)
+  (restart-emacs))
 
 ;;;###autoload
 (defun doom/restart-and-restore (&optional debug)
@@ -122,6 +128,7 @@
 If DEBUG (the prefix arg) is given, start the new instance with the --debug
 switch."
   (interactive "P")
+  (require 'restart-emacs)
   (doom/quicksave-session)
   (save-some-buffers nil t)
   (letf! ((#'save-buffers-kill-emacs #'kill-emacs)
@@ -133,8 +140,10 @@ switch."
     ;;   arguments at all. Should be fixed upstream, but restart-emacs seems to
     ;;   be unmaintained.
     (with-temp-file tmpfile
-      (print `(progn (add-hook 'window-setup-hook #'doom-load-session 100)
-                     (delete-file ,tmpfile))
+      (print `(progn
+                (when (boundp 'doom-version)
+                  (add-hook 'window-setup-hook #'doom-load-session 100))
+                (delete-file ,tmpfile))
              (current-buffer)))
     (restart-emacs
      (append (if debug (list "--debug-init"))

@@ -28,15 +28,6 @@
 
 
 ;;
-;;; Variables
-
-(defvar doom-cli--dump (getenv "__DOOMDUMP")
-  "If non-nil, dump target CLIs to stdout (or all of `doom-cli--table').
-
-This exists so external tools or Doom binscripts can inspect each other.")
-
-
-;;
 ;;; Setup CLI session
 
 ;; The garbage collector isn't so important during CLI ops. A higher threshold
@@ -49,28 +40,25 @@ This exists so external tools or Doom binscripts can inspect each other.")
 
 ;; HACK Load `cl' and site files manually to prevent polluting logs and stdout
 ;;      with deprecation and/or file load messages.
-(let ((inhibit-message t))
+(let ((inhibit-message (not (or (getenv "DEBUG") init-file-debug))))
   (require 'cl)
   (unless site-run-file
     (let ((site-run-file "site-start")
-          (verbose (or (getenv "DEBUG") init-file-debug))
           (tail load-path)
           (lispdir (expand-file-name "../lisp" data-directory))
           dir)
       (while tail
         (setq dir (car tail))
         (let ((default-directory dir))
-          (load (expand-file-name "subdirs.el") t (not verbose) t))
-        (or (string-prefix-p lispdir dir)
-            (let ((default-directory dir))
-              (load (expand-file-name "leim-list.el") t (not verbose) t)))
+          (load (expand-file-name "subdirs.el") t inhibit-message t))
+        (unless (string-prefix-p lispdir dir)
+          (let ((default-directory dir))
+            (load (expand-file-name "leim-list.el") t inhibit-message t)))
         (setq tail (cdr tail)))
-      (load site-run-file t (not verbose)))))
+      (load site-run-file t inhibit-message))))
 
 ;; Just the... bear necessities~
 (require 'core (expand-file-name "core" (file-name-directory load-file-name)))
-(require 'seq)
-(require 'map)
 
 ;; Load these eagerly, since autoloads haven't been generated/loaded yet
 (load! "autoload/process")
@@ -85,6 +73,9 @@ This exists so external tools or Doom binscripts can inspect each other.")
 (require 'core-modules)
 (require 'core-packages)
 
+;; Our DSL, API, and everything nice.
+(require 'core-cli-lib)
+
 ;; Don't generate superfluous files when writing temp buffers.
 (setq make-backup-files nil)
 ;; Stop user configuration from interfering with package management.
@@ -97,9 +88,6 @@ This exists so external tools or Doom binscripts can inspect each other.")
 
 ;;
 ;;; Bootstrap
-
-;; Our DSL, API, and everything nice.
-(require 'core-cli-lib)
 
 ;; Use our own home-grown debugger so we can capture backtraces, make them more
 ;; presentable, and write them to a file. Cleaner backtraces are better UX than
@@ -114,6 +102,22 @@ This exists so external tools or Doom binscripts can inspect each other.")
 
 ;; Load standard :help and :version handlers.
 (load! "cli/help")
+
+;; When __DOOMDUMP is set, doomscripts trigger this special handler.
+(defcli! (:root :dump)
+    ((pretty? ("--pretty") "Pretty print output")
+     &context context
+     &args commands)
+  "Dump metadata to stdout for other commands to read."
+  (let* ((prefix (doom-cli-context-prefix context))
+         (command (cons prefix commands)))
+    (funcall (if pretty? #'pp #'prin1)
+             (cond ((equal commands '("-")) (hash-table-values doom-cli--table))
+                   (commands (doom-cli-find command))
+                   ((doom-cli-find (list prefix)))))
+    (terpri)
+    ;; Kill manually so we don't save output to logs.
+    (let (kill-emacs) (kill-emacs 0))))
 
 (provide 'core-cli)
 ;;; core-cli.el ends here

@@ -98,7 +98,7 @@ OPTIONS:
                 (let* ((key "ENVIRONMENT VARIABLES")
                        (clis (if command (doom-cli-find command) (hash-table-values doom-cli--table)))
                        (clis (seq-remove #'doom-cli-alias clis))
-                       (clis (seq-filter (fn!! (cdr (assoc key (doom-cli-docs %)))) clis))
+                       (clis (seq-filter (fn! (cdr (assoc key (doom-cli-docs %)))) clis))
                        (clis (seq-group-by #'doom-cli-command clis)))
                   (print! "List of environment variables for %s:\n" command)
                   (if (null clis)
@@ -121,7 +121,9 @@ OPTIONS:
                                                 " +" " " (format "'%s'" formatted)))
                               " or ")))))))))
 
-(defcli! (:root :version) ((simple? ("--simple")) &context context)
+(defcli! (:root :version)
+    ((simple? ("--simple"))
+     &context context)
   "Show installed versions of Doom, Doom modules, and Emacs."
   (doom/version)
   (unless simple?
@@ -154,7 +156,7 @@ OPTIONS:
 (defun doom-cli-help-similar-commands (command &optional maxscore)
   "Return N commands that are similar to COMMAND."
   (seq-take-while
-   (fn!! (>= (car %) (or maxscore 0.0)))
+   (fn! (>= (car %) (or maxscore 0.0)))
    (seq-sort-by
     #'car #'>
     (cl-loop with prefix = (seq-find #'doom-cli-get (nreverse (doom-cli--command-expand command t)))
@@ -207,7 +209,7 @@ OPTIONS:
                                    ;; FIXME Who am I fooling?
                                    (format (format "%%-%ds%%s%%%ds" width width)
                                            "DOOM(1)" title "DOOM(1)")))
-                      ("NAME" . ,(concat (doom-cli-command-string cli) " - " .summary))
+                      ("NAME" . ,(concat .command " - " .summary))
                       ("SYNOPSIS" . ,(doom-cli-help--render-synopsis .synopsis nil t))
                       ("DESCRIPTION" . ,.description))
                   `((nil . ,(doom-cli-help--render-synopsis .synopsis "Usage: "))
@@ -222,9 +224,17 @@ OPTIONS:
                    (if (or (not (doom-cli-fn cli)) noglobal?)
                        `(,(assq 'local .options))
                      .options)
-                   cli)))))
+                   cli))))
+           (command (doom-cli-command cli)))
       (letf! (defun printsection (section)
-               (print! "%s\n" (if section (markup section) (dark "TODO"))))
+               (print! "%s\n"
+                       (if (null section)
+                           (dark "TODO")
+                         (markup
+                          (format-spec
+                           section `((?p . ,(car command))
+                                     (?c . ,(doom-cli-command-string (cdr command))))
+                           'ignore)))))
         (pcase-dolist (`(,label . ,contents) alist)
           (when (and contents (not (string-blank-p contents)))
             (when label
@@ -253,9 +263,9 @@ OPTIONS:
          (subcommands? (doom-cli-subcommands rcli 1 :predicate? t)))
     `((command  . ,(doom-cli-command cli))
       (options  ,@opts)
-      (required ,@(mapcar (fn!! (upcase (format "`%s'" %))) (if subcommands? '(command) (alist-get '&required args))))
-      (optional ,@(mapcar (fn!! (upcase (format "[`%s']" %)))(alist-get '&optional args)))
-      (rest     ,@(mapcar (fn!! (upcase (format "[`%s'...]" %))) (if subcommands? '(args) (alist-get '&args args))))
+      (required ,@(mapcar (fn! (upcase (format "`%s'" %))) (if subcommands? '(command) (alist-get '&required args))))
+      (optional ,@(mapcar (fn! (upcase (format "[`%s']" %)))(alist-get '&optional args)))
+      (rest     ,@(mapcar (fn! (upcase (format "[`%s'...]" %))) (if subcommands? '(args) (alist-get '&args args))))
       (examples ,@(doom-cli-help--parse-docs (doom-cli-find cli t) "SYNOPSIS")))))
 
 (defun doom-cli-help--render-synopsis (synopsis &optional prefix with-examples?)
@@ -304,9 +314,9 @@ OPTIONS:
 (cl-defun doom-cli-help--render-commands (commands &key prefix grouped? docs? (inline? t))
   (with-temp-buffer
     (let* ((doom-print-indent 0)
-           (commands (seq-group-by (fn!! (if grouped? (doom-cli-prop (doom-cli-get % t) :group))) commands))
+           (commands (seq-group-by (fn! (if grouped? (doom-cli-prop (doom-cli-get % t) :group))) commands))
            (toplevel (assq nil commands))
-           (rest (nreverse (remove toplevel commands)))
+           (rest (remove toplevel commands))
            (drop (if prefix (length prefix) 0))
            (minwidth
             (apply
@@ -350,8 +360,8 @@ OPTIONS:
 The alist's CAR are lists of formatted switches plus their arguments, e.g.
 '((\"`--foo'\" \"`BAR'\") ...). Their CDR is their formatted documentation."
   (let* ((docs (doom-cli-help--parse-docs (doom-cli-find cli t) "OPTIONS"))
-         (docs (mapcar (fn!! (cons (split-string (car %) ", ")
-                                   (cdr %)))
+         (docs (mapcar (fn! (cons (split-string (car %) ", ")
+                                  (cdr %)))
                        docs))
          (strfmt (if noformatting? "%s" "`%s'"))
          local-options
@@ -400,14 +410,13 @@ The alist's CAR are lists of formatted switches plus their arguments, e.g.
                    (insert!
                     ("%s%s\n%s"
                      (mapconcat
-                      (fn!!
-                       (when (member "..." (cdr %))
-                         (setq multiple? t))
-                       (string-trim-right
-                        (format "%s %s"
-                                (doom-print--cli-markup (car %))
-                                (doom-print--cli-markup
-                                 (string-join (remove "..." (cdr %)) "|")))))
+                      (fn! (when (member "..." (cdr %))
+                             (setq multiple? t))
+                           (string-trim-right
+                            (format "%s %s"
+                                    (doom-print--cli-markup (car %))
+                                    (doom-print--cli-markup
+                                     (string-join (remove "..." (cdr %)) "|")))))
                       switches
                       ", ")
                      (if multiple? ", ..." "")

@@ -159,7 +159,9 @@ in."
   (condition-case-unless-debug ex
       (print-group!
        (let ((doom-interactive-p 'doctor)
-             (noninteractive nil))
+             (noninteractive nil)
+             kill-emacs-query-functions
+             kill-emacs-hook)
          (defvar doom-reloading-p nil)
          (require 'core-start)
          (doom-initialize-packages))
@@ -256,9 +258,8 @@ in."
                                                   (eval (doom-package-get name :ignore))
                                                   (plist-member (doom-package-get name :recipe) :local-repo)
                                                   (locate-library (symbol-name name))
-                                                  ;; (doom-package-built-in-p name)
-                                                  ;; (doom-package-installed-p name)
-                                                  )
+                                                  (doom-package-built-in-p name)
+                                                  (doom-package-installed-p name))
                                        do (print! (error "Missing emacs package: %S") name))
                               (let ((inhibit-message t))
                                 (load doctor-file 'noerror 'nomessage)))

@@ -81,71 +81,6 @@ Fixes #3939: unsortable dired entries on Windows."
   (diff-hl-margin-mode))
 
 
-(use-package! dirvish
-  :when (featurep! +dirvish)
-  :defer t
-  :init (after! dired (dirvish-override-dired-mode))
-  :hook (dired-mode . dired-omit-mode)
-  :custom
-  ;; Go back home? Just press `bh'
-  (dirvish-bookmark-entries
-   '(("h" "~/"                          "Home")
-     ("d" "~/Downloads/"                "Downloads")))
-  ;; (dirvish-header-line-format '(:left (path) :right (free-space)))
-  (dirvish-mode-line-format ; it's ok to place string inside
-   '(:left (sort file-time " " file-size symlink) :right (omit yank index)))
-  (dirvish-attributes '(subtree-state all-the-icons))
-  ;; (dirvish-attributes '(file-size vscode-icon)) ; Feel free to try different combination
-  ;; Maybe the icons are too big to your eyes
-  ;; (dirvish-all-the-icons-height 0.8)
-  ;; In case you want the details at startup like `dired'
-  (dirvish-hide-details nil)
-  (dirvish-side-follow-buffer-file t)
-  :config
-  ;; (dirvish-peek-mode)
-  ;; Dired options are respected except a few exceptions, see FAQ.org
-  (setq dirvish-cache-dir (concat doom-cache-dir "dirvish/")
-        dired-recursive-deletes 'always
-        delete-by-moving-to-trash t
-        dired-dwim-target t
-        dired-omit-files (concat dired-omit-files
-                                 "\\|^\\.DS_Store\\'"
-                                 "\\|^\\.project\\(?:ile\\)?\\'"
-                                 "\\|^\\.\\(?:svn\\|git\\)\\'"
-                                 "\\|^\\.ccls-cache\\'"
-                                 "\\|\\(?:\\.js\\)?\\.meta\\'"
-                                 "\\|\\.\\(?:elc\\|o\\|pyo\\|swp\\|class\\)\\'")
-        ;; Make sure to use the long name of flags when exists
-        ;; eg. use "--almost-all" instead of "-A"
-        ;; Otherwise some commands won't work properly
-        dired-listing-switches "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
-  (remove-hook 'dired-mode-hook #'doom--recentf-add-dired-directory-h)
-  (map! (:map dired-mode-map
-        :ng "h"   #'dired-up-directory
-        :ng "j"   #'dired-next-line
-        :ng "k"   #'dired-previous-line
-        :ng "l"   #'dired-find-file
-        :ng "i"   #'wdired-change-to-wdired-mode
-        :ng "."   #'dired-omit-mode
-        :ng "TAB" #'dirvish-subtree-toggle
-        :ng "SPC" #'dirvish-history-jump
-        :ng "M-n" #'dirvish-history-go-forward
-        :ng "M-p" #'dirvish-history-go-backward
-        :ng "M-s" #'dirvish-setup-menu
-        :ng "M-f" #'dirvish-toggle-fullscreen
-        :ng "*"   #'dirvish-mark-menu
-        :ng "r"   #'dirvish-fd-roam
-        :ng "b"   #'dirvish-bookmark-goto
-        :ng "f"   #'dirvish-file-info-menu
-        :ng [remap dired-sort-toggle-or-edit] #'dirvish-quicksort
-        :ng [remap dired-do-redisplay] #'dirvish-ls-switches-menu
-        :ng [remap dired-summary] #'dirvish-dispatch
-        :ng [remap dired-do-copy] #'dirvish-yank-menu
-        :ng [remap mode-line-other-buffer] #'dirvish-history-last)
-        (:map dired-mode-map
-        :ng "q"  #'quit-window)))
-
-
 (use-package! ranger
   :when (featurep! +ranger)
   :after dired
@@ -203,8 +138,75 @@ we have to clean it up ourselves."
         ranger-hide-cursor nil))
 
 
+(use-package! dirvish
+  :when (featurep! +dirvish)
+  :defer t
+  :init (after! dired (dirvish-override-dired-mode))
+  :hook (dired-mode . dired-omit-mode)
+  :custom
+  ;; Go back home? Just press `bh'
+  (dirvish-bookmark-entries
+   '(("h" "~/"                          "Home")
+     ("d" "~/Downloads/"                "Downloads")))
+  ;; (dirvish-header-line-format '(:left (path) :right (free-space)))
+  (dirvish-mode-line-format ; it's ok to place string inside
+   '(:left (sort file-time " " file-size symlink) :right (omit yank index)))
+  (dirvish-attributes '(subtree-state all-the-icons))
+  ;; (dirvish-attributes '(file-size vscode-icon)) ; Feel free to try different combination
+  ;; Maybe the icons are too big to your eyes
+  ;; (dirvish-all-the-icons-height 0.8)
+  ;; In case you want the details at startup like `dired'
+  (dirvish-hide-details nil)
+  (dirvish-side-follow-buffer-file t)
+  :config
+  ;; (dirvish-peek-mode)
+  ;; Dired options are respected except a few exceptions, see FAQ.org
+  (setq dirvish-cache-dir (concat doom-cache-dir "dirvish/")
+        dired-recursive-deletes 'always
+        delete-by-moving-to-trash t
+        dired-dwim-target t
+        dired-omit-files (concat dired-omit-files
+                                 "\\|^\\.DS_Store\\'"
+                                 "\\|^\\.project\\(?:ile\\)?\\'"
+                                 "\\|^\\.\\(?:svn\\|git\\)\\'"
+                                 "\\|^\\.ccls-cache\\'"
+                                 "\\|\\(?:\\.js\\)?\\.meta\\'"
+                                 "\\|\\.\\(?:elc\\|o\\|pyo\\|swp\\|class\\)\\'")
+        ;; Make sure to use the long name of flags when exists
+        ;; eg. use "--almost-all" instead of "-A"
+        ;; Otherwise some commands won't work properly
+        dired-listing-switches "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
+  (remove-hook 'dired-mode-hook #'doom--recentf-add-dired-directory-h)
+  (map! (:map dired-mode-map
+        :ng "h"   #'dired-up-directory
+        :ng "j"   #'dired-next-line
+        :ng "k"   #'dired-previous-line
+        :ng "l"   #'dired-find-file
+        :ng "i"   #'wdired-change-to-wdired-mode
+        :ng "."   #'dired-omit-mode
+        :ng "TAB" #'dirvish-subtree-toggle
+        :ng "SPC" #'dirvish-history-jump
+        :ng "M-n" #'dirvish-history-go-forward
+        :ng "M-p" #'dirvish-history-go-backward
+        :ng "M-s" #'dirvish-setup-menu
+        :ng "M-f" #'dirvish-toggle-fullscreen
+        :ng "*"   #'dirvish-mark-menu
+        :ng "r"   #'dirvish-fd-roam
+        :ng "b"   #'dirvish-bookmark-goto
+        :ng "z"   #'dirvish-show-history
+        :ng "f"   #'dirvish-file-info-menu
+        :ng [remap dired-sort-toggle-or-edit] #'dirvish-quicksort
+        :ng [remap dired-do-redisplay] #'dirvish-ls-switches-menu
+        :ng [remap dired-summary] #'dirvish-dispatch
+        :ng [remap dired-do-copy] #'dirvish-yank-menu
+        :ng [remap mode-line-other-buffer] #'dirvish-history-last)
+        (:map dired-mode-map
+        :ng "q"  #'quit-window)))
+
+
 (use-package! all-the-icons-dired
   :when (featurep! +icons)
+  :unless (featurep! +dirvish)
   :hook (dired-mode . all-the-icons-dired-mode)
   :config
   ;; HACK Fixes #1929: icons break file renaming in Emacs 27+, because the icon
@@ -227,8 +229,8 @@ we have to clean it up ourselves."
 
 
 (use-package! dired-x
-  :unless (featurep! +ranger)
   :unless (featurep! +dirvish)
+  :unless (featurep! +ranger)
   :hook (dired-mode . dired-omit-mode)
   :config
   (setq dired-omit-verbose nil

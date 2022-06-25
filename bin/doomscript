@@ -1,28 +1,27 @@
 #!/usr/bin/env bash
-# This is a shebang interpreter for launching emacs lisp scripts with Doom's CLI
-# framework preloaded and all the metadata it needs initialized. Use it like so:
+# This is a shebang interpreter for launching Emacs Lisp scripts with Doom's CLI
+# framework preloaded, plus any environment variables it needs. Use it like so:
 #
 #   #!/usr/bin/env doomscript
 #   (print! "Hello world!")
 #
-# For this to work, this file must be in your $PATH.
+# For this to work (and to avoid absolute paths in your shebang line), I
+# recommend having this file in your $PATH:
 #
 #   export PATH="$HOME/.emacs.d/bin:$PATH"
 #
-# This can also be exploited to evaluate arbitrary elisp against Doom's CLI
-# environment.
-#
-# This isn't used for bin/doom because of the $PATH requirement (and using
-# $BASH_SOURCE to locate it would reduce its POSIX compliance). This shouldn't
-# be an issue for folks writing their own CLIs, however.
+# This isn't used for bin/doom because of the $PATH/absolute path requirement
+# (and using $BASH_SOURCE to locate it would reduce its POSIX compliance), but
+# this shouldn't be an issue for folks writing their own CLIs.
 
-set -e
 case "$EMACS" in
     *term*) EMACS=emacs ;;
     *) EMACS="${EMACS:-emacs}" ;;
 esac
 
-TMPDIR="${TMPDIR:-$($EMACS -Q --batch --eval '(princ (temporary-file-directory))' 2>/dev/null)}"
+emacs="$EMACS -q --no-site-file --no-x-resources --no-splash --batch"
+
+TMPDIR="${TMPDIR:-$($emacs --eval '(princ (temporary-file-directory))' 2>/dev/null)}"
 if [ -z "$TMPDIR" ]; then
     >&2 echo "Error: failed to run Emacs with command '$EMACS'"
     >&2 echo
@@ -41,10 +40,9 @@ tmpfile="$TMPDIR/doomscript.${__DOOMPID}"
 
 target="$1"
 shift
-$EMACS -Q --batch \
-    --load "$EMACSDIR/core/core-cli" \
-    --load "$target" \
-    -- "$@" || exit=$?
+$emacs --load "$EMACSDIR/core/core-cli" \
+       --load "$target" \
+       -- "$@" || exit=$?
 # Execute exit-script, if requested (to simulate execve)
 if [ "${exit:-0}" -eq 254 ]; then
     sh "${tmpdir}/doom.${__DOOMPID}.${__DOOMSTEP}.sh" "$0" "$@" && true
