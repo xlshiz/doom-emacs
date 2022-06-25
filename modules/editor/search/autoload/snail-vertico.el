@@ -14,10 +14,10 @@
 ;;;###autoload
 (defun snail--buffer-exclude (buf)
   (catch 'failed
-    (dolist (backlist-buf '("*scratch*" "*Messages*"))
-      (when (string-prefix-p backlist-buf buf)
+    (dolist (whitelist-buf '("*scratch*" "*Messages*"))
+      (when (string-prefix-p whitelist-buf buf)
         (throw 'failed nil)))
-    (dolist (backlist-buf '(" *" "*"))
+    (dolist (backlist-buf '(" *" "*" " markdown-code-fontification"))
       (when (string-prefix-p backlist-buf buf)
         (throw 'failed t)))
     nil))
@@ -79,6 +79,7 @@
     snail--source-recent-file
     ;; hiden
     consult--source-hidden-buffer
+    consult--source-modified-buffer
     ))
 
 ;;;###autoload

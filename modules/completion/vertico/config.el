@@ -147,6 +147,10 @@ orderless."
                       doom-projectile-fd-binary
                       (if IS-WINDOWS "--path-separator=/" ""))
             consult-find-args)))
+  (setq consult-buffer-sources
+        '(consult--source-hidden-buffer
+          consult--source-modified-buffer
+          consult--source-buffer))
 
   (consult-customize
    consult-ripgrep consult-git-grep consult-grep
