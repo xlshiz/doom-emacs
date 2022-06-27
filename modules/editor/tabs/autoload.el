@@ -2,20 +2,18 @@
 
 ;;;###autoload
 (defun +tabs-buffer-list ()
-  (let* ((bufs (buffer-list))
-         (use-workspace (featurep! :editor workspaces))
-         (active-workspace))
-    (when use-workspace
-        (setq active-workspace (+workspace-current))
-        (setq bufs (cl-remove-if (lambda (b)
-                                   (not (+workspace-contains-buffer-p b active-workspace ))) bufs)))
+  (let ((bufs (buffer-list)))
     (cl-remove-if #'+tabs-need-hide-p bufs)))
 
 (defun +tabs-hide-buffer-p (buf)
-  (let ((name (buffer-name buf))
-        (blacklist '("*" " *" "  *"
-                     "COMMIT_EDITMSG")))
+  (let* ((name (buffer-name buf))
+         (use-workspace (featurep! :editor workspaces))
+         (blacklist '("*" " *" "  *"
+                      "COMMIT_EDITMSG")))
     (or
+     (if use-workspace
+         (not (+workspace-contains-buffer-p buf (+workspace-current)))
+       nil)
      (window-dedicated-p (selected-window))
      (cl-some (lambda (prefix) (string-prefix-p prefix name)) blacklist)
      (eq (aref name 0) ?\s))))

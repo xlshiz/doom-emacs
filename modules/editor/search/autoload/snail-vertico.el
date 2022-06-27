@@ -17,7 +17,9 @@
     (dolist (whitelist-buf '("*scratch*" "*Messages*"))
       (when (string-prefix-p whitelist-buf buf)
         (throw 'failed nil)))
-    (dolist (backlist-buf '(" *" "*" " markdown-code-fontification"))
+    (dolist (backlist-buf '(" *" "*"
+                            " markdown-code-fontification"
+                            " tq-temp-epdfinfo"))
       (when (string-prefix-p backlist-buf buf)
         (throw 'failed t)))
     nil))

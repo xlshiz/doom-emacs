@@ -121,7 +121,6 @@ orderless."
     [remap load-theme]                    #'consult-theme
     [remap man]                           #'consult-man
     [remap recentf-open-files]            #'consult-recent-file
-    [remap switch-to-buffer]              #'consult-buffer
     [remap switch-to-buffer-other-window] #'consult-buffer-other-window
     [remap switch-to-buffer-other-frame]  #'consult-buffer-other-frame
     [remap yank-pop]                      #'consult-yank-pop
@@ -147,10 +146,6 @@ orderless."
                       doom-projectile-fd-binary
                       (if IS-WINDOWS "--path-separator=/" ""))
             consult-find-args)))
-  (setq consult-buffer-sources
-        '(consult--source-hidden-buffer
-          consult--source-modified-buffer
-          consult--source-buffer))
 
   (consult-customize
    consult-ripgrep consult-git-grep consult-grep
@@ -221,6 +216,7 @@ orderless."
          :desc "Actions" "a" #'embark-act)) ; to be moved to :config default if accepted
   :config
   (set-popup-rule! "^\\*Embark Export Grep" :size 0.35 :ttl 0 :quit nil)
+  (set-popup-rule! "^\\*Embark Export: \\+vertico" :size 0.35 :ttl 0 :quit t)
 
   (defadvice! +vertico--embark-which-key-prompt-a (fn &rest args)
     "Hide the which-key indicator immediately when using the completing-read prompter."

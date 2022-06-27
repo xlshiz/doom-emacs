@@ -237,3 +237,15 @@ targets."
 (defun +vertico-basic-remote-all-completions (string table pred point)
   (and (vertico--remote-p string)
        (completion-basic-all-completions string table pred point)))
+
+;;;###autoload
+(defun +vertico/buffer ()
+  (interactive)
+  (let ((selected (consult--read
+   (consult--buffer-query :sort 'visibility
+                          :as #'buffer-name)
+   :require-match (confirm-nonexistent-file-or-buffer)
+   :prompt "Switch to: "
+   :category 'buffer)))
+    (unless (plist-get selected :match)
+      (consult--buffer-action selected))))

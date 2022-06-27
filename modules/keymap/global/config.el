@@ -257,10 +257,8 @@
       (:when (featurep! :editor popup)
        :desc "Toggle last popup"    "~"    #'+popup/toggle)
       :desc "Find file"             "."    #'find-file
-      :desc "Switch buffer"         ","    #'switch-to-buffer
       (:when (featurep! :editor workspaces)
-       :desc "Switch workspace buffer" "," #'persp-switch-to-buffer
-       :desc "Switch buffer"           "<" #'switch-to-buffer)
+       :desc "Switch workspace buffer" "," #'persp-switch-to-buffer)
       :desc "Switch to last buffer" "`"    #'evil-switch-to-windows-last-buffer
       :desc "Run terminal"          "'"    #'vterm
       :desc "Search for symbol in project" "*" #'+default/search-project-for-symbol-at-point
@@ -287,7 +285,7 @@
        :desc "Toggle narrowing"            "-"   #'doom/toggle-narrow-buffer
        :desc "Previous buffer"             "["   #'previous-buffer
        :desc "Next buffer"                 "]"   #'next-buffer
-       :desc "Switch buffer"               "b"   #'switch-to-buffer
+       :desc "Switch buffer"               "b"   #'+vertico/buffer
        (:when (featurep! :editor workspaces)
         :desc "Switch buffer"              "B" #'persp-switch-to-buffer)
        :desc "Clone buffer"                "c"   #'clone-indirect-buffer
@@ -592,7 +590,6 @@
        :desc "Browse other project"         ">" #'doom/browse-in-other-project
        :desc "Run cmd in project root"      "!" #'projectile-run-shell-command-in-root
        :desc "Add new project"              "a" #'projectile-add-known-project
-       :desc "Switch project buffer"        "b" #'counsel-projectile-switch-to-buffer
        :desc "Compile in project"           "c" #'projectile-compile-project
        :desc "Repeat last command"          "C" #'projectile-repeat-last-command
        :desc "Remove known project"         "d" #'projectile-remove-known-project

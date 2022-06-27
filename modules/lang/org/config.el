@@ -1238,8 +1238,6 @@ between the two."
              #'+org-init-hacks-h
              #'+org-init-keybinds-h
              #'+org-init-popup-rules-h
-             #'+org-init-protocol-h
-             #'+org-init-protocol-lazy-loader-h
              #'+org-init-smartparens-h)
 
   ;; Wait until an org-protocol link is opened via emacsclient to load
