@@ -120,7 +120,7 @@ uses a straight or package.el command directly).")
                             "://github.com/"
                             (or (plist-get recipe :repo) "radian-software/straight.el")))
           (branch (or (plist-get recipe :branch) straight-repository-branch))
-          (call (if doom-debug-p
+          (call (if init-file-debug
                     (lambda (&rest args)
                       (print! "%s" (cdr (apply #'doom-call-process args))))
                   (lambda (&rest args)
@@ -528,10 +528,9 @@ elsewhere."
      (condition-case e
          (when-let (recipe (plist-get plist :recipe))
            (cl-destructuring-bind
-               (&key local-repo _files _flavor
-                     _build _pre-build _post-build _includes
-                     _type _repo _host _branch _protocol
-                     _remote _nonrecursive _fork _depth)
+               (&key local-repo _files _flavor _build _pre-build _post-build
+                     _includes _type _repo _host _branch _protocol _remote
+                     _nonrecursive _fork _depth _source _inherit)
                recipe
              ;; Expand :local-repo from current directory
              (when local-repo

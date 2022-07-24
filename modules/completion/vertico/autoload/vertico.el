@@ -38,7 +38,7 @@
          (consult-async-split-styles-alist consult-async-split-styles-alist))
     ;; Change the split style if the initial query contains the separator.
     (when query
-      (cl-destructuring-bind (&key type separator initial)
+      (cl-destructuring-bind (&key type separator initial _function)
           (consult--async-split-style)
         (pcase type
           (`separator
@@ -211,7 +211,7 @@ targets."
   (pcase-let* ((cmd (split-string-and-unquote +vertico-consult-fd-args))
                (`(,arg . ,opts) (consult--command-split input))
                (`(,re . ,hl) (funcall consult--regexp-compiler
-                                      arg 'extended)))
+                                      arg 'extended t)))
     (when re
       (list :command (append cmd
                              (list (consult--join-regexps re 'extended))

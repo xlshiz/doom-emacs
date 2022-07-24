@@ -2,7 +2,7 @@
 ;;; tools/lookup/packages.el
 
 ;;
-(package! dumb-jump :pin "dbb915441a2b66f2fbb954ff5de2723c5a4771d4")
+(package! dumb-jump :pin "1dd583011f4025b1b8c75fd785691851b6c5dfa3")
 
 ;; For dictionary and online lookup
 (package! request :pin "38ed1d2e64138eb16a9d8ed2987cff2e01b4a93b")
