@@ -53,6 +53,10 @@ This is ignored by ccls.")
   (set-docsets! 'c-mode "C")
   (set-docsets! 'c++-mode "C++" "Boost")
   (set-electric! '(c-mode c++-mode objc-mode java-mode) :chars '(?\n ?\} ?\{))
+  (when (featurep! +tree-sitter)
+    (add-hook! '(c-mode-local-vars-hook
+                 c++-mode-local-vars-hook)
+               :append #'tree-sitter!))
 
   ;; HACK Suppress 'Args out of range' error in when multiple modifications are
   ;;      performed at once in a `c++-mode' buffer, e.g. with `iedit' or
@@ -171,8 +175,3 @@ This is ignored by ccls.")
                                                         (?p "prototype"  font-lock-constant-face)
                                                         (?v "variable" font-lock-variable-name-face)
                                                         (?t "typedef"      font-lock-type-face))))))
-;; Tree sitter
-(eval-when! (featurep! +tree-sitter)
-  (add-hook! '(c-mode-local-vars-hook
-               c++-mode-local-vars-hook)
-             #'tree-sitter!))
