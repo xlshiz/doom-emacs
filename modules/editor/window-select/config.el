@@ -1,7 +1,7 @@
 ;;; ui/window-select/config.el -*- lexical-binding: t; -*-
 
 (use-package! switch-window
-  :when (featurep! +switch-window)
+  :when (modulep! +switch-window)
   :defer t
   :init
   (global-set-key [remap other-window] #'switch-window)
@@ -10,12 +10,12 @@
 
 
 (use-package! ace-window
-  :unless (featurep! +switch-window)
+  :unless (modulep! +switch-window)
   :defer t
   :init
   (global-set-key [remap other-window] #'ace-window)
   :config
-  (unless (featurep! +numbers)
+  (unless (modulep! +numbers)
     (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
   (custom-set-faces
     '(aw-leading-char-face (( t (:inherit font-lock-keyword-face :bold t :height 3.0))))
@@ -26,7 +26,7 @@
 
 
 (use-package! winum
-  :when (featurep! +numbers)
+  :when (modulep! +numbers)
   :after-call doom-switch-window-hook
   :config
   (winum-mode +1)

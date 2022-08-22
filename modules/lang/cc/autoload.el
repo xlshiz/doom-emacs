@@ -160,7 +160,7 @@ the children of class at point."
 
 ;;;###autoload
 (defun +cc-disable-auto-complete ()
-  (when (featurep! :completion company)
+  (when (modulep! :completion company)
     (require 'company)
     (setq-local company-idle-delay nil)))
 

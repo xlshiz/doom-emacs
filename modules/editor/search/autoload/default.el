@@ -10,7 +10,7 @@ If prefix ARG is set, prompt for a directory to search from."
               (read-directory-name "Search directory: ")
             default-directory)))
     (call-interactively
-     (cond ((featurep! :completion vertico) #'+vertico/project-search-from-cwd)
+     (cond ((modulep! :completion vertico) #'+vertico/project-search-from-cwd)
            (#'rgrep)))))
 
 ;;;###autoload
@@ -25,7 +25,7 @@ If prefix ARG is set, prompt for a directory to search from."
   (interactive)
   (let ((default-directory doom-emacs-dir))
     (call-interactively
-     (cond ((featurep! :completion vertico) #'+vertico/project-search-from-cwd)
+     (cond ((modulep! :completion vertico) #'+vertico/project-search-from-cwd)
            (#'rgrep)))))
 
 ;;;###autoload
@@ -48,7 +48,7 @@ input and search the whole buffer for it."
         (deactivate-mark)
         (when multiline-p
           (narrow-to-region start end)))
-      (cond ((featurep! :completion vertico)
+      (cond ((modulep! :completion vertico)
              (if (and start end (not multiline-p))
                  (consult-line
                   (replace-regexp-in-string
@@ -72,7 +72,7 @@ If prefix ARG is set, include ignored/hidden files."
                  (user-error "There are no known projects"))
              default-directory)))
     (call-interactively
-     (cond ((featurep! :completion vertico) #'+vertico/project-search)
+     (cond ((modulep! :completion vertico) #'+vertico/project-search)
            (#'projectile-ripgrep)))))
 
 ;;;###autoload
@@ -93,7 +93,7 @@ If prefix ARG is set, prompt for a known project to search from."
                    (completing-read "Search project: " projects nil t)
                  (user-error "There are no known projects"))
              (doom-project-root default-directory)))))
-  (cond ((featurep! :completion vertico)
+  (cond ((modulep! :completion vertico)
          (+vertico/project-search nil symbol dir))
         ((rgrep (regexp-quote symbol)))))
 
@@ -151,6 +151,6 @@ If prefix ARG is set, prompt for a known project to search from."
                                    nil t nil nil (doom-project-root))
                 (user-error "There are no known projects"))
             default-directory)))
-    (cond ((featurep! :completion vertico)
+    (cond ((modulep! :completion vertico)
            (+vertico/project-search nil (rxt-quote-pcre symbol)))
           ((rgrep (regexp-quote symbol))))))

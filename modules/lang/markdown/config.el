@@ -69,7 +69,7 @@ capture, the end position, and the output buffer.")
                  :unless '(:add sp-point-before-word-p sp-point-before-same-p))
 
   ;; Highly rust blocks correctly
-  (when (featurep! :lang rust)
+  (when (modulep! :lang rust)
     (add-to-list 'markdown-code-lang-modes '("rust" . rustic-mode)))
 
   ;; Don't trigger autofill in code blocks (see `auto-fill-mode')
@@ -90,7 +90,7 @@ capture, the end position, and the output buffer.")
         "o" #'markdown-open
         "p" #'markdown-preview
         "e" #'markdown-export
-        (:when (featurep! +grip)
+        (:when (modulep! +grip)
          "p" #'grip-mode)
         (:prefix ("i" . "insert")
          :desc "Table Of Content"  "T" #'markdown-toc-generate-toc
@@ -130,20 +130,20 @@ capture, the end position, and the output buffer.")
 
 
 (use-package! evil-markdown
-  :when (featurep! :editor evil +everywhere)
+  :when (modulep! :editor evil +everywhere)
   :hook (markdown-mode . evil-markdown-mode)
   :config
   (add-hook 'evil-markdown-mode-hook #'evil-normalize-keymaps)
   (map! :map evil-markdown-mode-map
         :ni "M-j"
-        (cond ((featurep! :editor tabs +sort)    nil)
-              ((featurep! :editor tabs)          #'awesome-tab-ace-jump))
+        (cond ((modulep! :editor tabs +sort)    nil)
+              ((modulep! :editor tabs)          #'awesome-tab-ace-jump))
         :ni "M-h"
-        (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-prev-tab)
-              ((featurep! :editor tabs)          #'awesome-tab-backward-tab))
+        (cond ((modulep! :editor tabs +sort)    #'sort-tab-select-prev-tab)
+              ((modulep! :editor tabs)          #'awesome-tab-backward-tab))
         :ni "M-l"
-        (cond ((featurep! :editor tabs +sort)    #'sort-tab-select-next-tab)
-              ((featurep! :editor tabs)          #'awesome-tab-forward-tab))
+        (cond ((modulep! :editor tabs +sort)    #'sort-tab-select-next-tab)
+              ((modulep! :editor tabs)          #'awesome-tab-forward-tab))
         :ni "C-j" #'ace-window
         :n "gj"  #'evil-next-visual-line
         :n "gk"  #'evil-previous-visual-line

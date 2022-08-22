@@ -1,7 +1,7 @@
 ;;; editor/tabs/config.el -*- lexical-binding: t; -*-
 
 (use-package! awesome-tab
-  :unless (featurep! +sort)
+  :unless (modulep! +sort)
   :hook (doom-init-ui . awesome-tab-mode)
   :init
   (setq awesome-tab-display-icon t)
@@ -61,7 +61,7 @@
     ("q" nil "quit")))
 
 (use-package! sort-tab
-  :when (featurep! +sort)
+  :when (modulep! +sort)
   :defer 0.2
   :config
   (window-divider-mode -1)

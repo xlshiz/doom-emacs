@@ -11,15 +11,15 @@
 (package! opencl-mode :pin "15091eff92c33ee0d1ece40eb99299ef79fee92d")
 
 (when (package! glsl-mode :pin "9b2e5f28e489a1f73c4aed734105618ac0dc0c43")
-  (when (featurep! :completion company)
+  (when (modulep! :completion company)
     (package! company-glsl
       :recipe (:host github :repo "Kaali/company-glsl")
       :pin "404cd0694ab34971f9c01eb22126cd2e7d3f9dc4")))
 
 (package! citre)
 
-(if (featurep! +lsp)
-    (unless (featurep! :tools lsp +eglot)
+(if (modulep! +lsp)
+    (unless (modulep! :tools lsp +eglot)
       ;; ccls package is necessary only for lsp-mode.
-      (when (featurep! +ccls)
+      (when (modulep! +ccls)
         (package! ccls :pin "675a5704c14a27931e835a431beea3631d92e8e6"))))

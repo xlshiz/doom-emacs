@@ -82,7 +82,7 @@ If the argument is interactive (satisfies `commandp'), it is called with
 argument: the identifier at point. See `set-lookup-handlers!' about adding to
 this list.")
 
-(defvar +lookup-dictionary-prefer-offline (featurep! +offline)
+(defvar +lookup-dictionary-prefer-offline (modulep! +offline)
   "If non-nil, look up dictionaries online.
 
 Setting this to nil will force it to use offline backends, which may be less
@@ -127,12 +127,12 @@ Dictionary.app behind the scenes to get definitions.")
       (funcall fn)))
 
   ;; This integration is already built into evil
-  (unless (featurep! :editor evil)
+  (unless (modulep! :editor evil)
     ;; Use `better-jumper' instead of xref's marker stack
     (advice-add #'xref-push-marker-stack :around #'doom-set-jump-a))
 
   (use-package! consult-xref
-    :when (featurep! :completion vertico)
+    :when (modulep! :completion vertico)
     :defer t
     :init
     (setq xref-show-xrefs-function       #'consult-xref
@@ -143,13 +143,13 @@ Dictionary.app behind the scenes to get definitions.")
 ;;; Dash docset integration
 
 (use-package! dash-docs
-  :when (featurep! +docsets)
+  :when (modulep! +docsets)
   :defer t
   :init
   (add-hook '+lookup-documentation-functions #'+lookup-dash-docsets-backend-fn)
   :config
-  (setq dash-docs-enable-debugging doom-debug-p
-        dash-docs-docsets-path (concat doom-etc-dir "docsets/")
+  (setq dash-docs-enable-debugging init-file-debug
+        dash-docs-docsets-path (concat doom-data-dir "docsets/")
         dash-docs-min-length 2
         dash-docs-browser-func #'eww))
 
@@ -158,7 +158,7 @@ Dictionary.app behind the scenes to get definitions.")
 ;;; Dictionary integration
 
 (use-package! define-word
-  :when (featurep! +dictionary)
+  :when (modulep! +dictionary)
   :unless IS-MAC
   :defer t
   :config
@@ -168,4 +168,4 @@ Dictionary.app behind the scenes to get definitions.")
 
 
 ;;;###package synosaurus
-(setq synosaurus-choose-method 'default)
+(setq synosaurus-choose-method 'default) ; use ivy/helm instead of ido

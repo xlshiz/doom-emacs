@@ -21,9 +21,9 @@
   ;;     if their binary is found.
   ;;   If one of the flags `+aspell', `+hunspell' or `+enchant' is given,
   ;;     only enable that spell checker.
-  (pcase (cond ((featurep! +aspell)   'aspell)
-               ((featurep! +hunspell) 'hunspell)
-               ((featurep! +enchant)  'enchant)
+  (pcase (cond ((modulep! +aspell)   'aspell)
+               ((modulep! +hunspell) 'hunspell)
+               ((modulep! +enchant)  'enchant)
                ((executable-find "aspell")    'aspell)
                ((executable-find "hunspell")  'hunspell)
                ((executable-find "enchant-2") 'enchant))
@@ -41,7 +41,7 @@
      (unless ispell-personal-dictionary
        (setq ispell-personal-dictionary
              (expand-file-name (concat "ispell/" ispell-dictionary ".pws")
-                               doom-etc-dir)))
+                               doom-data-dir)))
 
      (add-hook! 'text-mode-hook
        (defun +spell-remove-run-together-switch-for-aspell-h ()
@@ -66,7 +66,7 @@
 ;;
 ;;; Implementations
 
-(eval-if! (not (featurep! +flyspell))
+(eval-if! (not (modulep! +flyspell))
 
     (use-package! spell-fu
       :when (executable-find "aspell")
@@ -124,8 +124,8 @@
               font-lock-variable-name-face)))
         "Faces in certain major modes that spell-fu will not spellcheck.")
 
-      (setq spell-fu-directory (concat doom-etc-dir "spell-fu"))
-      (when (featurep! +everywhere)
+      (setq spell-fu-directory (concat doom-data-dir "spell-fu"))
+      (when (modulep! +everywhere)
         (add-hook! '(yaml-mode-hook
                      conf-mode-hook
                      prog-mode-hook)
@@ -180,7 +180,7 @@ directory first)."
                  git-commit-mode-hook)
                #'flyspell-mode)
 
-    (when (featurep! +everywhere)
+    (when (modulep! +everywhere)
       (add-hook! '(yaml-mode-hook
                    conf-mode-hook
                    prog-mode-hook)

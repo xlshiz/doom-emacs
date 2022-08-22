@@ -160,7 +160,7 @@ orderless."
   (consult-customize
    consult-theme
    :preview-key (list (kbd "C-.") :debounce 0.5 'any))
-  (when (featurep! :lang org)
+  (when (modulep! :lang org)
     (defvar +vertico--consult-org-source
       (list :name     "Org Buffer"
             :category 'buffer
@@ -195,7 +195,7 @@ orderless."
 
 
 (use-package! consult-flycheck
-  :when (featurep! :checkers syntax)
+  :when (modulep! :checkers syntax)
   :after (consult flycheck))
 
 
@@ -215,7 +215,9 @@ orderless."
         (:leader
          :desc "Actions" "a" #'embark-act)) ; to be moved to :config default if accepted
   :config
-  (set-popup-rule! "^\\*Embark Export Grep" :size 0.35 :ttl 0 :quit nil)
+  (require 'consult)
+
+  (set-popup-rule! "^\\*Embark Export:" :size 0.35 :ttl 0 :quit nil)
   (set-popup-rule! "^\\*Embark Export: \\+vertico" :size 0.35 :ttl 0 :quit t)
 
   (defadvice! +vertico--embark-which-key-prompt-a (fn &rest args)
@@ -245,9 +247,9 @@ orderless."
   (setf (alist-get 'package embark-keymap-alist) #'+vertico/embark-doom-package-map)
   (map! (:map embark-file-map
          :desc "Open target with sudo"        "s"   #'doom/sudo-find-file
-         (:when (featurep! :tools magit)
+         (:when (modulep! :tools magit)
           :desc "Open magit-status of target" "g"   #'+vertico/embark-magit-status)
-         (:when (featurep! :editor workspaces)
+         (:when (modulep! :editor workspaces)
           :desc "Open in new workspace"       "TAB" #'+vertico/embark-open-in-new-workspace))))
 
 
@@ -257,7 +259,7 @@ orderless."
   (map! :map minibuffer-local-map
         :desc "Cycle marginalia views" "M-A" #'marginalia-cycle)
   :config
-  (when (featurep! +icons)
+  (when (modulep! +icons)
     (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup))
   (advice-add #'marginalia--project-root :override #'doom-project-root)
   (pushnew! marginalia-command-categories
@@ -286,7 +288,7 @@ orderless."
 
 
 (use-package! vertico-posframe
-  :when (featurep! +childframe)
+  :when (modulep! +childframe)
   :hook (vertico-mode . vertico-posframe-mode)
   :config
   (add-hook 'doom-after-reload-hook #'posframe-delete-all))

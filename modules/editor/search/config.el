@@ -41,7 +41,7 @@
   :commands (color-rg-search-input color-rg-search-symbol
               color-rg-search-symbol-in-current-file color-rg-search-project)
   :init
-  (when (featurep! :completion vertico)
+  (when (modulep! :completion vertico)
     (define-key! vertico-map "<M-return>" #'+search/consult-to-color-rg))
   (defconst evil-collection-color-rg-maps '(color-rg-mode-map
                                              color-rg-mode-edit-map))
@@ -87,7 +87,7 @@
     (evil-collection-color-rg-setup)))
 
 (use-package! snails
-  :when (featurep! +snails)
+  :when (modulep! +snails)
   :commands (snails)
   :config
   (setq snails-show-with-frame nil)

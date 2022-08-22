@@ -17,7 +17,6 @@
               message-mode
               help-mode
               gud-mode
-              org-mode
               vterm-mode)
         company-frontends
         '(company-pseudo-tooltip-frontend  ; always show candidates in overlay tooltip
@@ -30,7 +29,7 @@
         ;; These auto-complete the current selection when
         ;; `company-auto-commit-chars' is typed. This is too magical. We
         ;; already have the much more explicit RET and TAB.
-        company-auto-commit nil
+        company-insertion-on-trigger nil
 
         ;; Only search the current buffer for `company-dabbrev' (a backend that
         ;; suggests text your open buffers). This prevents Company from causing
@@ -41,13 +40,13 @@
         company-dabbrev-ignore-case nil
         company-dabbrev-downcase nil)
 
-  (when (featurep! +tng)
+  (when (modulep! +tng)
     (add-hook 'global-company-mode-hook #'company-tng-mode))
 
   :config
-  (when (featurep! :editor evil)
+  (when (modulep! :editor evil)
     (add-hook 'company-mode-hook #'evil-normalize-keymaps)
-    (unless (featurep! +childframe)
+    (unless (modulep! +childframe)
       ;; Don't persist company popups when switching back to normal mode.
       ;; `company-box' aborts on mode switch so it doesn't need this.
       (add-hook! 'evil-normal-state-entry-hook
@@ -88,7 +87,7 @@
          "C-u"     #'company-previous-page
          "C-d"     #'company-next-page
          "C-s"     #'company-filter-candidates
-         "C-S-s"   (cond ((featurep! :completion vertico)  #'completion-at-point)
+         "C-S-s"   (cond ((modulep! :completion vertico)  #'completion-at-point)
                          (t nil))
          "C-SPC"   #'company-complete-common
          "TAB"     #'+company/smarter-yas-expand-next-field-complete
@@ -121,12 +120,11 @@
 
 
 (use-package! company-box
-  :when (featurep! +childframe)
+  :when (modulep! +childframe)
   :hook (company-mode . company-box-mode)
   :config
   (setq company-box-show-single-candidate t
         company-box-backends-colors nil
-        company-box-max-candidates 50
         company-box-icons-alist 'company-box-icons-all-the-icons
         ;; Move company-box-icons--elisp to the end, because it has a catch-all
         ;; clause that ruins icons from other backends in elisp buffers.
@@ -206,11 +204,10 @@
 (use-package! company-dict
   :defer t
   :config
-  (setq company-dict-dir (expand-file-name "dicts" doom-private-dir))
+  (setq company-dict-dir (expand-file-name "dicts" doom-user-dir))
   (add-hook! 'doom-project-hook
     (defun +company-enable-project-dicts-h (mode &rest _)
       "Enable per-project dictionaries."
       (if (symbol-value mode)
           (add-to-list 'company-dict-minor-mode-list mode nil #'eq)
         (setq company-dict-minor-mode-list (delq mode company-dict-minor-mode-list))))))
-

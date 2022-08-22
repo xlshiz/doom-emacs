@@ -1,5 +1,5 @@
 ;;; editor/search/autoload/snail-ivy.el -*- lexical-binding: t; -*-
-;;;###if (featurep! :completion ivy)
+;;;###if (modulep! :completion ivy)
 
 ;;;###autoload
 (defun snail--project-files (&rest _)
@@ -15,7 +15,7 @@
 ;;;###autoload
 (defun snail--buffer-list (&rest _)
   (let ((filter-func
-         (if (featurep! :ui workspaces)
+         (if (modulep! :editor workspaces)
              #'+workspace-contains-buffer-p
            (lambda (x) (not (string= (substring x 0 1) "*"))))))
     (mapc (lambda (x)

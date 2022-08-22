@@ -20,13 +20,13 @@
   (setq python-environment-directory doom-cache-dir
         python-indent-guess-indent-offset-verbose nil)
 
-  (when (featurep! +lsp)
+  (when (modulep! +lsp)
     (add-hook 'python-mode-local-vars-hook #'lsp! 'append)
     ;; Use "mspyls" in eglot if in PATH
     (when (executable-find "Microsoft.Python.LanguageServer")
       (set-eglot-client! 'python-mode '("Microsoft.Python.LanguageServer"))))
 
-  (when (featurep! +tree-sitter)
+  (when (modulep! +tree-sitter)
     (add-hook 'python-mode-local-vars-hook #'tree-sitter! 'append))
   :config
   (set-repl-handler! 'python-mode #'+python/open-repl
@@ -65,7 +65,7 @@
         (setq-local flycheck-python-flake8-executable "flake8"))))
 
   ;; Affects pyenv and conda
-  (when (featurep! :editor modeline)
+  (when (modulep! :editor modeline)
     (advice-add #'pythonic-activate :after-while #'+modeline-update-env-in-all-windows-h)
     (advice-add #'pythonic-deactivate :after #'+modeline-clear-env-in-all-windows-h))
 
@@ -158,7 +158,7 @@
 (use-package! anaconda-mode
   :defer t
   :init
-  (setq anaconda-mode-installation-directory (concat doom-etc-dir "anaconda/")
+  (setq anaconda-mode-installation-directory (concat doom-data-dir "anaconda/")
         anaconda-mode-eldoc-as-single-line t)
 
   (add-hook! 'python-mode-local-vars-hook :append
@@ -294,7 +294,7 @@
 (use-package! pyvenv
   :after python
   :init
-  (when (featurep! :editor modeline)
+  (when (modulep! :editor modeline)
     (add-hook 'pyvenv-post-activate-hooks #'+modeline-update-env-in-all-windows-h)
     (add-hook 'pyvenv-pre-deactivate-hooks #'+modeline-clear-env-in-all-windows-h))
   :config
@@ -306,7 +306,7 @@
 
 
 (use-package! pyenv-mode
-  :when (featurep! +pyenv)
+  :when (modulep! +pyenv)
   :after python
   :config
   (when (executable-find "pyenv")
@@ -317,7 +317,7 @@
 
 
 (use-package! conda
-  :when (featurep! +conda)
+  :when (modulep! +conda)
   :after python
   :config
   ;; The location of your anaconda home will be guessed from a list of common
@@ -356,7 +356,7 @@
 
 
 (use-package! poetry
-  :when (featurep! +poetry)
+  :when (modulep! +poetry)
   :after python
   :init
   (setq poetry-tracking-strategy 'switch-buffer)
@@ -364,7 +364,7 @@
 
 
 (use-package! cython-mode
-  :when (featurep! +cython)
+  :when (modulep! +cython)
   :mode "\\.p\\(yx\\|x[di]\\)\\'"
   :config
   (setq cython-default-compile-format "cython -a %s")
@@ -375,8 +375,8 @@
 
 
 (use-package! flycheck-cython
-  :when (featurep! +cython)
-  :when (featurep! :checkers syntax)
+  :when (modulep! +cython)
+  :when (modulep! :checkers syntax)
   :after cython-mode)
 
 
@@ -401,16 +401,16 @@
 ;;
 ;;; LSP
 
-(eval-when! (and (featurep! +lsp)
-                 (not (featurep! :tools lsp +eglot)))
+(eval-when! (and (modulep! +lsp)
+                 (not (modulep! :tools lsp +eglot)))
 
   (use-package! lsp-python-ms
-    :unless (featurep! +pyright)
+    :unless (modulep! +pyright)
     :after lsp-mode
     :preface
     (after! python
       (setq lsp-python-ms-python-executable-cmd python-shell-interpreter)))
 
   (use-package! lsp-pyright
-    :when (featurep! +pyright)
+    :when (modulep! +pyright)
     :after lsp-mode))

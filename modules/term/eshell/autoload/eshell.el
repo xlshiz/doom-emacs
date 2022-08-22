@@ -148,7 +148,7 @@ Once the eshell process is killed, the previous frame layout is restored."
 (defun +eshell/search-history ()
   "Search the eshell command history."
   (interactive)
-  (cond ((featurep! :completion vertico)
+  (cond ((modulep! :completion vertico)
          (forward-char 1) ;; Move outside of read only prompt text.
          (consult-history))
         ((eshell-list-history))))

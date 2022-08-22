@@ -1,5 +1,5 @@
 ;;; editor/search/autoload/become.el -*- lexical-binding: t; -*-
-;;;###if (featurep! :completion vertico)
+;;;###if (modulep! :completion vertico)
 
 ;;;###autoload
 (defun +embark-find-file (&rest _)

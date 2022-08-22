@@ -32,7 +32,7 @@
   (set-lookup-handlers! 'php-mode :documentation #'php-search-documentation)
   (set-formatter! 'php-mode #'php-cs-fixer-fix)
 
-  (if (not (featurep! +lsp))
+  (if (not (modulep! +lsp))
       ;; `+php-company-backend' uses `company-phpactor', `php-extras-company' or
       ;; `company-dabbrev-code', in that order.
       (when +php--company-backends
@@ -59,7 +59,7 @@
 
 
 (use-package! phpactor
-  :unless (featurep! +lsp)
+  :unless (modulep! +lsp)
   :after php-mode
   :init
   (add-to-list '+php--company-backends #'company-phpactor nil 'eq)
@@ -97,7 +97,7 @@
   (add-to-list '+php--company-backends #'php-extras-company)
   :config
   (setq php-extras-eldoc-functions-file
-        (concat doom-etc-dir "php-extras-eldoc-functions"))
+        (concat doom-data-dir "php-extras-eldoc-functions"))
   ;; Silence warning if `php-extras-eldoc-functions-file' hasn't finished
   ;; generating yet.
   (defun php-extras-load-eldoc ()
@@ -116,7 +116,7 @@
 
 
 (use-package! hack-mode
-  :when (featurep! +hack)
+  :when (modulep! +hack)
   :mode "\\.hh$")
 
 
@@ -161,5 +161,5 @@
         phpunit-executable nil))
 
 ;; Tree sitter
-(eval-when! (featurep! +tree-sitter)
+(eval-when! (modulep! +tree-sitter)
   (add-hook! 'php-mode-local-vars-hook #'tree-sitter!))

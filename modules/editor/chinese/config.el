@@ -64,15 +64,15 @@
   :init
   (setq default-input-method "pyim")
   :config
-  (unless (featurep! +rime)
+  (unless (modulep! +rime)
     ;; 使用小鹤双拼
     (setq pyim-default-scheme 'xiaohe-shuangpin)
     (require 'pyim-basedict)
     (pyim-basedict-enable))
-  (when (featurep! +rime)
+  (when (modulep! +rime)
     ;; 支持中文词移动
     (setq pyim-dicts
-          `((:name "we" :file ,(concat doom-etc-dir "pyim/we.pyim"))))
+          `((:name "we" :file ,(concat doom-data-dir "pyim/we.pyim"))))
     ;; 使用rime
     (setq pyim-default-scheme 'rime)
     (require 'pyim-liberime)
@@ -105,10 +105,10 @@
   )
 
 (use-package! liberime
-  :when (featurep! +rime)
+  :when (modulep! +rime)
   :defer t
   :init
-  (setq liberime-user-data-dir (expand-file-name (concat doom-etc-dir "pyim/rime")))
+  (setq liberime-user-data-dir (expand-file-name (concat doom-data-dir "pyim/rime")))
   (setq liberime-auto-build t)
   :config
   (liberime-try-select-schema "pinyin_cau_flypy"))

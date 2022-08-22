@@ -7,7 +7,7 @@
 
 (defun +tabs-hide-buffer-p (buf)
   (let* ((name (buffer-name buf))
-         (use-workspace (featurep! :editor workspaces))
+         (use-workspace (modulep! :editor workspaces))
          (blacklist '("*" " *" "  *"
                       "COMMIT_EDITMSG")))
     (or
@@ -20,7 +20,7 @@
 
 (defun +tabs-whitelist-buffer-p (buf)
   (let* ((name (buffer-name buf))
-         (whitelist '("*vterm*"
+         (whitelist '("*vterm*" "*forge:"
                      "*scratch*" "*Messages*")))
     (or
      (and (eq (current-buffer) buf) (not (string-prefix-p "*sort-tab*" name)))
@@ -37,7 +37,7 @@
 (defun +tabs/prev ()
   "Select prev tab"
   (interactive)
-  (if (featurep! +sort)
+  (if (modulep! +sort)
       (sort-tab-select-prev-tab)
     (awesome-tab-backward-tab)))
 
@@ -45,7 +45,7 @@
 (defun +tabs/next ()
   "Select next tab"
   (interactive)
-  (if (featurep! +sort)
+  (if (modulep! +sort)
       (sort-tab-select-next-tab)
     (awesome-tab-forward-tab)))
 
@@ -53,6 +53,6 @@
 (defun +tabs/ace-jump ()
   "Select next tab"
   (interactive)
-  (if (featurep! +sort)
+  (if (modulep! +sort)
       (awesome-tab-ace-jump)
     (awesome-tab-ace-jump)))

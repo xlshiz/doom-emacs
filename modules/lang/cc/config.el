@@ -53,7 +53,7 @@ This is ignored by ccls.")
   (set-docsets! 'c-mode "C")
   (set-docsets! 'c++-mode "C++" "Boost")
   (set-electric! '(c-mode c++-mode objc-mode java-mode) :chars '(?\n ?\} ?\{))
-  (when (featurep! +tree-sitter)
+  (when (modulep! +tree-sitter)
     (add-hook! '(c-mode-local-vars-hook
                  c++-mode-local-vars-hook)
                :append #'tree-sitter!))
@@ -133,7 +133,7 @@ This is ignored by ccls.")
 
 
 (use-package! company-cmake  ; for `cmake-mode'
-  :when (featurep! :completion company)
+  :when (modulep! :completion company)
   :after cmake-mode
   :config (set-company-backend! 'cmake-mode 'company-cmake))
 
@@ -143,7 +143,7 @@ This is ignored by ccls.")
 
 
 (use-package! company-glsl  ; for `glsl-mode'
-  :when (featurep! :completion company)
+  :when (modulep! :completion company)
   :after glsl-mode
   :config (set-company-backend! 'glsl-mode 'company-glsl))
 
@@ -151,7 +151,7 @@ This is ignored by ccls.")
 ;;
 ;; LSP
 
-(when (featurep! +lsp)
+(when (modulep! +lsp)
   ; (add-hook! '(c-mode-local-vars-hook
                ; c++-mode-local-vars-hook
                ; objc-mode-local-vars-hook
@@ -164,10 +164,10 @@ This is ignored by ccls.")
                                   "--completion-style=detailed"
                                   "--header-insertion=never"
                                   "--header-insertion-decorators=0"))
-  (unless (featurep! +ccls)
+  (unless (modulep! +ccls)
     (after! lsp-clangd (set-lsp-priority! 'clangd 1))))
 
-(when (featurep! :completion vertico)
+(when (modulep! :completion vertico)
   (after! consult-imenu
     (add-to-list 'consult-imenu-config '(c-mode :toplevel "function"
                                                 :types ((?f "function" font-lock-function-name-face)

@@ -1,5 +1,5 @@
 ;;; editor/search/autoload/snail-vertico.el -*- lexical-binding: t; -*-
-;;;###if (featurep! :completion vertico)
+;;;###if (modulep! :completion vertico)
 
 ;;;###autoload
 (defun snail--project-files (&rest _)

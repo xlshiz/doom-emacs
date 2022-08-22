@@ -4,5 +4,5 @@
 (defun +taskrunner/project-tasks ()
   "Show task in project."
   (interactive)
-  (cond ((featurep! :completion ivy) (ivy-taskrunner))
-        ((featurep! :completion helm) (helm-taskrunner))))
+  (cond ((modulep! :completion ivy) (ivy-taskrunner))
+        ((modulep! :completion helm) (helm-taskrunner))))
