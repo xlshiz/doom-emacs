@@ -7,7 +7,7 @@
 (when (modulep! +ranger)
   (package! ranger :pin "2498519cb21dcd5791d240607a72a204d1761668"))
 (when (modulep! +dirvish)
-  (package! dirvish :pin "698caa9f9012932bcca5914fd65b303b038f75d3"))
+  (package! dirvish :pin "a7294bceea0d379bb60a8b8c8d9e87b274558497"))
 (when (and (modulep! +icons)
            (not (modulep! +dirvish)))
   (package! all-the-icons-dired :pin "5e9b097f9950cc9f86de922b07903a4e5fefc733"))
