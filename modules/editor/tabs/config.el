@@ -25,11 +25,11 @@
        "Dired")
       ((derived-mode-p 'pdf-view-mode)
        "PDF")
-      ((derived-mode-p 'org-mode)
+      ((or (derived-mode-p 'org-mode)
+           (derived-mode-p 'org-agenda-mode))
        "org-mode")
-      ((and (derived-mode-p 'vterm-mode) (string-equal "*vterm" (substring (buffer-name) 0 6)))
-       "Files")
-      ((string-equal "*" (substring (buffer-name) 0 1))
+      ((or (string-equal "*scratch*" (buffer-name))
+            (string-equal "*Messages*" (buffer-name)))
        "Emacs")
       (t "Files"))))
   (setq awesome-tab-buffer-groups-function #'+tabs-buffer-groups-fn
@@ -40,8 +40,8 @@
     "
     ^^^^Fast Move             ^^^^Tab                    ^^Search            ^^Misc
    -^^^^--------------------+-^^^^---------------------+-^^----------------+-^^---------------------------
-      ^_k_^   prev group    | _C-a_^^     select first | _g_ search group  | _C-k_   kill buffer
-    _h_   _l_  switch tab   | _C-e_^^     select last  |                   | _C-S-k_ kill others in group
+      ^_k_^   prev group    | _C-a_^^     select first | _g_ search group  | _C-S-k_  kill all buffer in group
+    _h_   _l_  switch tab   | _C-e_^^     select last  | _d_ kill buffer   | _C-k_    kill others in group
       ^_j_^   next group    | _C-j_^^     ace jump     | ^^                | ^^
     ^^0 ~ 9^^ select window | _C-h_/_C-l_ move current | ^^                | ^^
    -^^^^--------------------+-^^^^---------------------+-^^----------------+-^^---------------------------
@@ -56,8 +56,9 @@
     ("C-h" awesome-tab-move-current-tab-to-left)
     ("C-l" awesome-tab-move-current-tab-to-right)
     ("g" awesome-tab-counsel-switch-group)
-    ("C-k" kill-current-buffer)
-    ("C-S-k" awesome-tab-kill-other-buffers-in-current-group)
+    ("d" kill-current-buffer)
+    ("C-S-k" awesome-tab-kill-all-buffers-in-current-group)
+    ("C-k" awesome-tab-kill-other-buffers-in-current-group)
     ("q" nil "quit")))
 
 (use-package! sort-tab

@@ -21,7 +21,8 @@
 (defun +tabs-whitelist-buffer-p (buf)
   (let* ((name (buffer-name buf))
          (whitelist '("*vterm*" "*forge:"
-                     "*scratch*" "*Messages*")))
+                     "*scratch*" "*Messages*"
+                     "*Org Agenda*")))
     (or
      (and (eq (current-buffer) buf) (not (string-prefix-p "*sort-tab*" name)))
      (cl-some (lambda (prefix) (string-prefix-p prefix name)) whitelist)
