@@ -20,6 +20,7 @@
         image-dired-temp-rotate-image-file (concat image-dired-dir "temp-rotate-image")
         ;; Screens are larger nowadays, we can afford slightly larger thumbnails
         image-dired-thumb-size 150)
+  (after! recentf (remove-hook 'dired-mode-hook #'doom--recentf-add-dired-directory-h))
   :config
   (set-popup-rule! "^\\*image-dired"
     :slot 20 :size 0.8 :select t :quit nil :ttl 0)
@@ -47,8 +48,6 @@ Fixes #3939: unsortable dired entries on Windows."
                   (and (boundp 'ls-lisp-use-insert-directory-program)
                        (not ls-lisp-use-insert-directory-program)))
           (setq-local dired-actual-switches (car args))))))
-
-  (remove-hook 'dired-mode-hook #'doom--recentf-add-dired-directory-h)
 
   ;; Don't complain about this command being disabled when we use it
   (put 'dired-find-alternate-file 'disabled nil)
@@ -134,6 +133,7 @@ we have to clean it up ourselves."
   :when (modulep! +dirvish)
   :defer t
   :init (after! dired (dirvish-override-dired-mode))
+  :hook (dired-mode . dired-omit-mode)
   :custom
   ;; Go back home? Just press `bh'
   (dirvish-bookmark-entries
@@ -143,17 +143,22 @@ we have to clean it up ourselves."
   ;; (dirvish-peek-mode)
   ;; Dired options are respected except a few exceptions, see FAQ.org
   (setq dirvish-cache-dir (concat doom-cache-dir "dirvish/")
-    dirvish-hide-details nil
-    dirvish-attributes '(subtree-state vc-state file-size)
-    dired-recursive-deletes 'always
-    delete-by-moving-to-trash t
-    dirvish-side-follow-buffer-file t
-    dired-dwim-target t)
+        dirvish-hide-details nil
+        dirvish-attributes '(subtree-state vc-state file-size)
+        dirvish-side-follow-buffer-file t
+        dirvish-use-mode-line nil
+        dirvish-header-line-height '(1 . 1)
+        delete-by-moving-to-trash nil
+        dired-recursive-deletes 'always
+        dired-dwim-target t
+        dired-omit-files (concat "\\`[.]?#\\|\\`[.][.]?\\'"
+                                 "\\|^\\..*"
+                                 "\\|\\(?:\\.js\\)?\\.meta\\'"
+                                 "\\|\\.\\(?:elc\\|o\\|pyo\\|swp\\|class\\)\\'"))
   (setq dirvish-mode-line-format
     '(:left (sort file-time " " file-size symlink) :right (omit yank index)))
   (when (modulep! +icons)
     (push 'all-the-icons dirvish-attributes))
-  (remove-hook 'dired-mode-hook #'doom--recentf-add-dired-directory-h)
   (map! :map dired-mode-map
     :ng "h"   #'dired-up-directory
     :ng "j"   #'dired-next-line
