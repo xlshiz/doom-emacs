@@ -23,13 +23,12 @@
      (cond
       ((derived-mode-p 'dired-mode)
        "Dired")
-      ((derived-mode-p 'pdf-view-mode)
-       "PDF")
       ((or (derived-mode-p 'org-mode)
            (derived-mode-p 'org-agenda-mode))
        "org-mode")
       ((or (string-equal "*scratch*" (buffer-name))
-            (string-equal "*Messages*" (buffer-name)))
+           (string-equal "*Messages*" (buffer-name))
+           (derived-mode-p 'pdf-view-mode))
        "Emacs")
       (t "Files"))))
   (setq awesome-tab-buffer-groups-function #'+tabs-buffer-groups-fn
