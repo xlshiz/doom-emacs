@@ -1,4 +1,4 @@
-;;; lisp/cli/help.el -*- lexical-binding: t; -*-
+;;; lisp/cli/meta.el -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;;
 ;; This file defines special commands that the Doom CLI will invoke when a
@@ -26,6 +26,22 @@ Recognizes %p (for the prefix) and %c (for the active command).")
 
 ;;
 ;;; Commands
+
+;; When __DOOMDUMP is set, doomscripts trigger this special handler.
+(defcli! (:root :dump)
+    ((pretty? ("--pretty") "Pretty print output")
+     &context context
+     &args commands)
+  "Dump metadata to stdout for other commands to read."
+  (let* ((prefix (doom-cli-context-prefix context))
+         (command (cons prefix commands)))
+    (funcall (if pretty? #'pp #'prin1)
+             (cond ((equal commands '("-")) (hash-table-values doom-cli--table))
+                   (commands (doom-cli-find command))
+                   ((doom-cli-find (list prefix)))))
+    (terpri)
+    ;; Kill manually so we don't save output to logs.
+    (let (kill-emacs) (kill-emacs 0))))
 
 (defcli! (:root :help)
     ((localonly? ("-g" "--no-global") "Hide global options")
@@ -462,5 +478,5 @@ The alist's CAR are lists of formatted switches plus their arguments, e.g.
                                       (string-trim-right (buffer-string))))))
                        "\n\n"))))))))))
 
-(provide 'doom-cli-help)
-;;; help.el ends here
+(provide 'doom-cli-meta)
+;;; meta.el ends here

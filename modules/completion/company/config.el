@@ -87,8 +87,7 @@
          "C-u"     #'company-previous-page
          "C-d"     #'company-next-page
          "C-s"     #'company-filter-candidates
-         "C-S-s"   (cond ((modulep! :completion vertico)  #'completion-at-point)
-                         (t nil))
+         "C-S-s"   #'+company/completing-read
          "C-SPC"   #'company-complete-common
          "TAB"     #'+company/smarter-yas-expand-next-field-complete
          [tab]     #'+company/smarter-yas-expand-next-field-complete

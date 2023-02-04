@@ -54,11 +54,11 @@
                                    "%")
                      :type perl)
                    consult-async-split-style 'perlalt))))))
-    (consult--grep prompt #'consult--ripgrep-builder directory query)))
+    (consult--grep prompt (consult--ripgrep-make-builder) directory query)))
 
 ;;;###autoload
 (defun +vertico/project-search (&optional arg initial-query directory)
-  "Peforms a live project search from the project root using ripgrep.
+  "Performs a live project search from the project root using ripgrep.
 If ARG (universal argument), include all files, even hidden or compressed ones,
 in the search."
   (interactive "P")
@@ -73,6 +73,7 @@ If ARG (universal argument), include all files, even hidden or compressed ones."
 
 ;;;###autoload
 (defun +vertico/search-symbol-at-point ()
+  "Performs a search in the current buffer for thing at point."
   (interactive)
   (consult-line (thing-at-point 'symbol)))
 
