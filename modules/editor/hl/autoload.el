@@ -1,6 +1,6 @@
-;;; editor/misc/autoload.el -*- lexical-binding: t; -*-
+;;; editor/hl/autoload.el -*- lexical-binding: t; -*-
 
-;;;###autoload (autoload '+vc/gutter-hydra/body "editor/misc/autoload/misc" nil t)
+;;;###autoload (autoload '+vc/gutter-hydra/body "editor/hl/autoload" nil t)
 (defhydra +vc/gutter-hydra
   (:body-pre (git-gutter-mode 1) :hint nil)
   "
