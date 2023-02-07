@@ -1,6 +1,6 @@
-;;; editor/hl/autoload.el -*- lexical-binding: t; -*-
+;;; editor/hl/autoload/hydra.el -*- lexical-binding: t; -*-
 
-;;;###autoload (autoload '+vc/gutter-hydra/body "editor/hl/autoload" nil t)
+;;;###autoload (autoload '+vc/gutter-hydra/body "editor/hl/autoload/hydra" nil t)
 (defhydra +vc/gutter-hydra
   (:body-pre (git-gutter-mode 1) :hint nil)
   "
@@ -13,12 +13,12 @@
      ^↓ ^      [_p_] popup             ╭─────────────────────
      ^_j_^                             │[_q_] quit
      ^_G_^                             │[_Q_] Quit and disable"
-  ("j" (progn (git-gutter:next-hunk 1) (recenter)))
-  ("k" (progn (git-gutter:previous-hunk 1) (recenter)))
-  ("g" (progn (goto-char (point-min)) (git-gutter:next-hunk 1)))
-  ("G" (progn (goto-char (point-min)) (git-gutter:previous-hunk 1)))
-  ("s" git-gutter:stage-hunk)
-  ("r" git-gutter:revert-hunk)
+  ("j" (progn (+vc-gutter/next-hunk 1) (recenter)))
+  ("k" (progn (+vc-gutter/previous-hunk 1) (recenter)))
+  ("g" (progn (goto-char (point-min)) (+vc-gutter/next-hunk 1)))
+  ("G" (progn (goto-char (point-min)) (+vc-gutter/previous-hunk 1)))
+  ("s" +vc-gutter/stage-hunk)
+  ("r" +vc-gutter/revert-hunk)
   ("m" git-gutter:mark-hunk)
   ("p" git-gutter:popup-hunk)
   ("R" git-gutter:set-start-revision)
