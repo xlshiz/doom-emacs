@@ -9,3 +9,5 @@
 (defalias '+vc-gutter/next-hunk #'diff-hl-next-hunk)
 ;;;###autoload
 (defalias '+vc-gutter/previous-hunk #'diff-hl-previous-hunk)
+;;;###autoload
+(defalias '+vc-gutter/mark-hunk #'diff-hl-mark-hunk)

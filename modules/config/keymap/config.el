@@ -380,12 +380,13 @@
        :desc "Revert file"                 "R"   #'vc-revert
        :desc "Copy link to remote"         "y"   #'+vc/browse-at-remote-kill
        :desc "Copy link to homepage"       "Y"   #'+vc/browse-at-remote-kill-homepage
-       (:when (modulep! :editor vc-gutter)
-        :desc "Revert hunk"               "r"   #'git-gutter:revert-hunk
-        :desc "Git stage hunk"            "s"   #'git-gutter:stage-hunk
+       :desc "SMerge"                      "m"   #'+vc/smerge-hydra/body
+       (:when (modulep! :editor hl)
+        :desc "Revert hunk"               "r"   #'+vc-gutter/revert-hunk
+        :desc "Git stage hunk"            "s"   #'+vc-gutter/stage-hunk
         :desc "Git time machine"          "t"   #'git-timemachine-toggle
-        :desc "Jump to next hunk"         "]"   #'git-gutter:next-hunk
-        :desc "Jump to previous hunk"     "["   #'git-gutter:previous-hunk)
+        :desc "Jump to next hunk"         "]"   #'+vc-gutter/next-hunk
+        :desc "Jump to previous hunk"     "["   #'+vc-gutter/previous-hunk)
        (:when (modulep! :tools magit)
         :desc "Magit dispatch"            "/"   #'magit-dispatch
         :desc "Magit file dispatch"       "."   #'magit-file-dispatch

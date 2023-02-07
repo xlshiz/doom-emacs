@@ -2,35 +2,22 @@
 
 ;;;###autoload (autoload '+vc/gutter-hydra/body "editor/hl/autoload/hydra" nil t)
 (defhydra +vc/gutter-hydra
-  (:body-pre (git-gutter-mode 1) :hint nil)
+  (:hint nil)
   "
-                                               [git gutter]
-   Movement  Hunk Actions     Misc.         +%-4s(car (git-gutter:statistic))/ -%-4s(cdr (git-gutter:statistic))
-  ╭──────────────────────────────────┴────────────────╯
-     ^_g_^       [_s_] stage        [_R_] set start Rev
-     ^_k_^       [_r_] revert
-     ^↑ ^      [_m_] mark
-     ^↓ ^      [_p_] popup             ╭─────────────────────
-     ^_j_^                             │[_q_] quit
-     ^_G_^                             │[_Q_] Quit and disable"
+       [git gutter]
+   Movement  Actions
+  ╭───────────────────────────╯
+     ^_g_^       [_s_] stage
+     ^_k_ ↑^     [_r_] revert
+     ^_j_ ↓^     [_m_] mark
+     ^_G_^"
   ("j" (progn (+vc-gutter/next-hunk 1) (recenter)))
   ("k" (progn (+vc-gutter/previous-hunk 1) (recenter)))
   ("g" (progn (goto-char (point-min)) (+vc-gutter/next-hunk 1)))
   ("G" (progn (goto-char (point-min)) (+vc-gutter/previous-hunk 1)))
   ("s" +vc-gutter/stage-hunk)
   ("r" +vc-gutter/revert-hunk)
-  ("m" git-gutter:mark-hunk)
-  ("p" git-gutter:popup-hunk)
-  ("R" git-gutter:set-start-revision)
-  ("q"
-   (when (get-buffer git-gutter:popup-buffer)
-     (kill-buffer (get-buffer git-gutter:popup-buffer)))
-   :color blue)
-  ("Q"
-   (progn (git-gutter-mode -1)
-          (when (get-buffer git-gutter:popup-buffer)
-            (kill-buffer (get-buffer git-gutter:popup-buffer))))
-   :color blue))
+  ("m" +vc-gutter/mark-hunk))
 
 ;;;###autodef
 (defun set-electric! (modes &rest plist)

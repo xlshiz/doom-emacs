@@ -448,9 +448,9 @@ directives. By default, this only recognizes C directives.")
       (:when (modulep! :lang web)
        :m "]x"   #'+web:encode-html-entities
        :m "[x"   #'+web:decode-html-entities)
-      (:when (modulep! :editor vc-gutter)
-       :m "]d"   #'git-gutter:next-hunk
-       :m "[d"   #'git-gutter:previous-hunk)
+      (:when (modulep! :editor hl)
+       :m "]d"   #'+vc-gutter/next-hunk
+       :m "[d"   #'+vc-gutter/previous-hunk)
       (:when (modulep! :editor hl-todo)
        :m "]t"   #'hl-todo-next
        :m "[t"   #'hl-todo-previous)

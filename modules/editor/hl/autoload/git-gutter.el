@@ -9,3 +9,5 @@
 (defalias '+vc-gutter/next-hunk #'git-gutter:next-hunk)
 ;;;###autoload
 (defalias '+vc-gutter/previous-hunk #'git-gutter:previous-hunk)
+;;;###autoload
+(defalias '+vc-gutter/mark-hunk #'git-gutter:mark-hunk)
