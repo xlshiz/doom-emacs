@@ -1,23 +1,4 @@
-;;; editor/hl/autoload/hydra.el -*- lexical-binding: t; -*-
-
-;;;###autoload (autoload '+vc/gutter-hydra/body "editor/hl/autoload/hydra" nil t)
-(defhydra +vc/gutter-hydra
-  (:hint nil)
-  "
-       [git gutter]
-   Movement  Actions
-  ╭───────────────────────────╯
-     ^_g_^       [_s_] stage
-     ^_k_ ↑^     [_r_] revert
-     ^_j_ ↓^     [_m_] mark
-     ^_G_^"
-  ("j" (progn (+vc-gutter/next-hunk 1) (recenter)))
-  ("k" (progn (+vc-gutter/previous-hunk 1) (recenter)))
-  ("g" (progn (goto-char (point-min)) (+vc-gutter/next-hunk 1)))
-  ("G" (progn (goto-char (point-min)) (+vc-gutter/previous-hunk 1)))
-  ("s" +vc-gutter/stage-hunk)
-  ("r" +vc-gutter/revert-hunk)
-  ("m" +vc-gutter/mark-hunk))
+;;; editor/hl/autoload/electric.el -*- lexical-binding: t; -*-
 
 ;;;###autodef
 (defun set-electric! (modes &rest plist)

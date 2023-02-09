@@ -11,3 +11,22 @@
 (defalias '+vc-gutter/previous-hunk #'diff-hl-previous-hunk)
 ;;;###autoload
 (defalias '+vc-gutter/mark-hunk #'diff-hl-mark-hunk)
+
+;;;###autoload (autoload '+vc/gutter-hydra/body "editor/hl/autoload/diff-hl" nil t)
+(defhydra +vc/gutter-hydra
+  (:body-pre (diff-hl-mode 1) :hint nil)
+  "
+       [git gutter]
+   Movement  Actions
+  ╭───────────────────────────╯
+     ^_g_^       [_s_] stage
+     ^_k_ ↑^     [_r_] revert
+     ^_j_ ↓^     [_m_] mark
+     ^_G_^"
+  ("j" (progn (+vc-gutter/next-hunk) (recenter)))
+  ("k" (progn (+vc-gutter/previous-hunk) (recenter)))
+  ("g" (progn (goto-char (point-min)) (+vc-gutter/next-hunk)))
+  ("G" (progn (goto-char (point-min)) (+vc-gutter/previous-hunk)))
+  ("s" +vc-gutter/stage-hunk)
+  ("r" +vc-gutter/revert-hunk)
+  ("m" +vc-gutter/mark-hunk))
