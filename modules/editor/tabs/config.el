@@ -92,10 +92,4 @@
           ret
         (with-current-buffer (car args)
           (or (derived-mode-p 'dired-mode)
-              (derived-mode-p 'pdf-view-mode))))))
-  (defadvice! +sort-tab-get-buffer-list (fn &rest args)
-    :around #'sort-tab-get-buffer-list
-    (let ((bufs (+tabs-buffer-list)))
-      (setq bufs (cl-remove-if #'sort-tab-buffer-need-hide-p bufs))
-      (setq bufs (sort bufs #'sort-tab-buffer-freq-higher-p))
-      bufs)))
+              (derived-mode-p 'pdf-view-mode)))))))

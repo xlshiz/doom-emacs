@@ -44,6 +44,21 @@
   "Buffer candidate source for `snail'.")
 
 ;;;###autoload
+(defvar snail--source-hidden-buffer
+  `(:name     "Hidden Buffer"
+    :narrow   32
+    :hiddent  t
+    :category buffer
+    :face     consult-buffer
+    :history  buffer-name-history
+    :state    ,#'consult--buffer-state
+    :items
+    ,(lambda () (cl-set-difference
+                  (consult--buffer-query :as #'buffer-name :exclude nil)
+                  (snail--buffers))))
+  "Buffer candidate source for `snail'.")
+
+;;;###autoload
 (defvar snail--source-recent-file
   `(:name "Recent Files"
     :narrow (?r . "Recent")
@@ -80,7 +95,7 @@
     snail--source-project-file
     snail--source-recent-file
     ;; hiden
-    consult--source-hidden-buffer
+    snail--source-hidden-buffer
     consult--source-modified-buffer
     ))
 
