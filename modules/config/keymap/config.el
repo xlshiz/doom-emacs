@@ -215,7 +215,7 @@
 ;;; :editor tabs
 (map! (:when (modulep! :editor tabs)
        :ni "M-j"
-       (cond ((modulep! :editor tabs +sort)    nil)
+       (cond ((modulep! :editor tabs +sort)    #'sort-tab-ace-jump)
              ((modulep! :editor tabs)          #'awesome-tab-ace-jump))
        :ni "M-h"
        (cond ((modulep! :editor tabs +sort)    #'sort-tab-select-prev-tab)
@@ -293,9 +293,10 @@
        :desc "Kill buffer"                 "d"   #'kill-current-buffer
        :desc "Kill all buffers"            "D"   #'doom/kill-all-buffers
        (:when (modulep! :editor tabs +sort)
-         :desc "Kill tab buffer"           "d"   #'sort-tab-close-current-tab
+         :desc "Kill tab buffer"           "d"   #'sort-tab-close-current-tab-and-select-previous
          :desc "Kill all buffers"          "D"   #'sort-tab-close-all-tabs
-         :desc "Kill mode buffers"         "k"   #'sort-tab-close-mode-tabs
+         :desc "Sort-tab kill tab buffer"  "k"   #'sort-tab-close-current-tab
+         :desc "Kill mode buffers"         "K"   #'sort-tab-close-mode-tabs
          )
        :desc "ibuffer"                     "i"   #'ibuffer
        :desc "Switch to last buffer"       "l"   #'evil-switch-to-windows-last-buffer

@@ -81,7 +81,7 @@
     ("C-e" sort-tab-select-last-tab)
     ("C-k" sort-tab-close-current-tab)
     ("C-S-k" sort-tab-close-all-tabs)
-    ("C-j" awesome-tab-ace-jump)
+    ("C-j" sort-tab-ace-jump)
     ("q" nil "quit"))
   (setq sort-tab-height 20)
   (sort-tab-mode t)
