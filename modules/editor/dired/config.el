@@ -167,14 +167,13 @@ we have to clean it up ourselves."
     :ng "i"   #'wdired-change-to-wdired-mode
     :ng "."   #'dired-omit-mode
     :ng "TAB" #'dirvish-subtree-toggle
-    :ng "SPC" #'dirvish-history-jump
     :ng "M-n" #'dirvish-history-go-forward
     :ng "M-p" #'dirvish-history-go-backward
     :ng "M-s" #'dirvish-setup-menu
     :ng "M-f" #'dirvish-toggle-fullscreen
     :ng "*"   #'dirvish-mark-menu
     :ng "r"   #'dirvish-fd-roam
-    :ng "b"   #'dirvish-bookmark-goto
+    :ng "b"   #'dirvish-bookmark-jump
     :ng "z"   #'dirvish-show-history
     :ng "f"   #'dirvish-file-info-menu
     :ng [remap dired-sort-toggle-or-edit] #'dirvish-quicksort
