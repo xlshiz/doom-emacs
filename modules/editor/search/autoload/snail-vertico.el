@@ -47,7 +47,7 @@
 (defvar snail--source-hidden-buffer
   `(:name     "Hidden Buffer"
     :narrow   32
-    :hiddent  t
+    :hidden   t
     :category buffer
     :face     consult-buffer
     :history  buffer-name-history
