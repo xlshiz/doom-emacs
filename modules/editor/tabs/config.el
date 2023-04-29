@@ -84,4 +84,8 @@
     ("C-j" sort-tab-ace-jump)
     ("q" nil "quit"))
   (setq sort-tab-height 20)
+  (setq sort-tab-hide-buffers (append '("COMMIT_EDITMSG")
+                                 sort-tab-hide-buffers))
+  (setq sort-tab-hide-tabs (append '(" *snails" "COMMIT_EDITMSG" " *rime" "*color-rg*" "*doom:vterm-popup:main*")
+                              sort-tab-hide-tabs))
   (sort-tab-mode t))
