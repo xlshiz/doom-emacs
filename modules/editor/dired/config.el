@@ -138,7 +138,8 @@ we have to clean it up ourselves."
   ;; Go back home? Just press `bh'
   (dirvish-bookmark-entries
     '(("h" "~/"                          "Home")
-       ("d" "~/Downloads/"                "Downloads")))
+      ("d" "~/Downloads/"                "Downloads")
+      ("j" "~/workdir/src/jd/"           "JD")))
   :config
   ;; (dirvish-peek-mode)
   ;; Dired options are respected except a few exceptions, see FAQ.org

@@ -15,7 +15,7 @@
   (map! :n "g C-]"  #'citre-peek
         :n "C-]"    #'citre-jump
         :n "M-,"    #'citre-jump-back)
-  (map! (:after citre-peek :map citre-peek-keymap
+  (map! (:map citre-peek-keymap
          "M-n"     #'citre-peek-next-line
          "M-p"     #'citre-peek-prev-line
          "M-N"     #'citre-peek-next-definition
