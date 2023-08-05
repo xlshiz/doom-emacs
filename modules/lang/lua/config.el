@@ -41,7 +41,10 @@ lua-language-server.")
               "-E" "-e" "LANG=en"
               (doom-path +lua-lsp-dir "main.lua")))
 
-      (set-eglot-client! 'lua-mode (+lua-generate-lsp-server-command)))))
+      (set-eglot-client! 'lua-mode (+lua-generate-lsp-server-command)))
+
+    (when (modulep! +tree-sitter)
+      (add-hook 'lua-mode-local-vars-hook #'tree-sitter! 'append))))
 
 
 (use-package! moonscript
@@ -53,13 +56,14 @@ lua-language-server.")
   (add-hook! 'moonscript-mode-hook
              #'+lua-moonscript-fix-single-quotes-h
              #'+lua-moonscript-fontify-interpolation-h)
-  (when (modulep! :checkers syntax)
+  (when (and (modulep! :checkers syntax)
+             (not (modulep! :checkers syntax +flymake)))
     (require 'flycheck-moonscript nil t)))
 
 
 (use-package! fennel-mode
   :when (modulep! +fennel)
-  :defer t
+  :mode "\\.fenneldoc\\'"
   :config
   (set-lookup-handlers! 'fennel-mode
     :definition #'fennel-find-definition
@@ -71,7 +75,10 @@ lua-language-server.")
     tab-width 2
     ;; Don't treat autoloads or sexp openers as outline headers, we have
     ;; hideshow for that.
-    outline-regexp "[ \t]*;;;;* [^ \t\n]"))
+    outline-regexp "[ \t]*;;;;* [^ \t\n]")
+
+  (when (modulep! +tree-sitter)
+    (add-hook! 'fennel-mode-local-vars-hook 'tree-sitter! 'append)))
 
 
 ;;
@@ -79,7 +86,7 @@ lua-language-server.")
 
 (def-project-mode! +lua-love-mode
   :modes '(moonscript-mode lua-mode markdown-mode json-mode)
-  :when #'+lua-love-project-root
+  :when (+lua-love-project-root)
   :on-load
   (progn
     (set-project-type! 'love2d

@@ -29,7 +29,7 @@
         ;; These auto-complete the current selection when
         ;; `company-auto-commit-chars' is typed. This is too magical. We
         ;; already have the much more explicit RET and TAB.
-        company-insertion-on-trigger nil
+        company-auto-commit nil
 
         ;; Only search the current buffer for `company-dabbrev' (a backend that
         ;; suggests text your open buffers). This prevents Company from causing
@@ -46,17 +46,14 @@
   :config
   (when (modulep! :editor evil)
     (add-hook 'company-mode-hook #'evil-normalize-keymaps)
-    (unless (modulep! +childframe)
-      ;; Don't persist company popups when switching back to normal mode.
-      ;; `company-box' aborts on mode switch so it doesn't need this.
-      (add-hook! 'evil-normal-state-entry-hook
-        (defun +company-abort-h ()
-          ;; HACK `company-abort' doesn't no-op if company isn't active; causing
-          ;;      unwanted side-effects, like the suppression of messages in the
-          ;;      echo-area.
-          ;; REVIEW Revisit this to refactor; shouldn't be necessary!
-          (when company-candidates
-            (company-abort)))))
+    (add-hook! 'evil-normal-state-entry-hook
+      (defun +company-abort-h ()
+        ;; HACK `company-abort' doesn't no-op if company isn't active; causing
+        ;;      unwanted side-effects, like the suppression of messages in the
+        ;;      echo-area.
+        ;; REVIEW Revisit this to refactor; shouldn't be necessary!
+        (when company-candidates
+          (company-abort))))
     ;; Allow users to switch between backends on the fly. E.g. C-x C-s followed
     ;; by C-x C-n, will switch from `company-yasnippet' to
     ;; `company-dabbrev-code'.
@@ -124,6 +121,7 @@
   :config
   (setq company-box-show-single-candidate t
         company-box-backends-colors nil
+        company-box-max-candidates 50
         company-box-icons-alist 'company-box-icons-all-the-icons
         ;; Move company-box-icons--elisp to the end, because it has a catch-all
         ;; clause that ruins icons from other backends in elisp buffers.

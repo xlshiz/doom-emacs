@@ -34,12 +34,9 @@ overrides `completion-styles' during company completion sessions.")
                              #'consult-completion-in-region
                            #'completion--in-region)
                          args)))
-  ;; Cleans up path when moving directories with shadowed paths syntax, e.g.
-  ;; cleans ~/foo/bar/// to /, and ~/foo/bar/~/ to ~/.
-  (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
-  (add-hook 'minibuffer-setup-hook #'vertico-repeat-save)
-  (map! :map vertico-map "DEL" #'vertico-directory-delete-char)
-  (map! :map vertico-map
+
+  (map! :when (modulep! :editor evil +everywhere)
+        :map vertico-map
         "M-j"   #'vertico-next-group
         "M-k"   #'vertico-previous-group
         "M-RET" #'vertico-exit-input
@@ -47,7 +44,15 @@ overrides `completion-styles' during company completion sessions.")
         "C-j"   #'vertico-next
         "C-M-j" #'vertico-next-group
         "C-k"   #'vertico-previous
-        "C-M-k" #'vertico-previous-group)
+        "C-M-k" #'vertico-previous-group
+        "C-h" (cmds! (eq 'file (vertico--metadata-get 'category)) #'vertico-directory-up)
+        "C-l" (cmds! (eq 'file (vertico--metadata-get 'category)) #'+vertico/enter-or-preview))
+
+  ;; Cleans up path when moving directories with shadowed paths syntax, e.g.
+  ;; cleans ~/foo/bar/// to /, and ~/foo/bar/~/ to ~/.
+  (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
+  (add-hook 'minibuffer-setup-hook #'vertico-repeat-save)
+  (map! :map vertico-map "DEL" #'vertico-directory-delete-char)
 
   ;; These commands are problematic and automatically show the *Completions* buffer
   (advice-add #'tmm-add-prompt :after #'minibuffer-hide-completions)
@@ -110,17 +115,18 @@ orderless."
   :defer t
   :preface
   (define-key!
-    [remap apropos]                       #'consult-apropos
     [remap bookmark-jump]                 #'consult-bookmark
     [remap evil-show-marks]               #'consult-mark
     [remap evil-show-jumps]               #'+vertico/jump-list
     [remap evil-show-registers]           #'consult-register
     [remap goto-line]                     #'consult-goto-line
     [remap imenu]                         #'consult-imenu
+    [remap Info-search]                   #'consult-info
     [remap locate]                        #'consult-locate
     [remap load-theme]                    #'consult-theme
     [remap man]                           #'consult-man
     [remap recentf-open-files]            #'consult-recent-file
+    [remap switch-to-buffer]              #'consult-buffer
     [remap switch-to-buffer-other-window] #'consult-buffer-other-window
     [remap switch-to-buffer-other-frame]  #'consult-buffer-other-frame
     [remap yank-pop]                      #'consult-yank-pop
@@ -190,11 +196,14 @@ orderless."
   :bind (([remap list-directory] . consult-dir)
          :map vertico-map
          ("C-x C-d" . consult-dir)
-         ("C-x C-j" . consult-dir-jump-file)))
-
+         ("C-x C-j" . consult-dir-jump-file))
+  :config
+  (add-to-list 'consult-dir-sources 'consult-dir--source-tramp-ssh t)
+  (add-to-list 'consult-dir-sources 'consult-dir--source-tramp-local t))
 
 (use-package! consult-flycheck
-  :when (modulep! :checkers syntax)
+  :when (and (modulep! :checkers syntax)
+             (not (modulep! :checkers syntax +flymake)))
   :after (consult flycheck))
 
 
@@ -237,12 +246,13 @@ orderless."
         cons
         '+vertico-embark-target-package-fn
         (nthcdr pos embark-target-finders)))
-  (embark-define-keymap +vertico/embark-doom-package-map
-    "Keymap for Embark package actions for packages installed by Doom."
-    ("h" doom/help-packages)
-    ("b" doom/bump-package)
-    ("c" doom/help-package-config)
-    ("u" doom/help-package-homepage))
+  (defvar-keymap +vertico/embark-doom-package-map
+    :doc "Keymap for Embark package actions for packages installed by Doom."
+    :parent embark-general-map
+    "h" #'doom/help-packages
+    "b" #'doom/bump-package
+    "c" #'doom/help-package-config
+    "u" #'doom/help-package-homepage)
   (setf (alist-get 'package embark-keymap-alist) #'+vertico/embark-doom-package-map)
   (map! (:map embark-file-map
          :desc "Open target with sudo"        "s"   #'doom/sudo-find-file
@@ -273,12 +283,6 @@ orderless."
             '(projectile-recentf . project-file)
             '(projectile-switch-to-buffer . buffer)
             '(projectile-switch-project . project-file)))
-
-
-(use-package! embark-consult
-  :after (embark consult)
-  :config
-  (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode))
 
 
 (use-package! wgrep

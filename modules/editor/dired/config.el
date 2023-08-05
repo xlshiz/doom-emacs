@@ -181,8 +181,7 @@ we have to clean it up ourselves."
     :ng [remap dired-do-redisplay] #'dirvish-ls-switches-menu
     :ng [remap dired-summary] #'dirvish-dispatch
     :ng [remap dired-do-copy] #'dirvish-yank-menu
-    :ng [remap mode-line-other-buffer] #'dirvish-history-last
-    :ng "q"  #'dirvish-quit)
+    :ng [remap mode-line-other-buffer] #'dirvish-history-last)
   (set-popup-rule! "^ \\*Dirvish.*" :ignore t)
   (global-set-key [remap find-dired] #'dirvish-fd))
 

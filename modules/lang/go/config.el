@@ -56,6 +56,7 @@
           "a" #'+go/test-all
           "s" #'+go/test-single
           "n" #'+go/test-nested
+          "f" #'+go/test-file
           "g" #'go-gen-test-dwim
           "G" #'go-gen-test-all
           "e" #'go-gen-test-exported
@@ -77,5 +78,6 @@
   (setq company-go-show-annotation t))
 
 (use-package! flycheck-golangci-lint
-  :when (modulep! :checkers syntax)
+  :when (and (modulep! :checkers syntax)
+             (not (modulep! :checkers syntax +flymake)))
   :hook (go-mode . flycheck-golangci-lint-setup))

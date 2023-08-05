@@ -3,41 +3,45 @@
 
 (package! org
   :recipe (:host github
-           ;; REVIEW I intentionally avoid git.savannah.gnu.org because of SSL
+           ;; REVIEW: I intentionally avoid git.savannah.gnu.org because of SSL
            ;;   issues (see #5655), uptime issues, download time, and lack of
            ;;   shallow clone support.
            :repo "emacs-straight/org-mode"
            :files (:defaults "etc")
            :depth 1
-           ;; HACK Org requires a post-install compilation step to generate a
-           ;;   org-version.el with org-release and org-git-version functions,
-           ;;   using a 'git describe ...' call.  This won't work in a sparse
-           ;;   clone and I value smaller network burdens on users over
-           ;;   non-essential variables so we fake it:
+           ;; HACK: Org has a post-install step that generates org-version.el
+           ;;   and org-loaddefs.el, but Straight doesn't invoke this step, and
+           ;;   the former doesn't work if the Org repo is a shallow clone.
+           ;;   Rather than impose the network burden of a full clone (and other
+           ;;   redundant work in Org's makefile), I'd rather fake these files
+           ;;   instead. Besides, Straight already produces a org-autoloads.el,
+           ;;   so org-loaddefs.el isn't needed.
            :build t
            :pre-build
-           (with-temp-file "org-version.el"
-             (let ((version
-                    (with-temp-buffer
-                      (insert-file-contents (doom-path "lisp/org.el") nil 0 1024)
-                      (if (re-search-forward "^;; Version: \\([^\n-]+\\)" nil t)
-                          (match-string-no-properties 1)
-                        "Unknown"))))
-               (insert (format "(defun org-release () %S)\n" version)
-                       (format "(defun org-git-version (&rest _) \"%s-??-%s\")\n"
-                               version (cdr (doom-call-process "git" "rev-parse" "--short" "HEAD")))
-                       "(provide 'org-version)\n"))))
-  :pin "bed47b437d8cde7a98bafdb07996e248b40f70e6")
+           (progn
+             (with-temp-file "org-loaddefs.el")
+             (with-temp-file "org-version.el"
+               (let ((version
+                      (with-temp-buffer
+                        (insert-file-contents (doom-path "lisp/org.el") nil 0 1024)
+                        (if (re-search-forward "^;; Version: \\([^\n-]+\\)" nil t)
+                            (match-string-no-properties 1)
+                          "Unknown"))))
+                 (insert (format "(defun org-release () %S)\n" version)
+                         (format "(defun org-git-version (&rest _) \"%s-??-%s\")\n"
+                                 version (cdr (doom-call-process "git" "rev-parse" "--short" "HEAD")))
+                         "(provide 'org-version)\n")))))
+  :pin "d6f3aed7b1b01df7b092a47099205847b34fdd37")
 (package! org-contrib
   :recipe (:host github
            :repo "emacsmirror/org-contrib")
-  :pin "aa104c0bbc3113f6d3d167b20bd8d6bf6a285f0f")
+  :pin "4ac1a280c740df121bcefb2ec99ddba945e857d3")
 
 (package! avy)
 (package! htmlize :pin "dd27bc3f26efd728f2b1f01f9e4ac4f61f2ffbf9")
 (package! org-yt
   :recipe (:host github :repo "TobiasZawada/org-yt")
-  :pin "40cc1ac76d741055cbefa13860d9f070a7ade001")
+  :pin "158e20204cd952a77c1e561552f1cdbfb1a5acb6")
 (package! ox-clip :pin "ff117cf3c619eef12eccc0ccbfa3f11adb73ea68")
 (package! toc-org :pin "bf2e4b358efbd860ecafe6e74776de0885d9d100")
 (package! org-cliplink :pin "13e0940b65d22bec34e2de4bc8cba1412a7abfbc")
@@ -45,14 +49,14 @@
 ;; TODO Adjust when this is added to GNU ELPA
 (when (modulep! +contacts)
   (package! org-contacts
-    :pin "bd5093e46b1d873a579db21cfab75d306df948b2"
+    :pin "7f03eafaad2e5746949c0bebb98353e939c51ade"
     :recipe (:host nil
              :type git
              :repo "https://repo.or.cz/org-contacts.git")))
 
 (when (and IS-MAC
            (modulep! :os macos))
-  (package! org-mac-link :pin "0b18c1d070b9601cc65c40e902169e367e4348c9"))
+  (package! org-mac-link :pin "3a30a937e135a6637a5126e2ac096b6c90584045"))
 
 (when (modulep! +passwords)
   (package! org-passwords
@@ -67,11 +71,11 @@
 (when (modulep! :editor pdf)
   (package! org-pdftools :pin "967f48fb5038bba32915ee9da8dc4e8b10ba3376"))
 (when (modulep! :tools magit)
-  (package! orgit :pin "5036c3db5897ce93cd895aa213072661a497a4e6")
+  (package! orgit :pin "4a585029875a1dbbe96d8ac157bd2fd02875f289")
   (when (modulep! :tools magit +forge)
-    (package! orgit-forge :pin "3a54569dd02909119e15550552ce6acf7ec2dacd")))
+    (package! orgit-forge :pin "8ba92a54aee9693b1bf03baf14f83550a7c89b18")))
 (when (modulep! +brain)
-  (package! org-brain :pin "46ca9f766322cff31279ecdf02251ff24a0e9431"))
+  (package! org-brain :pin "2bad7732aae1a3051e2a14de2e30f970bbe43c25"))
 (when (modulep! +dragndrop)
   (package! org-download :pin "19e166f0a8c539b4144cfbc614309d47a9b2a9b7"))
 (when (modulep! +gnuplot)
@@ -80,27 +84,27 @@
 (when (modulep! +ipython) ; DEPRECATED
   (package! ob-ipython :pin "7147455230841744fb5b95dcbe03320313a77124"))
 (when (modulep! +jupyter)
-  (package! jupyter :pin "7d20c0aee2f9c896215f35232905b23532ef04c5"))
+  (package! jupyter :pin "1baabc8f2d0631f8f4308400f9a53f1aadd58d14"))
 (when (modulep! +journal)
-  (package! org-journal :pin "1ea9e3b672ed384922ede6af96598446f3691873"))
+  (package! org-journal :pin "18df4d5ae5e15580df42562c143d007c6d28d75f"))
 (when (modulep! +noter)
-  (package! org-noter :pin "9ead81d42dd4dd5074782d239b2efddf9b8b7b3d"))
+  (package! org-noter :pin "f9710c976823c180070cee4e958e0dc4531ba0de"))
 (when (modulep! +pomodoro)
   (package! org-pomodoro :pin "3f5bcfb80d61556d35fc29e5ddb09750df962cc6"))
 (when (modulep! +pretty)
-  (package! org-appear :pin "60ba267c5da336e75e603f8c7ab3f44e6f4e4dac")
-  (package! org-superstar :pin "03be6c0a3081c46a59b108deb8479ee24a6d86c0")
+  (package! org-appear :pin "eb9f9db40aa529fe4b977235d86494b115281d17")
+  (package! org-superstar :pin "54c81c27dde2a6dc461bb064e79a8b2089093a2e")
   (package! org-fancy-priorities :pin "7f677c6c14ecf05eab8e0efbfe7f1b00ae68eb1d"))
 (when (modulep! +present)
   (package! centered-window
     :recipe (:host github :repo "anler/centered-window-mode")
     :pin "80965f6c6afe8d918481433984b493de72af5399")
-  (package! org-tree-slide :pin "d6529bc2df727d09014e0e56abf4f15a8e8fc20f")
-  (package! org-re-reveal :pin "941aa4b94f4eb13cea23013126e84f335059dead")
+  (package! org-tree-slide :pin "97273dbb1718e9f63d338468e4c310167a846a67")
+  (package! org-re-reveal :pin "592985019905447d5f1fd6e24d14bfa9f4adf2f3")
   (package! revealjs
     :recipe (:host github :repo "hakimel/reveal.js"
              :files ("css" "dist" "js" "plugin"))
-    :pin "f6f657b627f9703e32414d8d3f16fb49d41031cb"))
+    :pin "12f5ba4c9d53c500ec20aea2cc8b8f66e725026a"))
 (cond
  ((modulep! +roam)
   (package! org-roam
@@ -111,7 +115,7 @@
     ;; FIXME A :recipe isn't strictly necessary, but without it, our package
     ;;       bumper fails to distinguish between org-roam v1 and v2.
     :recipe (:host github :repo "org-roam/org-roam")
-    :pin "d95d25615e69e7cc847641800c1886366336c97e")))
+    :pin "5c06471c3a11348342719fd9011486455adeb701")))
 
 ;;; Babel
 (package! ob-async :pin "9aac486073f5c356ada20e716571be33a350a982")
@@ -128,7 +132,7 @@
 (when (modulep! :lang fsharp)
   (package! ob-fsharp
     :recipe (:host github :repo "elken/ob-fsharp")
-    :pin "ca3d4568da6c82ff32a8d289743b059d9f909c67"))
+    :pin "a5bb40915a8b78fb3c5fc4b44ad00393e07e46a4"))
 (when (modulep! :lang go)
   (package! ob-go :pin "2067ed55f4c1d33a43cb3f6948609d240a8915f5"))
 (when (modulep! :lang graphql)
@@ -148,16 +152,16 @@
     :recipe (:host github :repo "DEADB17/ob-racket")
     :pin "d8fd51bddb019b0eb68755255f88fc800cfe03cb"))
 (when (modulep! :lang rest)
-  (package! ob-restclient :pin "1b021ce1c67c97fa1aa4d2c0816edb7add129e48"))
+  (package! ob-restclient :pin "ded3b7eb7b0592328a7a08ecce6f25278cba4a1d"))
 (when (modulep! :lang scala)
   (package! ob-ammonite :pin "39937dff395e70aff76a4224fa49cf2ec6c57cca"))
 
 ;;; Export
 (when (modulep! +pandoc)
-  (package! ox-pandoc :pin "f8eac5e5692fc44a4724ada43191e7c28a1ccf30"))
+  (package! ox-pandoc :pin "0f758517f512e375825679541b5d905be40342eb"))
 (when (modulep! +hugo)
   (package! ox-hugo
     :recipe (:host github :repo "kaushalmodi/ox-hugo" :nonrecursive t)
-    :pin "e532fce4a4fbf9a7981bed07d1b9ec30a4d0a305"))
+    :pin "cb1b6cfd7b080e889352150416c1725f11ba937a"))
 (when (modulep! :lang rst)
   (package! ox-rst :pin "99fa790da55b57a3f2e9aa187493ba434a64250e"))

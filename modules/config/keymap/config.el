@@ -658,7 +658,9 @@
        (cond ((modulep! :completion vertico)   #'+vertico/search-symbol-at-point)
              (t nil))
        :desc "Dictionary"                   "t" #'+lookup/dictionary-definition
-       :desc "Thesaurus"                    "T" #'+lookup/synonyms)
+       :desc "Thesaurus"                    "T" #'+lookup/synonyms
+       (:when (fboundp 'vundo)
+         :desc "Undo history"               "u" #'vundo))
 
       ;;; <leader> t --- toggle
       (:prefix-map ("t" . "toggle")

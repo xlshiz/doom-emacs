@@ -35,7 +35,7 @@ This is ignored by ccls.")
 (use-package! cc-mode
   :mode ("\\.mm\\'" . objc-mode)
   ;; Use `c-mode'/`c++-mode'/`objc-mode' depending on heuristics
-  :mode ("\\.h\\'" . +cc-c-c++-objc-mode) 
+  :mode ("\\.h\\'" . +cc-c-c++-objc-mode)
   ;; Ensure find-file-at-point recognize system libraries in C modes. It must be
   ;; set up before the likes of irony/lsp are initialized. Also, we use
   ;; local-vars hooks to ensure these only run in their respective major modes,
@@ -45,7 +45,6 @@ This is ignored by ccls.")
   :hook (c-mode-common . rainbow-delimiters-mode)
   :hook ((c-mode c++-mode) . +cc-fontify-constants-h)
   :hook ((c-mode c++-mode) . +cc-disable-auto-complete)
-  :hook ((c-mode c++-mode) . (lambda () (setq indent-tabs-mode t tab-width 8 c-basic-offset 8)))
   :init
   (add-to-list 'doom-detect-indentation-excluded-modes 'c-mode)
   (add-to-list 'doom-detect-indentation-excluded-modes 'c++-mode)
@@ -66,8 +65,7 @@ This is ignored by ccls.")
     (ignore-errors (apply fn args)))
 
   ;; Custom style, based off of linux
-  (setq c-basic-offset tab-width
-        c-backspace-function #'delete-backward-char)
+  (setq c-backspace-function #'delete-backward-char)
 
   (defface +font-lock-call-function-face
     '((((background dark)) :foreground "#2188b6")
@@ -80,7 +78,11 @@ This is ignored by ccls.")
                           t)
 
   (c-add-style
-   "doom" '((c-comment-only-line-offset . 0)
+   "doom" '("linux"
+            (c-comment-only-line-offset . 0)
+            (tab-width . 8)
+            (c-basic-offset . 8)
+            (indent-tabs-mode . t)
             (c-hanging-braces-alist (brace-list-open)
                                     (brace-entry-open)
                                     (substatement-open after)
@@ -156,7 +158,7 @@ This is ignored by ccls.")
                ; c++-mode-local-vars-hook
                ; objc-mode-local-vars-hook
                ; cmake-mode-local-vars-hook)
-             ; #'lsp!)
+             ; :append #'lsp!)
 
   (setq lsp-clients-clangd-args '("-j=3"
                                   "--background-index"

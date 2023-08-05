@@ -30,17 +30,18 @@
        workspaces              ; tab emulation, persistence & separate workspaces
        undo                    ; persistent, smarter undo for your inevitable mistakes
        snippets                ; my elves. They type so I don't have to
-       (tabs)                  ; a tab bar for Emacs
+       (tabs +sort)                  ; a tab bar for Emacs
        fold                    ; (nigh) universal code folding
        multiple-cursors        ; editing in many places at once
        vc                      ; version-control and Emacs, sitting in a tree
-       (dired +dirvish)        ; making dired pretty [functional]
+       (dired +dirvish +icons) ; making dired pretty [functional]
        (search +snails)
        editorconfig            ; let someone else argue about tabs vs spaces
        make                    ; run make tasks from Emacs
        pdf                     ; pdf enhancements
        taskrunner              ; taskrunner for all your projects
        (chinese +rime)
+       (hl +pretty +diff-hl)
        misc
 
        :term
@@ -112,12 +113,15 @@
         +tree-sitter
         +lsp)                  ; the tubes
        yaml                    ; JSON, but readable
+       (zig
+        +tree-sitter)
 
-                                        ;keymap must be last
-       :keymap
-       global
+       ;keymap must be last
+       :config
+       keymap
 
        :private
+       eaf
        ;; tabnine
        )
 

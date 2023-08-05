@@ -7,6 +7,7 @@
 ;;                                project
 ;;   + `+lookup/references': find a symbol's references in the current project
 ;;   + `+lookup/file': open the file referenced at point
+;;   + `+lookup/online'; look up a symbol on online resources
 ;;   + `+lookup/in-docsets': look up in Dash docsets
 ;;
 ;; This module uses `xref', an experimental new library in Emacs. It may change

@@ -1,14 +1,5 @@
 ;;; editor/search/config.el -*- lexical-binding: t; -*-
 
-(use-package! imenu-list
-  :defer t
-  :config
-  (setq imenu-list-focus-after-activation t
-        imenu-list-idle-update-delay 0.5
-        imenu-list-auto-resize t)
-  (set-popup-rule! "^\\*Ilist"
-    :side 'right :size 35 :quit nil :select nil :ttl 0))
-
 (use-package! thing-edit
   :commands (thing-cut-parentheses thing-copy-parentheses thing-replace-parentheses thing-copy-region-or-line thing-cut-region-or-line thing-replace-region-or-line)
   :defer t)
@@ -138,7 +129,7 @@
    snail--source-buffer snail--source-project-file snail--source-recent-file
    +embark-find-file +embark-search-file-cwd +embark-search-file-other-dir +embark-search-file-other-project
    +embark/grep-project +embark-grep-other-cwd +embark-grep-other-project
-   :preview-key (kbd "C-.")))
+   :preview-key "C-."))
 
 (after! embark
 

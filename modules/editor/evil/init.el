@@ -102,11 +102,13 @@ variable for an explanation of the defaults (in comments). See
       calendar
       cider
       cmake-mode
+      color-rg
       comint
       company
       compile
       consult
       corfu
+      crdt
       (custom cus-edit)
       cus-theme
       daemons
@@ -153,6 +155,7 @@ variable for an explanation of the defaults (in comments). See
       geiser
       ggtags
       git-timemachine
+      gited
       gnus
       go-mode
       grep
@@ -276,7 +279,7 @@ and complains if a module is loaded too early (during startup)."
     (unless (memq (or (car-safe module) module) disabled-list)
       (doom-log "editor:evil: loading evil-collection-%s %s"
                 (or (car-safe module) module)
-                (if doom-init-time "" "(too early!)"))
+                (if after-init-time "" "(too early!)"))
       (with-demoted-errors "evil-collection error: %s"
         (evil-collection-init (list module)))))
 

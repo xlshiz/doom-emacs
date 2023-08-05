@@ -345,7 +345,7 @@ without needing to check if they are available."
   (cl-loop for (cat . mod) in (doom-module-list 'all)
            for readme-path = (or (doom-module-locate-path cat mod "README.org")
                                  (doom-module-locate-path cat mod))
-           for format = (format "%s %s" cat mod)
+           for format = (if mod (format "%s %s" cat mod) (format "%s" cat))
            if (doom-module-p cat mod)
            collect (list format readme-path)
            else if (and cat mod)
@@ -696,33 +696,7 @@ config blocks in your private config."
   (unless (executable-find "rg")
     (user-error "Can't find ripgrep on your system"))
   (cond ((fboundp 'consult--grep)
-         (consult--grep
-          prompt
-          (lambda (input)
-            (pcase-let* ((cmd (split-string-and-unquote consult-ripgrep-args))
-                         (`(,arg . ,opts) (consult--command-split query))
-                         (flags (append cmd opts))
-                         (ignore-case (if (or (member "-S" flags) (member "--smart-case" flags))
-                                          (let (case-fold-search)
-                                            ;; Case insensitive if there are no uppercase letters
-                                            (not (string-match-p "[[:upper:]]" arg)))
-                                        (or (member "-i" flags) (member "--ignore-case" flags)))))
-              (if (or (member "-F" flags) (member "--fixed-strings" flags))
-                  `(:command (,@cmd "-e" ,arg ,@opts ,@dirs) :highlight
-                    ,(apply-partially #'consult--highlight-regexps
-                                      (list (regexp-quote arg)) ignore-case))
-                (pcase-let* ((type (or consult--ripgrep-regexp-type
-                                       (setq consult--ripgrep-regexp-type
-                                             (if (consult--grep-lookahead-p (car cmd) "-P") 'pcre 'extended))))
-                             (`(,re . ,hl) (funcall consult--regexp-compiler arg type ignore-case)))
-                  (when re
-                    `(:command
-                      (,@cmd ,@(and (eq type 'pcre) '("-P"))
-                             "-e" ,(consult--join-regexps re type)
-                             ,@opts
-                             ,@dirs)
-                      :highlight ,hl))))))
-          data-directory query))
+         (consult--grep prompt #'consult--ripgrep-make-builder (cons data-directory dirs) query))
         ((fboundp 'counsel-rg)
          (let ((counsel-rg-base-command
                 (if (stringp counsel-rg-base-command)
@@ -760,4 +734,3 @@ Uses the symbol at point or the current selection, if available."
                                    (format "%s.el" filebase)))
             collect it)
    query "Search loaded files: "))
-

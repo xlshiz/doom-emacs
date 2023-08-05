@@ -89,7 +89,7 @@ Docsets can be searched directly via `+lookup/in-docsets'."
   "Lookup QUERY in dash DOCSETS.
 
 QUERY is a string and docsets in an array of strings, each a name of a Dash
-docset.
+docset. Requires either helm or ivy.
 
 If prefix ARG is supplied, search all installed installed docsets. They can be
 installed with `dash-docs-install-docset'."
@@ -103,6 +103,7 @@ installed with `dash-docs-install-docset'."
         (query (doom-thing-at-point-or-region query)))
     (doom-log "Searching docsets %s" dash-docs-docsets)
     (cond ((modulep! :completion vertico)
+           (require 'consult)
            (dash-docs-initialize-debugging-buffer)
            (dash-docs-create-buffer-connections)
            (dash-docs-create-common-connections)

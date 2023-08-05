@@ -3,10 +3,10 @@
 
 (package! cmake-mode
   :recipe (:host github :repo "emacsmirror/cmake-mode" :files (:defaults "*"))
-  :pin "d5d77de8c4c69e348b182eeb30222b2f1ba8db7b")
+  :pin "6ce56331445ad7ef79a11d5a3163364a883067c2")
 (package! cuda-mode :pin "7f593518fd135fc6af994024bcb47986dfa502d2")
 (package! demangle-mode :pin "04f545adab066708d6151f13da65aaf519f8ac4e")
-(package! disaster :pin "10a785facc60d89d78e0d5177985ab1af1741bb4")
+(package! disaster :pin "0c13bd244cc43773af81e52ce73a55f199d58a61")
 (package! modern-cpp-font-lock :pin "43c6b68ff58fccdf9deef11674a172e4eaa8455c")
 (package! opencl-mode :pin "15091eff92c33ee0d1ece40eb99299ef79fee92d")
 

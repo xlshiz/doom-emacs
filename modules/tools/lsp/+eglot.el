@@ -4,14 +4,23 @@
   :commands eglot eglot-ensure
   :hook (eglot-managed-mode . +lsp-optimization-mode)
   :init
+  (defadvice! +eglot--ensure-available-mode (fn)
+    "Run `eglot-ensure' if the current mode has support."
+    :around #'eglot-ensure
+    (when (alist-get major-mode eglot-server-programs nil nil
+                     (lambda (modes key)
+                       (if (listp modes)
+                           (member key modes)
+                         (eq key modes))))
+      (funcall fn)))
   (setq eglot-sync-connect 1
-        eglot-connect-timeout 10
         eglot-autoshutdown t
         eglot-send-changes-idle-time 0.5
         ;; NOTE We disable eglot-auto-display-help-buffer because :select t in
         ;;      its popup rule causes eglot to steal focus too often.
         eglot-auto-display-help-buffer nil)
-  (when (modulep! :checkers syntax)
+  (when (and (modulep! :checkers syntax)
+             (not (modulep! :checkers syntax +flymake)))
     (setq eglot-stay-out-of '(flymake)))
 
   :config
@@ -24,10 +33,6 @@
     :documentation   #'+eglot-lookup-documentation)
 
   (add-to-list 'doom-debug-variables '(eglot-events-buffer-size . 0))
-
-  (when (modulep! :checkers syntax)
-    (after! flycheck
-      (load! "autoload/flycheck-eglot")))
 
   (defadvice! +lsp--defer-server-shutdown-a (fn &optional server)
     "Defer server shutdown for a few seconds.
@@ -55,3 +60,9 @@ server getting expensively restarted when reverting buffers."
   :when (modulep! :completion vertico)
   :init
   (map! :map eglot-mode-map [remap xref-find-apropos] #'consult-eglot-symbols))
+
+
+(use-package! flycheck-eglot
+  :when (and (modulep! :checkers syntax)
+             (not (modulep! :checkers syntax +flymake)))
+  :hook (eglot-managed-mode . flycheck-eglot-mode))
