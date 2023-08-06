@@ -62,7 +62,7 @@
 
 (use-package! sort-tab
   :when (modulep! +sort)
-  :defer 0.2
+  :defer 0
   :config
   (window-divider-mode -1)
   (setq uniquify-buffer-name-style 'forward)
@@ -84,7 +84,7 @@
     ("C-j" sort-tab-ace-jump)
     ("q" nil "quit"))
   (setq sort-tab-height 20)
-  (setq sort-tab-hide-buffers (append '("COMMIT_EDITMSG")
+  (setq sort-tab-hide-buffers (append '("COMMIT_EDITMSG" "dir-data-")
                                  sort-tab-hide-buffers))
   (setq sort-tab-hide-tabs (append '(" *snails" "COMMIT_EDITMSG" " *rime" "*color-rg*" "*doom:vterm-popup:main*")
                               sort-tab-hide-tabs))
