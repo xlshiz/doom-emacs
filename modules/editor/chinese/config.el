@@ -111,7 +111,7 @@
   (setq liberime-user-data-dir (expand-file-name (concat doom-data-dir "pyim/rime")))
   (setq liberime-auto-build t)
   :config
-  (liberime-try-select-schema "pinyin_cau_flypy"))
+  (liberime-try-select-schema "double_pinyin_cau_flypy"))
 
 (after! ivy
   (setq ivy-re-builders-alist
