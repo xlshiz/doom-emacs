@@ -1,7 +1,7 @@
 ;; -*- no-byte-compile: t; -*-
 ;;; editor/search/packages.el
 
-(package! avy :pin "955c8dedd68c74f3cf692c1249513f048518c4c9")
+(package! avy :pin "be612110cb116a38b8603df367942e2bb3d9bdbe")
 (package! thing-edit :recipe (:host github :repo "manateelazycat/thing-edit"))
 (package! avy-thing-edit :recipe (:host github :repo "xlshiz/avy-thing-edit"))
 (package! symbol-overlay)
