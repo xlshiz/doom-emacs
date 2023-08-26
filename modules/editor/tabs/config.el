@@ -86,6 +86,6 @@
   (setq sort-tab-height 20)
   (setq sort-tab-hide-buffers (append '("COMMIT_EDITMSG" "dir-data-")
                                  sort-tab-hide-buffers))
-  (setq sort-tab-hide-tabs (append '(" *snails" "COMMIT_EDITMSG" " *rime" "*color-rg*" "*doom:vterm-popup:main*")
+  (setq sort-tab-hide-tabs (append '(" *snails" "COMMIT_EDITMSG" " *rime" "*color-rg*" "*doom:vterm-popup:main*" "*Ilist*")
                               sort-tab-hide-tabs))
   (sort-tab-mode t))

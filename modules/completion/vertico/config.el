@@ -161,10 +161,10 @@ orderless."
    +default/search-notes-for-symbol-at-point
    +default/search-emacsd
    consult--source-recent-file consult--source-project-recent-file consult--source-bookmark
-   :preview-key (kbd "C-."))
+   :preview-key "C-.")
   (consult-customize
    consult-theme
-   :preview-key (list (kbd "C-.") :debounce 0.5 'any))
+   :preview-key (list "C-." :debounce 0.5 'any))
   (when (modulep! :lang org)
     (defvar +vertico--consult-org-source
       (list :name     "Org Buffer"

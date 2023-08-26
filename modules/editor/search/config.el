@@ -144,22 +144,24 @@
         (apply fn args))
       ))
 
-  (embark-define-keymap +embark-become-snail-map
-    "Keymap for Embark become."
-    ("." +embark-find-file)
-    ("f" +embark-search-file-cwd)
-    ("F" +embark-search-file-other-dir)
-    ("P" +embark-search-file-other-project)
-    ("A" snail))
+  (defvar-keymap +embark-become-snail-map
+    :doc "Keymap for Embark become."
+    :parent nil
+    "." #'+embark-find-file
+    "f" #'+embark-search-file-cwd
+    "F" #'+embark-search-file-other-dir
+    "P" #'+embark-search-file-other-project
+    "A" #'snail)
   (add-to-list 'embark-become-keymaps '+embark-become-snail-map)
 
-  (embark-define-keymap +embark-become-grep-map
-    "Keymap for Embark become."
-    ("p" +embark/grep-project)
-    ("P" +embark-grep-other-project)
-    ("G" +embark-grep-other-cwd)
-    ("g" +default/search-project-for-symbol-at-point)
-    ("b" +embark-grep-buffer))
+  (defvar-keymap +embark-become-grep-map
+    :doc "Keymap for Embark become."
+    :parent nil
+    "p" #'+embark/grep-project
+    "P" #'+embark-grep-other-project
+    "G" #'+embark-grep-other-cwd
+    "g" #'+default/search-project-for-symbol-at-point
+    "b" #'+embark-grep-buffer)
   (add-to-list 'embark-become-keymaps '+embark-become-grep-map)
   )
 

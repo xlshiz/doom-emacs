@@ -31,6 +31,7 @@
     '(anaconda-mode
       buff-menu
       calc
+      color-rg
       comint
       company
       custom
