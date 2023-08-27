@@ -144,8 +144,8 @@ we have to clean it up ourselves."
   ;; (dirvish-peek-mode)
   ;; Dired options are respected except a few exceptions, see FAQ.org
   (setq dirvish-cache-dir (concat doom-cache-dir "dirvish/")
-        dirvish-hide-details nil
-        dirvish-attributes '(subtree-state vc-state file-size)
+        dirvish-hide-details t
+        dirvish-attributes '(subtree-state collapse file-size file-time)
         dirvish-side-follow-buffer-file t
         dirvish-use-mode-line nil
         dirvish-header-line-height '(1 . 1)
