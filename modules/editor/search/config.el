@@ -126,7 +126,7 @@
 
 (after! consult
   (consult-customize
-   snail--source-buffer snail--source-project-file snail--source-recent-file
+   snail--source-buffer snail--source-project-file snail--source-recent-file snail--source-hidden-buffer
    +embark-find-file +embark-search-file-cwd +embark-search-file-other-dir +embark-search-file-other-project
    +embark/grep-project +embark-grep-other-cwd +embark-grep-other-project
    :preview-key "C-."))

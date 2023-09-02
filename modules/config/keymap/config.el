@@ -557,7 +557,7 @@
 
       ;;; <leader> o --- open
       (:prefix-map ("o" . "open")
-       :desc "Imenu sidebar"    "i"  #'imenu-list-smart-toggle
+       :desc "Imenu sidebar"    "i"  #'symbols-outline-smart-toggle
        :desc "Org agenda"       "A"  #'org-agenda
        (:prefix ("a" . "org agenda")
         :desc "Agenda"         "a"  #'org-agenda

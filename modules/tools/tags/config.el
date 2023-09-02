@@ -34,7 +34,9 @@
          :n "q"       #'citre-peek-abort)))
 
 (use-package! symbols-outline
-  :commands (symbols-outline-show)
+  :commands (symbols-outline-smart-toggle)
+  :init
+  (setq symbols-outline-follow-symbol-in-origin nil)
   :config
   (map! (:map symbols-outline-mode-map
          :n "g"   #'symbols-outline-refresh
