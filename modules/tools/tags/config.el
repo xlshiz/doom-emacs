@@ -32,3 +32,17 @@
          "M-m f"   #'citre-peek-make-current-def-first
          "M-m j"   #'citre-peek-jump
          :n "q"       #'citre-peek-abort)))
+
+(use-package! symbols-outline
+  :commands (symbols-outline-show)
+  :config
+  (map! (:map symbols-outline-mode-map
+         :n "g"   #'symbols-outline-refresh
+         :n "j"   #'symbols-outline-next
+         :n "k"   #'symbols-outline-prev
+         :n [tab] #'symbols-outline-toggle-node
+         :n "RET" #'symbols-outline-visit
+         :n "M-RET" #'symbols-outline-visit-and-quit
+         :n "q"   #'quit-window))
+  (setq symbols-outline-window-position 'right)
+  (symbols-outline-follow-mode))

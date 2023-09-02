@@ -22,16 +22,6 @@ current line.")
         "<M-left>"  #'drag-stuff-left
         "<M-right>" #'drag-stuff-right))
 ;;;}}}
-;;;{{{2 imenu-list
-(use-package! imenu-list
-  :defer t
-  :config
-  (setq imenu-list-focus-after-activation t
-        imenu-list-idle-update-delay 0.5
-        imenu-list-auto-resize t)
-  (set-popup-rule! "^\\*Ilist"
-    :side 'right :size 35 :quit nil :select nil :ttl 0))
-;;;}}}
 ;;;{{{2 markmacro
 (use-package! markmacro
   :commands (markmacro-mark-words markmacro-mark-lines markmacro-mark-chars markmacro-mark-imenus markmacro-apply-all
