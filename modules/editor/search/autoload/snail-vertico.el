@@ -4,12 +4,13 @@
 ;;;###autoload
 (defun snail--project-files (&rest _)
   (require 'projectile)
-  (let ((ht (consult--buffer-file-hash)))
-    (unless (file-equal-p default-directory "~")
-      (seq-remove (lambda (x)
-                    (gethash (projectile-expand-root x) ht))
-                  (mapcar #'substring-no-properties (if (doom-project-root)
-                                                        (projectile-current-project-files)))))))
+  (let* ((ht (consult--buffer-file-hash))
+          (candidates (unless (file-equal-p default-directory "~")
+                        (mapc #'substring-no-properties (if (doom-project-root)
+                                                          (projectile-current-project-files))))))
+    (if (length> candidates 100)
+      candidates
+      (seq-remove (lambda (x) (gethash (projectile-expand-root x) ht)) candidates))))
 
 ;;;###autoload
 (defun snail--buffer-exclude (buf)
