@@ -149,7 +149,9 @@ we have to clean it up ourselves."
   (setq dirvish-cache-dir (concat doom-cache-dir "dirvish/")
         dirvish-hide-details t
         dirvish-attributes '(subtree-state collapse file-size file-time)
-        dirvish-side-follow-buffer-file t
+        dirvish-side-auto-expand t
+        dirvish-subtree-state-style 'nerd
+        dirvish-reuse-session nil
         dirvish-use-mode-line nil
         dirvish-header-line-height '(1 . 1)
         delete-by-moving-to-trash nil
