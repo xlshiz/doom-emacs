@@ -30,7 +30,6 @@
   (set-docsets! 'php-mode "PHP" "PHPUnit" "Laravel" "CakePHP" "CodeIgniter" "Doctrine_ORM")
   (set-repl-handler! 'php-mode #'+php/open-repl)
   (set-lookup-handlers! 'php-mode :documentation #'php-search-documentation)
-  (set-formatter! 'php-mode #'php-cs-fixer-fix)
 
   (if (not (modulep! +lsp))
       ;; `+php-company-backend' uses `company-phpactor', `php-extras-company' or

@@ -25,8 +25,20 @@ generate `completing-read' candidates."
   (interactive)
   (call-interactively
    (if (and (not IS-MAC) (executable-find "man"))
-       #'man
+       (or (command-remapping #'man)
+           #'man)
      #'woman)))
+
+;;;###autoload
+(defun +default/new-buffer ()
+  "TODO"
+  (interactive)
+  (if (modulep! 'evil)
+      (call-interactively #'evil-buffer-new)
+    (let ((buffer (generate-new-buffer "*new*")))
+      (set-window-buffer nil buffer)
+      (with-current-buffer buffer
+        (funcall (default-value 'major-mode))))))
 
 ;;;###autoload
 (defun +default/restart-server ()

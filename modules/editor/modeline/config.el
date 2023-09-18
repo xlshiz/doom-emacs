@@ -13,9 +13,6 @@
   :hook (doom-modeline-mode . size-indication-mode) ; filesize in modeline
   :hook (doom-modeline-mode . column-number-mode)   ; cursor column in modeline
   :init
-  (unless after-init-time
-    ;; prevent flash of unstyled modeline at startup
-    (setq-default mode-line-format nil))
   ;; We display project info in the modeline ourselves
   (setq projectile-dynamic-mode-line nil)
   ;; Set these early so they don't trigger variable watchers
@@ -34,21 +31,7 @@
               (IS-WINDOWS 1)
               (0)))
 
-  ;; Fix modeline icons in daemon-spawned graphical frames. We have our own
-  ;; mechanism for disabling all-the-icons, so we don't need doom-modeline to do
-  ;; it for us. However, this may cause unwanted padding in the modeline in
-  ;; daemon-spawned terminal frames. If it bothers you, you may prefer
-  ;; `doom-modeline-icon' set to `nil'.
-  (when (daemonp)
-    (setq doom-modeline-icon t))
   :config
-  ;; HACK Fix #4102 due to empty all-the-icons return value (caused by
-  ;;      `doom--disable-all-the-icons-in-tty-a' advice) in tty daemon frames.
-  (defadvice! +modeline-disable-icon-in-daemon-a (fn &rest args)
-    :around #'doom-modeline-propertize-icon
-    (when (display-graphic-p)
-      (apply fn args)))
-
   ;; Fix an issue where these two variables aren't defined in TTY Emacs on MacOS
   (defvar mouse-wheel-down-event nil)
   (defvar mouse-wheel-up-event nil)
@@ -56,13 +39,12 @@
   (add-hook 'after-setting-font-hook #'+modeline-resize-for-font-h)
   (add-hook 'doom-load-theme-hook #'doom-modeline-refresh-bars)
 
-  (add-hook '+doom-dashboard-mode-hook #'doom-modeline-set-project-modeline)
-
+  (add-to-list 'doom-modeline-mode-alist '(+doom-dashboard-mode . dashboard))
   (add-hook! 'magit-mode-hook
     (defun +modeline-hide-in-non-status-buffer-h ()
       "Show minimal modeline in magit-status buffer, no modeline elsewhere."
       (if (eq major-mode 'magit-status-mode)
-          (doom-modeline-set-vcs-modeline)
+          (doom-modeline-set-modeline 'magit)
         (hide-mode-line-mode))))
 
   ;; Some functions modify the buffer, causing the modeline to show a false

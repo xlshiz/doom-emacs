@@ -1,5 +1,8 @@
 ;;; editor/dired/config.el -*- lexical-binding: t; -*-
 
+(defvar +dired-dirvish-icon-provider 'nerd-icons
+  "Icon provider to use for dirvish when the module is enabled.")
+
 (use-package! dired
   :commands dired-jump
   :init
@@ -159,7 +162,7 @@ we have to clean it up ourselves."
   (setq dirvish-mode-line-format
     '(:left (sort file-time " " file-size symlink) :right (omit yank index)))
   (when (modulep! +icons)
-    (push 'all-the-icons dirvish-attributes))
+    (push +dired-dirvish-icon-provider dirvish-attributes))
   (map! :map dired-mode-map
     :ng "h"   #'dired-up-directory
     :ng "j"   #'dired-next-line
@@ -186,28 +189,20 @@ we have to clean it up ourselves."
   (global-set-key [remap find-dired] #'dirvish-fd))
 
 
-(use-package! all-the-icons-dired
+(use-package! nerd-icons-dired
   :when (modulep! +icons)
   :unless (modulep! +dirvish)
-  :hook (dired-mode . all-the-icons-dired-mode)
+  :hook (dired-mode . nerd-icons-dired-mode)
   :config
-  ;; HACK Fixes #1929: icons break file renaming in Emacs 27+, because the icon
-  ;;      is considered part of the filename, so we disable icons while we're in
-  ;;      wdired-mode.
-  (defvar +wdired-icons-enabled -1)
-
-  ;; display icons with colors
-  (setq all-the-icons-dired-monochrome nil)
-
   (defadvice! +dired-disable-icons-in-wdired-mode-a (&rest _)
     :before #'wdired-change-to-wdired-mode
-    (setq-local +wdired-icons-enabled (if all-the-icons-dired-mode 1 -1))
-    (when all-the-icons-dired-mode
-      (all-the-icons-dired-mode -1)))
+    (setq-local +wdired-icons-enabled (if nerd-icons-dired-mode 1 -1))
+    (when nerd-icons-dired-mode
+      (nerd-icons-dired-mode -1)))
 
   (defadvice! +dired-restore-icons-after-wdired-mode-a (&rest _)
     :after #'wdired-change-to-dired-mode
-    (all-the-icons-dired-mode +wdired-icons-enabled)))
+    (nerd-icons-dired-mode +wdired-icons-enabled)))
 
 
 (use-package! dired-x

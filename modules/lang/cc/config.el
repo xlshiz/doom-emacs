@@ -52,6 +52,17 @@ This is ignored by ccls.")
   (set-docsets! 'c-mode "C")
   (set-docsets! 'c++-mode "C++" "Boost")
   (set-electric! '(c-mode c++-mode objc-mode java-mode) :chars '(?\n ?\} ?\{))
+  (set-formatter!
+    'clang-format
+    '("clang-format"
+      "-assume-filename"
+      (or (buffer-file-name)
+          (cdr (assoc major-mode
+                      '((c-mode        . ".c")
+                        (c++-mode      . ".cpp")
+                        (cuda-mode     . ".cu")
+                        (protobuf-mode . ".proto"))))))
+    :modes '(c-mode c++-mode protobuf-mode cuda-mode))
   (when (modulep! +tree-sitter)
     (add-hook! '(c-mode-local-vars-hook
                  c++-mode-local-vars-hook)
@@ -65,17 +76,8 @@ This is ignored by ccls.")
     (ignore-errors (apply fn args)))
 
   ;; Custom style, based off of linux
-  (setq c-backspace-function #'delete-backward-char)
-
-  (defface +font-lock-call-function-face
-    '((((background dark)) :foreground "#2188b6")
-      (((background light)) :foreground "#2188b6"))
-    "Call function face"
-    :group 'font-lock-faces)
-  (defvar +font-lock-call-function-face '+font-lock-call-function-face)
-  (font-lock-add-keywords 'c-mode
-                          '(("\\(\\w+\\)\\s-*\(" . +font-lock-call-function-face))
-                          t)
+  (setq c-basic-offset tab-width
+        c-backspace-function #'delete-backward-char)
 
   (c-add-style
    "doom" '("linux"
