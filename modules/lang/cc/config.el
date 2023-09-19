@@ -96,7 +96,6 @@ This is ignored by ccls.")
              (substatement-open . 0)
              (substatement-label . 0)
              (statement-cont . +)
-             (case-label . +)
              ;; align args with open brace OR don't indent at all (if open
              ;; brace is at eolp and close brace is after arg with no trailing
              ;; comma)
