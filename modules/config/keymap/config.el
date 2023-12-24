@@ -60,21 +60,21 @@
        :gn [S-s-return]   #'+default/newline-above)
 
       ;;; avy-thins-edit
-      (:prefix-map ("C-c y" . "avy-copy-and-yank")
-       :ni "w"      #'avy-thing-copy-and-yank-word
-       :ni "o"      #'avy-thing-copy-and-yank-symbol
-       :ni "x"      #'avy-thing-copy-and-yank-sexp
-       :ni "l"      #'avy-thing-copy-and-yank-line
-       :ni "b"      #'avy-thing-copy-and-yank-parentheses
-       :ni "("      #'avy-thing-copy-and-yank-parentheses
-       :ni "p"      #'avy-thing-copy-and-yank-paragraph
-       :ni "{"      #'avy-thing-copy-and-yank-paragraph
-       :ni "n"      #'avy-thing-copy-and-yank-number
-       :ni "f"      #'avy-thing-copy-and-yank-defun
-       :ni "e"      #'avy-thing-copy-and-yank-email
-       :ni "i"      #'avy-thing-copy-and-yank-filename
-       :ni "t"      #'avy-thing-copy-and-yank-list
-       :ni "u"      #'avy-thing-copy-and-yank-url)
+      (:prefix-map ("M-i" . "avy-copy-and-yank")
+       :i "w"      #'avy-thing-copy-and-yank-word
+       :i "o"      #'avy-thing-copy-and-yank-symbol
+       :i "x"      #'avy-thing-copy-and-yank-sexp
+       :i "l"      #'avy-thing-copy-and-yank-line
+       :i "b"      #'avy-thing-copy-and-yank-parentheses
+       :i "("      #'avy-thing-copy-and-yank-parentheses
+       :i "p"      #'avy-thing-copy-and-yank-paragraph
+       :i "{"      #'avy-thing-copy-and-yank-paragraph
+       :i "n"      #'avy-thing-copy-and-yank-number
+       :i "f"      #'avy-thing-copy-and-yank-defun
+       :i "e"      #'avy-thing-copy-and-yank-email
+       :i "i"      #'avy-thing-copy-and-yank-filename
+       :i "t"      #'avy-thing-copy-and-yank-list
+       :i "u"      #'avy-thing-copy-and-yank-url)
       (:prefix-map ("C-c j" . "avy-thing-edit")
        (:prefix-map ("c" . "copy")
         :ni "w"      #'avy-thing-copy-word
@@ -300,8 +300,6 @@
          )
        :desc "ibuffer"                     "i"   #'ibuffer
        :desc "Switch to last buffer"       "l"   #'evil-switch-to-windows-last-buffer
-       :desc "Set bookmark"                "m"   #'bookmark-set
-       :desc "Delete bookmark"             "M"   #'bookmark-delete
        :desc "Next buffer"                 "n"   #'next-buffer
        :desc "New empty buffer"            "N"   #'evil-buffer-new
        :desc "Kill other buffers"          "O"   #'doom/kill-other-buffers
@@ -445,8 +443,8 @@
 
       ;;; <leader> j --- jump
       (:prefix-map ("j" . "jump")
-       :desc "avy goto char timer"        "j"   #'evil-avy-goto-char-timer
-       :desc "avy goto 2 char"            "c"   #'evil-avy-goto-char-2
+       :desc "avy goto char timer"        "c"   #'evil-avy-goto-char-timer
+       :desc "avy goto 2 char"            "j"   #'evil-avy-goto-char-2
        :desc "avy goto char"              "C"   #'evil-avy-goto-char
        :desc "avy goto line"              "l"   #'evil-avy-goto-line
        :desc "avy goto word"              "w"   #'evil-avy-goto-word-1
@@ -482,6 +480,8 @@
 
       ;;; <leader> m --- mark
       (:prefix-map ("m" . "mark")
+       :desc "Set bookmark"               "b"   #'bookmark-set
+       :desc "Delete bookmark"            "B"   #'bookmark-delete
        :desc "Mark symbol highlight"      "m"   #'symbol-overlay-put
        :desc "Clear all highlight"        "c"   #'symbol-overlay-remove-all)
 

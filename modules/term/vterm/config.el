@@ -21,8 +21,7 @@
       (kbd "C-x C-f") 'find-file)
     (evil-collection-define-key 'normal 'vterm-mode-map
       (kbd "C-j") 'ace-window))
-
-
+  (setq vterm-buffer-name "vterm*")
   :config
   ; (set-popup-rule! "^\\*vterm" :size 0.25 :vslot -4 :select t :quit nil :ttl 0)
   ; (set-popup-rule! "^\\*doom:vterm" :size 0.25 :vslot -4 :select t :quit nil :ttl 0)

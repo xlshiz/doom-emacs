@@ -59,8 +59,30 @@ Fixes #3939: unsortable dired entries on Windows."
     "Don't auto-revert in dired-virtual buffers (see `dired-virtual-revert')."
     :before-while #'dired-buffer-stale-p
     (not (eq revert-buffer-function #'dired-virtual-revert)))
+  ;; Use single buffer
+  (defadvice dired-find-file (around dired-find-file-single-buffer activate)
+    "Replace current buffer if file is a directory."
+    (interactive)
+    (let ((orig (current-buffer))
+          (filename (dired-get-file-for-visit)))
+      ad-do-it
+      (when (and (file-directory-p filename)
+                 (not (eq (current-buffer) orig)))
+        (kill-buffer orig))))
+  (defadvice dired-up-directory (around dired-up-directory-single-buffer activate)
+    "Replace current buffer if file is a directory."
+    (interactive)
+    (let ((orig (current-buffer)))
+      ad-do-it
+      (kill-buffer orig)))
 
   (map! :map dired-mode-map
+        :ng "h"   #'dired-up-directory
+        :ng "j"   #'dired-next-line
+        :ng "k"   #'dired-previous-line
+        :ng "l"   #'dired-find-file
+        :ng "i"   #'wdired-change-to-wdired-mode
+        :ng "."   #'dired-omit-mode
         ;; Kill all dired buffers on q
         :ng "q" #'+dired/quit-all
         ;; To be consistent with ivy/helm+wgrep integration
@@ -165,6 +187,15 @@ we have to clean it up ourselves."
     '(:left (sort file-time " " file-size symlink) :right (omit yank index)))
   (when (modulep! +icons)
     (push +dired-dirvish-icon-provider dirvish-attributes))
+  (defadvice dirvish-find-entry-a (around dirvish-find-file-single-buffer activate)
+    "Replace current buffer if file is a directory."
+    (interactive)
+    (let ((orig (current-buffer))
+          (filename (dired-get-file-for-visit)))
+      ad-do-it
+      (when (and (file-directory-p filename)
+                 (not (eq (current-buffer) orig)))
+        (kill-buffer orig))))
   (map! :map dired-mode-map
     :ng "h"   #'dired-up-directory
     :ng "j"   #'dired-next-line
