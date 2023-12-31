@@ -662,8 +662,9 @@
              (t nil))
        :desc "Dictionary"                   "t" #'+lookup/dictionary-definition
        :desc "Thesaurus"                    "T" #'+lookup/synonyms
-       (:when (fboundp 'vundo)
-         :desc "Undo history"               "u" #'vundo))
+       :desc "Undo history"                 "u"
+       (cond ((modulep! :emacs undo +tree)     #'undo-tree-visualize)
+             ((modulep! :emacs undo)           #'vundo)))
 
       ;;; <leader> t --- toggle
       (:prefix-map ("t" . "toggle")
