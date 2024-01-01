@@ -15,9 +15,7 @@
         avy-timeout-seconds 0.5))
 
 (use-package! avy-thing-edit
-  :defer t
-  :config
-  (setq avy-thing-edit-jump-command #'evil-avy-goto-char-timer))
+  :defer t)
 
 (use-package! symbol-overlay
   :commands (symbol-overlay-put symbol-overlay-remove-all)
